@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "final_project"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pytest = "^5.3.5"
+pytest-cov = "^2.8.1"
+autoflake = "^1.3.1"
+isort = "^4.3.21"
+black = "^19.10b0"
+unify = "^0.5"
+flake8 = "^3.7.9"
+pylint = "^2.4.4"
+mypy = "^0.761"
+fastapi = "^0.54.1"
+uvicorn = "^0.11.3"
+
+rq = "^1.3.0"
+"testing.postgresql" = "^1.3.0"
+psycopg2 = "^2.8.5"
+aiohttp = "^3.6.2"
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.scripts]
+start_storage_service = "final_project.storage:start_storage_app"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
