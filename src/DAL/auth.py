@@ -20,7 +20,6 @@ from src.models import (
     InUser,
     OutUser,
     TokensResponse,
-    UserWithRole,
     UserWithTokens,
 )
 from src.password import get_password_hash
@@ -55,7 +54,7 @@ def _is_valid_token(actual_token: str, expected_token: str) -> bool:
     return actual_token == expected_token
 
 
-async def check_authorization(token: str = Depends(oauth_scheme),) -> UserWithRole:
+async def check_authorization(token: str = Depends(oauth_scheme),) -> OutUser:
     '''
     Обрабатывает jwt
     :raises HttpException со статусом 401 если произошла ошибка при обработке токена
@@ -63,13 +62,14 @@ async def check_authorization(token: str = Depends(oauth_scheme),) -> UserWithRo
     '''
     user_id = _get_user_id(token)
     user = await _get_user_from_db(user_id)
+    print(user)
     if _is_valid_token(token, user.access_token.decode()):
-        return UserWithRole.from_orm(user)
+        return OutUser.from_orm(user)
     raise DALError(HTTPStatus.BAD_REQUEST.value, Message.ACCESS_TOKEN_OUTDATED.value)
 
 
 async def check_admin_role(
-    user: UserWithRole = Depends(check_authorization),
+    user: OutUser = Depends(check_authorization),
 ) -> OutUser:
     if user.role != UserRole.ADMIN:
         raise DALError(HTTPStatus.FORBIDDEN.value, Message.ACCESS_FORBIDDEN.value)

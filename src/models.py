@@ -16,14 +16,14 @@ class InUser(BaseModel):
 class OutUser(BaseModel):
     id: int
     username: str
+    type: str
 
     class Config:
         orm_mode = True
 
 
-class UserWithRole(BaseModel):
-    role: UserRole
-
+class MyModel(BaseModel):
+    url: str
 
 class UserWithTokens(OutUser):
     access_token: bytes
