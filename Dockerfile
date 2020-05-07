@@ -29,7 +29,7 @@ RUN pip install --no-compile --upgrade pip \
  && poetry install --no-dev --no-interaction --no-ansi \
  && pip uninstall --yes poetry 
 
-COPY ./final_project /code/final_project
+COPY ./final_project /code/src
 COPY Makefile /code/
 
 
