@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from src.database.user_roles import UserRole
 
 
 class TokensResponse(BaseModel):
@@ -24,6 +23,7 @@ class OutUser(BaseModel):
 
 class MyModel(BaseModel):
     url: str
+
 
 class UserWithTokens(OutUser):
     access_token: bytes

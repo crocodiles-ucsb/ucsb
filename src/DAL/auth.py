@@ -8,21 +8,14 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jwt import PyJWTError
 from src.config import tokens_settings
-from src.DAL.grant_type import GrantType
-from src.DAL.user import get_user_with_tokens
+from src.controller.grant_type import GrantType
+from src.DAL.password import get_password_hash
+from src.DAL.user import User
 from src.database.database import create_session, run_in_threadpool
-from src.database.models import User
-from src.database.user_roles import UserRole
+from src.database.models import User as UserDB
 from src.exceptions import DALError
 from src.messages import Message
-from src.models import (
-    InRefreshToken,
-    InUser,
-    OutUser,
-    TokensResponse,
-    UserWithTokens,
-)
-from src.password import get_password_hash
+from src.models import OutUser, TokensResponse, UserWithTokens
 
 SECRET_KEY = '123'
 ALGORITHM = 'HS256'
@@ -31,7 +24,7 @@ oauth_scheme = OAuth2PasswordBearer(tokenUrl='/auth')
 
 
 async def _get_user_from_db(user_id: int) -> UserWithTokens:
-    user = await (get_user_with_tokens(user_id))
+    user = await (User.get_user_tokens(user_id))
     return user
 
 
@@ -54,7 +47,7 @@ def _is_valid_token(actual_token: str, expected_token: str) -> bool:
     return actual_token == expected_token
 
 
-async def check_authorization(token: str = Depends(oauth_scheme),) -> OutUser:
+async def check_authorization(token: str) -> OutUser:
     '''
     Обрабатывает jwt
     :raises HttpException со статусом 401 если произошла ошибка при обработке токена
@@ -62,18 +55,9 @@ async def check_authorization(token: str = Depends(oauth_scheme),) -> OutUser:
     '''
     user_id = _get_user_id(token)
     user = await _get_user_from_db(user_id)
-    print(user)
     if _is_valid_token(token, user.access_token.decode()):
-        return OutUser.from_orm(user)
+        return OutUser.parse_obj(user)
     raise DALError(HTTPStatus.BAD_REQUEST.value, Message.ACCESS_TOKEN_OUTDATED.value)
-
-
-async def check_admin_role(
-    user: OutUser = Depends(check_authorization),
-) -> OutUser:
-    if user.role != UserRole.ADMIN:
-        raise DALError(HTTPStatus.FORBIDDEN.value, Message.ACCESS_FORBIDDEN.value)
-    return OutUser.parse_obj(user)
 
 
 def _is_password_correct(password: str, expected_password_hash: str) -> bool:
@@ -84,8 +68,8 @@ def _is_password_correct(password: str, expected_password_hash: str) -> bool:
 def _authenticate_user(username: str, password: str) -> Awaitable[OutUser]:
     message = Message.INCORRECT_USERNAME_OR_PASSWORD.value
     with create_session() as session:
-        user: Optional[User] = session.query(User).filter(
-            User.username == username
+        user: Optional[UserDB] = session.query(UserDB).filter(
+            UserDB.username == username
         ).first()
         user = deepcopy(user)
     if user is None:
@@ -106,7 +90,7 @@ def _save_tokens_to_db(
     user: OutUser, access_token: bytes, refresh_token: bytes
 ) -> None:
     with create_session() as session:
-        user_from_db = session.query(User).filter(User.id == user.id).one()
+        user_from_db = session.query(UserDB).filter(UserDB.id == user.id).one()
         user_from_db.refresh_token = refresh_token.decode()
         user_from_db.access_token = access_token.decode()
         session.add(user_from_db)

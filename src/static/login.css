@@ -1,0 +1,97 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&display=swap");
+
+html, body {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+}
+
+.outer {
+    display: table;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+.middle {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.inner {
+    text-align: center;
+    width: auto;
+    padding: 0 15px;
+}
+
+#auth_form {
+    background: #ffffff;
+    height: 100%;
+    min-height: 400px;
+}
+
+#auth_form .login-wr {
+    position: relative;
+    margin: 0 auto;
+    background: #f5f5f5;
+    max-width: 350px;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+#auth_form h2 {
+    text-align: center;
+    font-weight: 500;
+    font-size: 2em;
+    margin-top: 30px;
+    color: #414141;
+}
+
+#auth_form .form {
+    padding-top: 20px;
+    text-align: center;
+}
+
+#auth_form input[type="text"] {
+    width: 80%;
+    margin-bottom: 20px;
+    height: 40px;
+    border-radius: 5px;
+    outline: 0;
+    -moz-outline-style: none;
+}
+
+#auth_form input[type="password"] {
+    width: 80%;
+    margin-bottom: 40px;
+    height: 40px;
+    border-radius: 5px;
+    outline: 0;
+    -moz-outline-style: none;
+}
+
+#auth_form input[type="text"],
+#auth_form input[type="password"] {
+    border: 1px solid #ccc;
+    padding: 0 0 0 10px;
+    font-size: 14px;
+}
+
+#auth_form button {
+    width: 40%;
+    margin-bottom: 30px;
+    height: 45px;
+    border-radius: 5px;
+    background: #8497FF;
+    border: none;
+    color: white;
+    font-size: 14px;
+    font-weight: 100;
+    cursor: pointer;
+    transition: box-shadow .4s ease;
+}

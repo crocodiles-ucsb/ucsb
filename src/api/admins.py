@@ -1,27 +1,16 @@
-from fastapi import APIRouter, Depends
-from fastapi.responses import RedirectResponse
-
+from fastapi import APIRouter
+from fastapi.requests import Request
+from src.controller.admins import AdminsController
 from src.DAL.auth import check_authorization
-from src.database.database import create_session
-from src.database.models import User, Admin
-from src.models import OutUser
 
 router = APIRouter()
-from src.password import get_password_hash
 
 
 @router.get('/{admin_id}')
-async def get_admin(admin_id: int, user: OutUser = Depends(check_authorization)):
-    '''
-    возвращает страничку админа
-    :param admin_id:
-    :return:
-    '''
-    return 'admin page'
+async def get_admin(admin_id: int, req: Request):
+    return await AdminsController.get_admin_page(admin_id,req)
 
 
 @router.post('')
 async def add_admin(username: str, password: str):
-    with create_session() as session:
-        admin = Admin(username=username, password_hash=get_password_hash(password))
-        session.add(admin)
+    return await AdminsController.add(username, password)

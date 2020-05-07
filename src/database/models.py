@@ -10,10 +10,7 @@ class User(Base):
     access_token = sa.Column(sa.String)
     refresh_token = sa.Column(sa.String)
     type = sa.Column(sa.String(50))
-    __mapper_args__ = {
-        'polymorphic_identity': 'user',
-        'polymorphic_on': type
-    }
+    __mapper_args__ = {'polymorphic_identity': 'user', 'polymorphic_on': type}
 
 
 class Admin(User):

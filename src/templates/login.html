@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <link href="{{ url_for('static', path='/login.css') }}" rel="stylesheet">
+    <title>Вход в систему</title>
+</head>
+<body>
+<form id="auth_form">
+    <div class="outer">
+        <div class="middle">
+            <div class="inner">
+                <div class="login-wr">
+                    <h2>Вход в систему</h2>
+                    <div class="form">
+                        <input type="text" placeholder="Логин" name="username">
+                        <input type="password" placeholder="Пароль" name="password">
+                        <button type="submit">Войти</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+
+    const url_root = 'http://185.189.14.105/';
+
+    function add_to_cookie(json) {
+        document.cookie = "access_token=" + json.access_token + '; max-age=900';
+        document.cookie = "refresh_token=" + json.refresh_token + '; max-age=1209600';
+    }
+
+    function Redirect(postfix) {
+        window.location.replace(url_root + postfix);
+    }
+
+    auth_form.onsubmit = async (e) => {
+        e.preventDefault();
+        let formData = new FormData(auth_form);
+        formData.append('grant_type', 'password');
+        const response = await fetch(url_root + 'auth', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (response.status === 200) {
+            let json = await response.json();
+            add_to_cookie(json);
+            Redirect('')
+
+        } else {
+            alert('Пользователь с такими данными не зарегестрирован')
+        }
+    };
+
+</script>
+</body>
+</html>

@@ -1,21 +1,31 @@
-from typing import Awaitable
+from abc import abstractmethod
+from http import HTTPStatus
+from typing import Awaitable, Generic, TypeVar
 
 from sqlalchemy.orm import Session
 from src.database.database import create_session, run_in_threadpool
-from src.database.models import User
+from src.database.models import User as DBUser
 from src.exceptions import DALError
 from src.messages import Message
-from src.models import UserWithTokens
+from src.models import OutUser, UserWithTokens
+
+TParams = TypeVar('TParams')
 
 
-def _get_user(user_id: int, session: Session) -> User:
-    user = session.query(User).filter(User.id == user_id).one()
-    if user:
-        return user
-    raise DALError(Message.USER_DOES_NOT_EXISTS.value)
+class User(Generic[TParams]):
+    @staticmethod
+    def _get_user(user_id: int, session: Session) -> DBUser:
+        user = session.query(DBUser).filter(DBUser.id == user_id).one()
+        if user:
+            return user
+        raise DALError(HTTPStatus.NOT_FOUND.value, Message.USER_DOES_NOT_EXISTS.value)
 
+    @staticmethod
+    @run_in_threadpool
+    def get_user_tokens(user_id: int) -> Awaitable[UserWithTokens]:
+        with create_session() as session:
+            return UserWithTokens.from_orm(User._get_user(user_id, session))  # type: ignore
 
-@run_in_threadpool
-def get_user_with_tokens(user_id: int) -> Awaitable[UserWithTokens]:
-    with create_session() as session:
-        return UserWithTokens.from_orm(_get_user(user_id, session))  # type: ignore
+    @abstractmethod
+    async def register_user(self, params: TParams) -> OutUser:
+        pass

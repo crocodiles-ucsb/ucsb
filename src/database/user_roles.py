@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class UserRole(Enum):
-    ADMIN = 0
-    OPERATOR = 1
-    SECURITY = 2
-    CONTRACTOR_REPRESENTATIVE = 3
+    ADMIN = 'admin'
+    OPERATOR = 'operator'
+    SECURITY = 'security'
+    CONTRACTOR_REPRESENTATIVE = 'Contractor representative'

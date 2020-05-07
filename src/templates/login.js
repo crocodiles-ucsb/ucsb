@@ -5,16 +5,6 @@ function add_to_cookie(json) {
     document.cookie = "refresh_token=" + json.refresh_token + '; max-age=1209600';
 }
 
-
-async function get_url(url, token) {
-    return (await fetch(url, {
-        headers: new Headers({
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/x-www-form-urlencoded'
-        })
-    }));
-}
-
 function Redirect(postfix) {
     window.location.replace(url_root + postfix);
 }

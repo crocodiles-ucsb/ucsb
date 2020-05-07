@@ -1,32 +1,23 @@
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request
 from fastapi.responses import RedirectResponse
-from pydantic import BaseModel
-from starlette.templating import Jinja2Templates
-
 from src.DAL.auth import check_authorization
-from src.models import OutUser, MyModel
+from src.DAL.utils import get_url_postfix
+
+from src.templates import templates
 
 router = APIRouter()
-
-templates = Jinja2Templates(directory='src/templates')
-
+from src.config import service_settings
 
 @router.get('/')
 async def get_index(req: Request):
     '''
     пустой html c логикой
     '''
-    return templates.TemplateResponse('index.html', {'request': req})
-
-
-@router.get('/role', response_model=MyModel)
-async def get_role(req: Request, user: OutUser = Depends(check_authorization)):
-    '''
-    берет инфу из хедера и возвращает url
-    '''
-    return RedirectResponse('http://loaclhost:8000/' + f'{user.type}s/{user.id}', headers=req.headers)
-    # print(user)
-    # return MyModel(url=f'{user.type}s/{user.id}')
+    token = req.cookies.get('access_token')
+    if token:
+        user = await check_authorization(token)
+        return RedirectResponse(f'{service_settings.base_url}{get_url_postfix(user)}')
+    return RedirectResponse(service_settings.login_url)
 
 
 @router.get('/login')
@@ -34,4 +25,4 @@ async def login(req: Request):
     '''
     авторизация с логикой
     '''
-    return templates.TemplateResponse('auth.html', {'request': req})
+    return templates.TemplateResponse('login.html', {'request': req})
