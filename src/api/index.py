@@ -13,6 +13,8 @@ async def get_index(req: Request):
     '''
     return await IndexController.transfer(req)
 
+async def get_forbidden_page(req: Request):
+    return IndexController.forbidden(req)
 
 @router.get('/login')
 async def login(req: Request):
