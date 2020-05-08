@@ -19,5 +19,5 @@ class AdminsController(AbstractUserController):
     @staticmethod
     @auth_handler
     async def get_admin_page(admin_id: int, req: Request) -> _TemplateResponse:
-        user = await AdminsController.check_auth(req, UserRole.ADMIN)
+        user = await AdminsController.check_auth(req, admin_id,UserRole.ADMIN)
         return templates.TemplateResponse('admin.html', {'request': req, 'user': user})
