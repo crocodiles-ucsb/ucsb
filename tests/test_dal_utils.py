@@ -4,11 +4,6 @@ from src.database.user_roles import UserRole
 from src.models import OutUser
 
 
-@pytest.fixture()
-def username():
-    return '1'
-
-
 @pytest.mark.parametrize(
     'user_id, user_type, postfix',
     [

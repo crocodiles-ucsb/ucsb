@@ -1,10 +1,8 @@
-from copy import deepcopy
 from datetime import datetime, timedelta
 from http import HTTPStatus
 from typing import Any, Awaitable, Dict, Optional
 
 import jwt
-from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jwt import PyJWTError
 from src.config import tokens_settings
@@ -13,7 +11,7 @@ from src.DAL.password import get_password_hash
 from src.DAL.user import User
 from src.database.database import create_session, run_in_threadpool
 from src.database.models import User as UserDB
-from src.exceptions import DALError
+from src.exceptions import AccessTokenOutdatedError, DALError
 from src.messages import Message
 from src.models import OutUser, TokensResponse, UserWithTokens
 
@@ -57,7 +55,9 @@ async def check_authorization(token: str) -> OutUser:
     user = await _get_user_from_db(user_id)
     if _is_valid_token(token, user.access_token.decode()):
         return OutUser.parse_obj(user)
-    raise DALError(HTTPStatus.BAD_REQUEST.value, Message.ACCESS_TOKEN_OUTDATED.value)
+    raise AccessTokenOutdatedError(
+        HTTPStatus.BAD_REQUEST.value, Message.ACCESS_TOKEN_OUTDATED.value
+    )
 
 
 def _is_password_correct(password: str, expected_password_hash: str) -> bool:
@@ -71,12 +71,11 @@ def _authenticate_user(username: str, password: str) -> Awaitable[OutUser]:
         user: Optional[UserDB] = session.query(UserDB).filter(
             UserDB.username == username
         ).first()
-        user = deepcopy(user)
-    if user is None:
+        if user is None:
+            raise DALError(HTTPStatus.NOT_FOUND.value, message)
+        if _is_password_correct(password, user.password_hash):
+            return OutUser.from_orm(user)  # type: ignore
         raise DALError(HTTPStatus.NOT_FOUND.value, message)
-    if _is_password_correct(password, user.password_hash):
-        return OutUser.from_orm(user)  # type: ignore
-    raise DALError(HTTPStatus.NOT_FOUND.value, message)
 
 
 def _create_token(user_id: int, expires_delta: timedelta) -> bytes:

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form id="refresh_form">
+    <input type="hidden" value={{access_token}} name="access_token">
+    <input type="hidden" value={{refresh_token}} name="refresh_token">
+    <button hidden="hidden" type="submit" id="button"></button>
+</form>
+<script>
+    form = new FormData(refresh_form);
+    document.cookie = "access_token=" + form.get('access_token') + '; max-age=900';
+    document.cookie = "refresh_token=" + form.get('refresh_token') + '; max-age=1209600';
+    window.location.replace('http://185.189.14.105:80')
+</script>
+</body>
+</html>

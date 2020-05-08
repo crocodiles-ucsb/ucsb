@@ -1,4 +1,4 @@
-const url_root = 'http://localhost:8000/';
+const url_root = 'http://185.189.14.105:80/';
 
 function add_to_cookie(json) {
     document.cookie = "access_token=" + json.access_token + '; max-age=900';

@@ -8,23 +8,7 @@ from src.DAL.registration import (
 )
 from src.database.database import create_session
 from src.database.models import User
-from src.database.user_roles import UserRole
 from src.exceptions import DALError
-
-
-@pytest.fixture(scope='session')
-def simple_registration_params():
-    return SimpleRegistrationParams(username='123', password='123', type=UserRole.ADMIN)
-
-
-@pytest.fixture(scope='session')
-def simple_registration():
-    return SimpleRegistration()
-
-
-@pytest.fixture()
-async def _add_user(simple_registration, simple_registration_params):
-    await simple_registration.register(simple_registration_params)
 
 
 @pytest.mark.asyncio
