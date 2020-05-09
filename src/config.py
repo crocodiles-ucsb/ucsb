@@ -8,8 +8,8 @@ class TokensSettings(BaseSettings):
 
 
 class ServiceSettings(BaseSettings):
-    base_address = '185.189.14.105'
-    port = 80
+    base_address = 'localhost'
+    port = 8000
     base_url = f'http://{base_address}:{port}'
     login_url = f'{base_url}/login'
     refresh_token_url = f'{base_url}/refresh_tokens'

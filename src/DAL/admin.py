@@ -4,6 +4,7 @@ from src.DAL.registration import (
     SimpleRegistrationParams,
 )
 from src.DAL.user import User
+from src.database.user_roles import UserRole
 from src.models import OutUser
 
 
@@ -15,3 +16,6 @@ class Admin(User[SimpleRegistrationParams]):
 
     async def register_user(self, params: SimpleRegistrationParams) -> OutUser:
         return await self.registration.register(params)
+
+    async def add_user(self, user_type: UserRole):
+        pass

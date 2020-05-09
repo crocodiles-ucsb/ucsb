@@ -14,7 +14,7 @@
     form = new FormData(refresh_form);
     document.cookie = "access_token=" + form.get('access_token') + '; max-age=900';
     document.cookie = "refresh_token=" + form.get('refresh_token') + '; max-age=1209600';
-    window.location.replace('http://185.189.14.105:80')
+    window.location.replace('http://localhost:8000')
 </script>
 </body>
 </html>

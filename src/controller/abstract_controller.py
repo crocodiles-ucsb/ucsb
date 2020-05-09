@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import cast
 
 from src.DAL.tokens import check_auth
 from src.DAL.utils import get_tokens
@@ -12,6 +13,7 @@ class AbstractUserController(ABC):
     @staticmethod
     async def check_auth(request: Request, user_id: int, user_type: UserRole) -> OutUser:
         user = await check_auth(get_tokens(request), True)
+        user = cast(OutUser, user)
         if user.type != user_type.value or user.id != user_id:
             raise AccessForbidden()
         return user

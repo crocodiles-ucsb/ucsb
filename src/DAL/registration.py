@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from src.DAL.password import get_password_hash
 from src.DAL.user import TParams
 from src.database.database import create_session, run_in_threadpool
-from src.database.models import User
+from src.database.models import User, Admin
 from src.database.user_roles import UserRole
 from src.exceptions import DALError
 from src.messages import Message
@@ -32,7 +32,10 @@ class SimpleRegistration(AbstractRegistration[SimpleRegistrationParams]):
     def register(self, params: SimpleRegistrationParams) -> Awaitable[OutUser]:
         with create_session() as session:
             password_hash = get_password_hash(params.password)
-            user = User(
+            db_obj = User
+            if params.type == UserRole.ADMIN:
+                db_obj = Admin
+            user = db_obj(
                 username=params.username,
                 password_hash=password_hash,
                 type=params.type.value,
