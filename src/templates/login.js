@@ -13,7 +13,7 @@ login_form.onsubmit = async (e) => {
     e.preventDefault();
     let formData = new FormData(login_form);
     console.log(login_form);
-    const response = await fetch('http://localhost:8000/auth?grant_type=password' + '&' + 'username=' +
+    const response = await fetch('http://185.189.14.105/auth?grant_type=password' + '&' + 'username=' +
         formData.get('username') +
         '&' + 'password=' + formData.get('password'), {
         method: 'POST'

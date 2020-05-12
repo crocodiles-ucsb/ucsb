@@ -14,7 +14,7 @@ async function get_url(url, token) {
     }));
 }
 
-const url_root = 'http://localhost:8000/';
+const url_root = 'http://185.189.14.105/';
 
 function Redirect(postfix) {
     window.location.replace(url_root + postfix);

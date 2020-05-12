@@ -1,14 +1,24 @@
+from dataclasses import dataclass
+from typing import TypeVar
+
 from src.DAL.registration import (
     AbstractRegistration,
     SimpleRegistration,
     SimpleRegistrationParams,
 )
-from src.DAL.user import User
-from src.database.user_roles import UserRole
+from src.DAL.users.user import User
 from src.models import OutUser
 
 
-class Admin(User[SimpleRegistrationParams]):
+@dataclass
+class OperatorAddingParams:
+    name: str
+
+
+TUserParams = TypeVar('TUserParams')
+
+
+class Admin(User):
     def __init__(self) -> None:
         self.registration: AbstractRegistration[
             SimpleRegistrationParams
@@ -16,6 +26,3 @@ class Admin(User[SimpleRegistrationParams]):
 
     async def register_user(self, params: SimpleRegistrationParams) -> OutUser:
         return await self.registration.register(params)
-
-    async def add_user(self, user_type: UserRole):
-        pass

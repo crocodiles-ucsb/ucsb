@@ -32,3 +32,26 @@ class UserWithTokens(OutUser):
 
 class InRefreshToken(BaseModel):
     refresh_token: str
+
+
+class OperatorToRegisterOut(BaseModel):
+    id: int
+    first_name: str
+    last_name: str
+    patronymic: str
+    uuid: str
+
+    class Config:
+        orm_mode = True
+
+
+class OperatorAddingParams(BaseModel):
+    last_name: str
+    first_name: str
+    patronymic: str
+
+
+class OperatorIn(BaseModel):
+    first_name: str
+    last_name: str
+    patronymic: str

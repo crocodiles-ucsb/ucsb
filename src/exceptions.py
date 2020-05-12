@@ -1,4 +1,8 @@
+from typing import Optional
+
 from fastapi import HTTPException
+from starlette.requests import Request
+
 from src.models import OutUser, TokensResponse
 
 
@@ -18,10 +22,15 @@ class AccessTokenOutdatedError(Exception):
     pass
 
 
+class AuthDataOutdated(Exception):
+    pass
+
+
 class NeedRedirectToRefreshToken(Exception):
-    def __init__(self, tokens: TokensResponse):
+    def __init__(self, tokens: TokensResponse, req: Optional[Request] = None):
         super().__init__()
         self.tokens: TokensResponse = tokens
+        self.request: Optional[Request] = req
 
 
 class RedirectToUser(Exception):

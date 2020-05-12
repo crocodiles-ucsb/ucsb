@@ -1,10 +1,111 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <title>Администратор</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{{ url_for('static', path='/admin.css') }}" rel="stylesheet">
+    <title>Операторы</title>
 </head>
+
 <body>
-Стрнаица администратора
+
+<div class="grid-container">
+
+    <div class="sidebar">
+        <a class="active" href="./admin_opers.html">
+            <img src="./triangle.png" class="triangle"></img>Операторы</a>
+        <a href="./admin_secs.html">
+            <img src="./triangle.png" class="triangle"></img>Охранники</a>
+        <a href="./admin_dics.html">
+            <img src="./triangle.png" class="triangle"></img>Словари</a>
+    </div>
+
+    <div class="search">
+        <input type="search" placeholder="Поиск">
+        <button class="search_button"> Найти</button>
+        <button onclick="location.href='http://185.189.14.105/admins/{{admin_id}}/add_operator'" class="add_button"
+                type="button"> +
+            Добавить
+        </button>
+    </div>
+
+    <div class="pagination">
+        <a href="#">&laquo;</a>
+        <a href="#">1</a>
+        <a href="#">&raquo;</a>
+    </div>
+
+    <div class="table-wr">
+        <table id="table">
+            <tr>
+                <th>ФИО</th>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+
+</div>
+
 </body>
+
 </html>

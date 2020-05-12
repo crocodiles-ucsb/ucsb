@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{{ url_for('static', path='/add_operator_form.css') }}" rel="stylesheet">
+    <title>Добавление оператора</title>
+</head>
+
+<body>
+<form id="add_form" method="post" action="http://185.189.14.105/operators">
+    <div class="outer">
+        <div class="middle">
+            <div class="inner">
+                <div class="add-wr">
+                    <h2>Добавление оператора</h2>
+                    <div class="form">
+                        <input type="surname" placeholder="Фамилия" name="last_name">
+                        <input type="name" placeholder="Имя" name="first_name">
+                        <input type="patronymic_last" placeholder="Отчество" name="patronymic">
+                        <button type="submit" class="add_button"> + Добавить</button>
+                        <button onclick="location.href='http://localhost:8000/'" type="button" class=back_button>
+                            Назад
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    const base_url = 'http://185.189.14.105/';
+    const url = base_url + '/operators/';
+    window.onload = async function () {
+        let form = document.getElementById("add_form");
+        form.onsubmit = submitted.bind(form);
+    };
+
+    async function submitted(event) {
+        event.preventDefault();
+        const form = new FormData(add_form);
+        res = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'first_name': form.get('first_name'), 'last_name': form.get('last_name'),
+                'patronymic': form.get('patronymic')
+            })
+        });
+        if (res.status === 401) {
+            alert('Данные авторизации устарели, перезагрузите страницу и попробуйте заново')
+        }
+        let reponse_json = await res.json();
+        alert('Ссылка на регестриацию пользователя :' + reponse_json.first_name + " " + reponse_json.last_name + ":" +
+            base_url + '/register/' + reponse_json.uuid)
+
+
+    }
+</script>
+</body>
+
+</html>

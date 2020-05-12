@@ -1,6 +1,6 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from http import HTTPStatus
-from typing import Awaitable, Generic, TypeVar
+from typing import Awaitable, TypeVar
 
 from sqlalchemy.orm import Session
 from src.database.database import create_session, run_in_threadpool
@@ -9,10 +9,10 @@ from src.exceptions import DALError
 from src.messages import Message
 from src.models import OutUser, UserWithTokens
 
-TParams = TypeVar('TParams')
+TRegisterParams = TypeVar('TRegisterParams')
 
 
-class User(Generic[TParams]):
+class User(ABC):
     @staticmethod
     def _get_user(user_id: int, session: Session) -> DBUser:
         user = session.query(DBUser).filter(DBUser.id == user_id).one()
@@ -27,5 +27,5 @@ class User(Generic[TParams]):
             return UserWithTokens.from_orm(User._get_user(user_id, session))  # type: ignore
 
     @abstractmethod
-    async def register_user(self, params: TParams) -> OutUser:
+    async def register_user(self, params: TRegisterParams) -> OutUser:
         pass

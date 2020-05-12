@@ -8,7 +8,7 @@ from jwt import PyJWTError
 from src.config import tokens_settings
 from src.controller.grant_type import GrantType
 from src.DAL.password import get_password_hash
-from src.DAL.user import User
+from src.DAL.users.user import User
 from src.database.database import create_session, run_in_threadpool
 from src.database.models import User as UserDB
 from src.exceptions import AccessTokenOutdatedError, DALError

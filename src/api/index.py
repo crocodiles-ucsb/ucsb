@@ -27,3 +27,8 @@ async def login(req: Request):
 @router.get('/refresh_tokens')
 async def refresh_tokens(req: Request, access_token: str, refresh_token: str):
     return IndexController.refresh_tokens(req, access_token, refresh_token)
+
+
+@router.get('/register/{uuid}')
+async def get_register_form(req: Request, uuid: str):
+    return await IndexController.get_register_form(req, uuid)
