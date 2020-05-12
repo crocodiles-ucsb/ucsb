@@ -35,6 +35,4 @@ build_on_prod:
     export base_address='185.189.14.105'
     export port=80
 
-	docker-compose build code
-
 ci:	lint test

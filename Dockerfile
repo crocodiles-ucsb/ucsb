@@ -31,8 +31,6 @@ RUN pip install --no-compile --upgrade pip \
 
 COPY ./src /code/src
 COPY Makefile /code/
-
-
-
+RUN ["make", "build_on_prod"]
 ENTRYPOINT [""]
 CMD ["make", "up"]
