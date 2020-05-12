@@ -23,13 +23,13 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN)
     async def add_operator_form(req: Request, admin_id: int) -> _TemplateResponse:
-        return templates.TemplateResponse('add_operator_form.html', {'request': req})
+        return templates.TemplateResponse('add_operator_form.html', {'request': req, 'base_url':service_settings.base_url})
 
     @staticmethod
     @auth_required(UserRole.ADMIN)
     async def get_admin_page(req: Request, admin_id: int) -> _TemplateResponse:
         return templates.TemplateResponse(
-            'admin.html', {'request': req, 'admin_id': admin_id}
+            'admin.html', {'request': req, 'admin_id': admin_id, 'base_url':service_settings.base_url}
         )
 
     @staticmethod

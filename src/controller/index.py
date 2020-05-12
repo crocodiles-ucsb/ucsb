@@ -1,4 +1,5 @@
 from src.DAL.registration import RegistrationViaUniqueLink
+from src.config import service_settings
 from src.controller.authorization_decorators import auth_handler
 from src.DAL import tokens
 from src.DAL.tokens import get_tokens
@@ -23,15 +24,17 @@ class IndexController:
                 'request': req,
                 'access_token': access_token,
                 'refresh_token': refresh_token,
+                'base_url': service_settings.base_url
             },
         )
 
     @staticmethod
     def forbidden(req: Request) -> _TemplateResponse:
-        return templates.TemplateResponse('forbidden.html', {'request': req})
+        return templates.TemplateResponse('forbidden.html', {'request': req, 'base_url': service_settings.base_url})
 
     @staticmethod
     async def get_register_form(req: Request, uuid: str) -> _TemplateResponse:
         if await RegistrationViaUniqueLink.is_valid_uuid(uuid):
-            return templates.TemplateResponse('registration.html', {'request': req})
+            return templates.TemplateResponse('registration.html',
+                                              {'request': req, 'base_url': service_settings.base_url})
         return 'Ссылка недействительна или устарела'

@@ -9,7 +9,7 @@
 </head>
 
 <body>
-<form id="add_form" method="post" action="http://185.189.14.105/operators">
+<form id="add_form" method="post" action="{{base_url}}/operators">
     <div class="outer">
         <div class="middle">
             <div class="inner">
@@ -20,7 +20,7 @@
                         <input type="name" placeholder="Имя" name="first_name">
                         <input type="patronymic_last" placeholder="Отчество" name="patronymic">
                         <button type="submit" class="add_button"> + Добавить</button>
-                        <button onclick="location.href='http://185.189.14.105/'" type="button" class=back_button>
+                        <button onclick="location.href='{{base_url}}'" type="button" class=back_button>
                             Назад
                         </button>
 
@@ -31,7 +31,7 @@
     </div>
 </form>
 <script>
-    const base_url = 'http://185.189.14.105';
+    const base_url = '{{base_url}}';
     const url = base_url + '/operators/';
     window.onload = async function () {
         let form = document.getElementById("add_form");
