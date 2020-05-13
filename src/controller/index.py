@@ -46,6 +46,8 @@ class IndexController:
 
     @staticmethod
     async def get_login_page(req: Request):
+        value = Urls.base_url.value
+        print(value)
         return templates.TemplateResponse(
-            'login.html', {'request': req, 'base_url': Urls.base_url.value}
+            'login.html', {'request': req, 'base_url': value}
         )
