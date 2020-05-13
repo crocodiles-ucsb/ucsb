@@ -52,7 +52,7 @@ def auth_handler(func):
             )
         except RedirectToUser as e:
             return RedirectResponse(
-                f'{Urls.base_url}{get_url_postfix(e.user)}',
+                f'{Urls.base_url.value}{get_url_postfix(e.user)}',
                 HTTPStatus.SEE_OTHER.value,
             )
         except NeedRedirectToLogin:
