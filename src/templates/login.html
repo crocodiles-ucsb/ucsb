@@ -40,7 +40,7 @@
         e.preventDefault();
         let formData = new FormData(auth_form);
         formData.append('grant_type', 'password');
-        const response = await fetch(url_root + 'auth', {
+        const response = await fetch(url_root + '/auth', {
             method: 'POST',
             body: formData
         });
