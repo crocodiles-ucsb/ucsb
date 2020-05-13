@@ -5,11 +5,12 @@ from src.DAL import auth
 from src.DAL.auth import check_authorization
 from src.exceptions import (
     AccessTokenOutdatedError,
+    AuthDataOutdated,
     DALError,
     NeedRedirectToLogin,
     NeedRedirectToRefreshToken,
     RedirectToUser,
-    AuthDataOutdated)
+)
 from src.models import OutUser
 from starlette.requests import Request
 
@@ -25,7 +26,9 @@ def get_tokens(req: Request) -> Tokens:
     return Tokens(cookies.get('access_token'), cookies.get('refresh_token'))
 
 
-async def check_auth(tokens: Tokens, need_user: bool = False, auth_redirect: bool = True) -> Optional[OutUser]:
+async def check_auth(
+    tokens: Tokens, need_user: bool = False, auth_redirect: bool = True
+) -> Optional[OutUser]:
     access_token, refresh_token = tokens.access_token, tokens.refresh_token
     if not access_token and not refresh_token:
         if auth_redirect:

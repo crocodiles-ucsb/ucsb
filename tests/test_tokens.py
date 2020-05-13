@@ -124,5 +124,6 @@ async def test_check_auth_when_user_has_old_refresh_token_raises_need_login(
     with pytest.raises(NeedRedirectToLogin):
         await check_auth(Tokens(None, token))
 
+
 # @pytest.mark.asyncio
 # async def test_ch

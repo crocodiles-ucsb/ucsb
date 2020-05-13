@@ -1,6 +1,7 @@
 from io import StringIO
 from typing import Type
-from src.config import service_settings
+from src.urls import Urls
+
 from src.database.models import (
     Admin,
     ContractorRepresentative,
@@ -31,7 +32,7 @@ def get_url_postfix(user: OutUser) -> str:
 
 
 def get_registration_url(uuid: str) -> str:
-    return f'{service_settings.registration_url}/{uuid}'
+    return f'{Urls.registration_url}/{uuid}'
 
 
 def get_db_obj(user_role: UserRole) -> Type[User]:

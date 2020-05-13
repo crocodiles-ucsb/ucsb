@@ -1,9 +1,8 @@
 from typing import Optional
 
 from fastapi import HTTPException
-from starlette.requests import Request
-
 from src.models import OutUser, TokensResponse
+from starlette.requests import Request
 
 
 class DALError(HTTPException):

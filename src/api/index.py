@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Request
 from src.controller.index import IndexController
 from src.DAL.auth import refresh_tokens
-from src.templates import templates
 
 router = APIRouter()
 
@@ -21,7 +20,7 @@ async def get_forbidden_page(req: Request):
 
 @router.get('/login')
 async def login(req: Request):
-    return templates.TemplateResponse('login.html', {'request': req})
+    return await IndexController.get_login_page(req)
 
 
 @router.get('/refresh_tokens')

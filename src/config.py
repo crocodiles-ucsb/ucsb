@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from pydantic import BaseSettings
 
 
@@ -10,12 +12,17 @@ class TokensSettings(BaseSettings):
 class ServiceSettings(BaseSettings):
     base_address = 'localhost'
     port = 8000
-    base_url = f'http://{base_address}:{port}'
-    login_url = f'{base_url}/login'
-    refresh_token_url = f'{base_url}/refresh_tokens'
-    forbidden_url = f'{base_url}/forbidden'
-    registration_url = f'{base_url}/register'
 
 
-tokens_settings = TokensSettings()
-service_settings = ServiceSettings()
+@lru_cache()
+def _get_service_settings() -> ServiceSettings:
+    return ServiceSettings()
+
+
+@lru_cache()
+def _get_tokens_settings() -> TokensSettings:
+    return TokensSettings()
+
+
+tokens_settings = _get_tokens_settings()
+service_settings = _get_service_settings()

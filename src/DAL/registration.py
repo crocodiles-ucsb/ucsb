@@ -62,7 +62,11 @@ class RegistrationViaUniqueLink(AbstractRegistration[UniqueLinkRegistrationParam
     @run_in_threadpool
     def is_valid_uuid(uuid: str) -> bool:
         with create_session() as session:
-            return session.query(UserToRegister).filter(UserToRegister.uuid == uuid).first()
+            return (
+                session.query(UserToRegister)
+                .filter(UserToRegister.uuid == uuid)
+                .first()
+            )
 
     @run_in_threadpool
     def register(self, params: UniqueLinkRegistrationParams) -> Awaitable[OutUser]:

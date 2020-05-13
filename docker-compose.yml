@@ -11,3 +11,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - 80:8000
+    environment:
+      - BASE_ADDRESS=localhost
+      - PORT=80
