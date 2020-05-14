@@ -77,3 +77,6 @@ my.db
 
 # dev docker-compose
 docker-compose.dev.yaml
+
+#prod docker-compose
+docker-compose.prod.yaml
