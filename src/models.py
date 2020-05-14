@@ -14,6 +14,10 @@ class InUser(BaseModel):
     password: str
 
 
+class InUserWithUUID(InUser):
+    uuid: str
+
+
 class OutUser(BaseModel):
     id: int
     username: str
@@ -34,23 +38,6 @@ class UserWithTokens(OutUser):
 
 class InRefreshToken(BaseModel):
     refresh_token: str
-
-
-class OperatorToRegisterOut(BaseModel):
-    id: int
-    first_name: str
-    last_name: str
-    patronymic: str
-    uuid: str
-
-    class Config:
-        orm_mode = True
-
-
-class OperatorAddingParams(BaseModel):
-    last_name: str
-    first_name: str
-    patronymic: Optional[str] = None
 
 
 class OperatorIn(BaseModel):

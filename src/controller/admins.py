@@ -3,15 +3,14 @@ from http import HTTPStatus
 from src.controller.authorization_decorators import auth_required
 from src.DAL.registration import SimpleRegistrationParams
 from src.DAL.users.admin import Admin
-from src.DAL.users.operator import Operator
+from src.DAL.users.operator import Operator, OperatorToAddingOut, OperatorAddingParams
 from src.database.user_roles import UserRole
 from src.exceptions import DALError
-from src.models import OperatorAddingParams, OperatorIn, OperatorToRegisterOut, OutUser
+from src.models import OperatorIn, OutUser
 from src.templates import templates
+from src.urls import Urls
 from starlette.requests import Request
 from starlette.templating import _TemplateResponse
-
-from src.urls import Urls
 
 
 class AdminsController:
@@ -25,8 +24,7 @@ class AdminsController:
     @auth_required(UserRole.ADMIN)
     async def add_operator_form(req: Request, admin_id: int) -> _TemplateResponse:
         return templates.TemplateResponse(
-            'add_operator_form.html',
-            {'request': req, 'base_url': Urls.base_url.value},
+            'add_operator_form.html', {'request': req, 'base_url': Urls.base_url.value},
         )
 
     @staticmethod
@@ -34,19 +32,15 @@ class AdminsController:
     async def get_admin_page(req: Request, admin_id: int) -> _TemplateResponse:
         return templates.TemplateResponse(
             'admin.html',
-            {
-                'request': req,
-                'admin_id': admin_id,
-                'base_url': Urls.base_url.value,
-            },
+            {'request': req, 'admin_id': admin_id, 'base_url': Urls.base_url.value, },
         )
 
     @staticmethod
     @auth_required(UserRole.ADMIN, check_id=False, auth_redirect=False)
     async def add_operator(
-        req: Request, operator_in: OperatorIn
-    ) -> OperatorToRegisterOut:
-        if operator_in.first_name == "" or operator_in.last_name == "":
+            req: Request, operator_in: OperatorIn
+    ) -> OperatorToAddingOut:
+        if operator_in.first_name == '' or operator_in.last_name == '':
             raise DALError(HTTPStatus.BAD_REQUEST.value)
         return await Operator().add_user(
             OperatorAddingParams(

@@ -18,7 +18,7 @@ class OperatorAddingParams:
 TUserParams = TypeVar('TUserParams')
 
 
-class Admin(User):
+class Admin(User[SimpleRegistrationParams]):
     def __init__(self) -> None:
         self.registration: AbstractRegistration[
             SimpleRegistrationParams

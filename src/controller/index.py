@@ -1,12 +1,12 @@
 from src.controller.authorization_decorators import auth_handler
 from src.DAL import tokens
-from src.DAL.registration import RegistrationViaUniqueLink
+from src.DAL.registration import RegistrationViaUniqueLink, UniqueLinkRegistrationParams
 from src.DAL.tokens import get_tokens
+from src.models import InUserWithUUID, OutUser
 from src.templates import templates
+from src.urls import Urls
 from starlette.requests import Request
 from starlette.templating import _TemplateResponse
-
-from src.urls import Urls
 
 
 class IndexController:
@@ -17,7 +17,7 @@ class IndexController:
 
     @staticmethod
     def refresh_tokens(
-            req: Request, access_token: str, refresh_token: str
+        req: Request, access_token: str, refresh_token: str
     ) -> _TemplateResponse:
         return templates.TemplateResponse(
             'refresh_tokens.html',
@@ -39,15 +39,21 @@ class IndexController:
     async def get_register_form(req: Request, uuid: str) -> _TemplateResponse:
         if await RegistrationViaUniqueLink.is_valid_uuid(uuid):
             return templates.TemplateResponse(
-                'registration.html',
-                {'request': req, 'base_url': Urls.base_url.value},
+                'registration.html', {'request': req, 'base_url': Urls.base_url.value},
             )
         return 'Ссылка недействительна или устарела'
 
     @staticmethod
     async def get_login_page(req: Request):
         value = Urls.base_url.value
-        print(value)
         return templates.TemplateResponse(
             'login.html', {'request': req, 'base_url': value}
+        )
+
+    @staticmethod
+    async def register_user(in_user: InUserWithUUID) -> OutUser:
+        return await RegistrationViaUniqueLink().register(
+            UniqueLinkRegistrationParams(
+                username=in_user.username, password=in_user.password, uuid=in_user.uuid
+            )
         )

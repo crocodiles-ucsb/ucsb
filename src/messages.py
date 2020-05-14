@@ -2,6 +2,9 @@ from enum import Enum
 
 
 class Message(Enum):
+    LINK_INVALID_OR_OUTDATED = (
+        'Ссылкой кто-то уже воспользовался или она не действительная'
+    )
     USER_ALREADY_EXISTS = 'User already exists'
     USER_DOES_NOT_EXISTS = 'User does not exists'
     COULD_NOT_VALIDATE_CREDENTIALS = 'Could not validate credentials'

@@ -1,6 +1,6 @@
+import uuid
 from abc import ABC, abstractmethod
 from typing import Awaitable, Generic, Type, TypeVar
-from uuid import uuid4
 
 from src.DAL.utils import get_db_obj_to_register
 from src.database.database import create_session, run_in_threadpool
@@ -38,5 +38,5 @@ class AddingUserWithDisposableLink(
         self, role: UserRole, params: TAddingUserParams, out_model: Type[TAddingUserOut]
     ) -> TAddingUserOut:
         db_obj_to_register = get_db_obj_to_register(role)
-        obj = db_obj_to_register(**params.__dict__, uuid=str(uuid4()))
+        obj = db_obj_to_register(**params.__dict__, uuid=str(uuid.uuid4()))
         return await self._add_db_obj_to_register_to_db(obj, out_model)

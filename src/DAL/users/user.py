@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from http import HTTPStatus
-from typing import Awaitable, TypeVar
+from typing import Awaitable, Generic, TypeVar
 
 from sqlalchemy.orm import Session
 from src.database.database import create_session, run_in_threadpool
@@ -12,7 +12,7 @@ from src.models import OutUser, UserWithTokens
 TRegisterParams = TypeVar('TRegisterParams')
 
 
-class User(ABC):
+class User(ABC, Generic[TRegisterParams]):
     @staticmethod
     def _get_user(user_id: int, session: Session) -> DBUser:
         user = session.query(DBUser).filter(DBUser.id == user_id).one()

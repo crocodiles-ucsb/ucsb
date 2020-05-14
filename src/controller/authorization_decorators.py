@@ -1,7 +1,6 @@
 from http import HTTPStatus
 from typing import cast
 
-
 from src.DAL.tokens import check_auth, get_tokens
 from src.DAL.utils import get_url_postfix
 from src.database.user_roles import UserRole
@@ -13,10 +12,9 @@ from src.exceptions import (
     RedirectToUser,
 )
 from src.models import OutUser
+from src.urls import Urls
 from starlette.requests import Request
 from starlette.responses import JSONResponse, RedirectResponse
-
-from src.urls import Urls
 
 
 def auth_required(
@@ -56,9 +54,7 @@ def auth_handler(func):
                 HTTPStatus.SEE_OTHER.value,
             )
         except NeedRedirectToLogin:
-            return RedirectResponse(
-                Urls.login_url.value, HTTPStatus.SEE_OTHER.value
-            )
+            return RedirectResponse(Urls.login_url.value, HTTPStatus.SEE_OTHER.value)
         except NeedRedirectToRefreshToken as e:
             return RedirectResponse(
                 f'{Urls.refresh_token_url.value}?access_token={e.tokens.access_token.decode()}&refresh_token'

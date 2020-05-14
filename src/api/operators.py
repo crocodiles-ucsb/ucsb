@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter
 from src.controller.admins import AdminsController
 from src.models import OperatorIn

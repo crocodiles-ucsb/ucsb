@@ -2,8 +2,7 @@ from http import HTTPStatus
 
 import pytest
 from mock import AsyncMock
-from src.DAL.tokens import check_auth
-from src.DAL.utils import Tokens
+from src.DAL.tokens import Tokens, check_auth
 from src.database.user_roles import UserRole
 from src.exceptions import (
     AccessTokenOutdatedError,
@@ -123,7 +122,3 @@ async def test_check_auth_when_user_has_old_refresh_token_raises_need_login(
     )
     with pytest.raises(NeedRedirectToLogin):
         await check_auth(Tokens(None, token))
-
-
-# @pytest.mark.asyncio
-# async def test_ch

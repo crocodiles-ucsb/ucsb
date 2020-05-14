@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request
 from src.controller.index import IndexController
 from src.DAL.auth import refresh_tokens
+from src.models import InUserWithUUID
 
 router = APIRouter()
 
@@ -31,3 +32,8 @@ async def refresh_tokens(req: Request, access_token: str, refresh_token: str):
 @router.get('/register/{uuid}')
 async def get_register_form(req: Request, uuid: str):
     return await IndexController.get_register_form(req, uuid)
+
+
+@router.post('/users')
+async def add_user(user: InUserWithUUID):
+    return await IndexController.register_user(user)

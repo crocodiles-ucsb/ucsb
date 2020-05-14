@@ -1,6 +1,5 @@
 from io import StringIO
 from typing import Type
-from src.urls import Urls
 
 from src.database.models import (
     Admin,
@@ -15,6 +14,7 @@ from src.database.models import (
 )
 from src.database.user_roles import UserRole
 from src.models import OutUser
+from src.urls import Urls
 
 
 def get_url_postfix(user: OutUser) -> str:
@@ -44,6 +44,12 @@ def get_db_obj(user_role: UserRole) -> Type[User]:
         return ContractorRepresentative
     if user_role == UserRole.SECURITY:
         return Security
+    raise ValueError()
+
+
+def get_obj_from_obj_to_register(user_to_register: UserToRegister) -> Type[User]:
+    if isinstance(user_to_register, OperatorToRegister):
+        return Operator
     raise ValueError()
 
 

@@ -24,9 +24,9 @@ class Admin(User):
 class Operator(User):
     __tablename__ = 'operator'
     id = sa.Column(sa.Integer, sa.ForeignKey('user.id'), primary_key=True)
-    last_name = sa.Column(sa.String, nullable=False)
-    first_name = sa.Column(sa.String, nullable=False)
-    patronymic = sa.Column(sa.String, nullable=False)
+    last_name = sa.Column(sa.String)
+    first_name = sa.Column(sa.String)
+    patronymic = sa.Column(sa.String)
     __mapper_args__ = {
         'polymorphic_identity': 'operator',
     }

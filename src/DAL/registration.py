@@ -1,14 +1,15 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from http import HTTPStatus
-from typing import Awaitable, Generic
+from typing import Awaitable, Generic, Optional, Type
 
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 from src.DAL.password import get_password_hash
 from src.DAL.users.user import TRegisterParams
-from src.DAL.utils import get_db_obj
+from src.DAL.utils import get_db_obj, get_obj_from_obj_to_register
 from src.database.database import create_session, run_in_threadpool
-from src.database.models import UserToRegister
+from src.database.models import OperatorToRegister, User, UserToRegister
 from src.database.user_roles import UserRole
 from src.exceptions import DALError
 from src.messages import Message
@@ -26,7 +27,6 @@ class SimpleRegistrationParams:
 class UniqueLinkRegistrationParams:
     username: str
     password: str
-    type: UserRole
     uuid: str
 
 
@@ -35,25 +35,31 @@ class AbstractRegistration(Generic[TRegisterParams], ABC):
     def register(self, params: TRegisterParams) -> Awaitable[OutUser]:
         pass
 
+    def _add_user(
+        self, session: Session, username: str, password: str, db_obj: Type[User]
+    ) -> User:
+        password_hash = get_password_hash(password)
+        user = db_obj(username=username, password_hash=password_hash,)
+        session.add(user)
+        try:
+            session.flush()
+        except IntegrityError:
+            raise DALError(
+                HTTPStatus.BAD_REQUEST.value, Message.USER_ALREADY_EXISTS.value
+            )
+        return user
+
 
 class SimpleRegistration(AbstractRegistration[SimpleRegistrationParams]):
     @run_in_threadpool
     def register(self, params: SimpleRegistrationParams) -> Awaitable[OutUser]:
         with create_session() as session:
-            password_hash = get_password_hash(params.password)
-            db_obj = get_db_obj(params.type)
-            user = db_obj(
+            user = self._add_user(
+                session,
                 username=params.username,
-                password_hash=password_hash,
-                type=params.type.value,
+                password=params.password,
+                db_obj=get_db_obj(params.type),
             )
-            session.add(user)
-            try:
-                session.flush()
-            except IntegrityError:
-                raise DALError(
-                    HTTPStatus.BAD_REQUEST.value, Message.USER_ALREADY_EXISTS.value
-                )
             return OutUser.from_orm(user)  # type: ignore
 
 
@@ -63,11 +69,35 @@ class RegistrationViaUniqueLink(AbstractRegistration[UniqueLinkRegistrationParam
     def is_valid_uuid(uuid: str) -> bool:
         with create_session() as session:
             return (
-                session.query(UserToRegister)
-                .filter(UserToRegister.uuid == uuid)
-                .first()
+                RegistrationViaUniqueLink._get_user_to_register(session, uuid)
+                is not None
             )
+
+    @staticmethod
+    def _get_user_to_register(session: Session, uuid: str) -> Optional[UserToRegister]:
+        return session.query(UserToRegister).filter(UserToRegister.uuid == uuid).first()
+
+    def _transfer_fields(self, obj: User, obj_to_register: UserToRegister) -> User:
+        if isinstance(obj_to_register, OperatorToRegister):
+            obj.last_name = obj_to_register.last_name
+            obj.first_name = obj_to_register.first_name
+            obj.patronymic = obj_to_register.patronymic
+        return obj
 
     @run_in_threadpool
     def register(self, params: UniqueLinkRegistrationParams) -> Awaitable[OutUser]:
-        pass
+        with create_session() as session:
+            user_to_register = self._get_user_to_register(session, params.uuid)
+            if not user_to_register:
+                raise DALError(
+                    HTTPStatus.BAD_REQUEST.value, Message.LINK_INVALID_OR_OUTDATED.value
+                )
+            user = self._add_user(
+                session,
+                username=params.username,
+                password=params.password,
+                db_obj=get_obj_from_obj_to_register(user_to_register),
+            )
+            user = self._transfer_fields(user, user_to_register)
+            session.delete(user_to_register)
+            return OutUser.from_orm(user)  # type: ignore

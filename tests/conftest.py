@@ -1,5 +1,7 @@
 import pytest
+from src.DAL.adding_user import AddingUserWithDisposableLink
 from src.DAL.registration import SimpleRegistration, SimpleRegistrationParams
+from src.DAL.users.operator import OperatorAddingParams, OperatorToAddingOut
 from src.database.database import Base, engine
 from src.database.user_roles import UserRole
 from src.models import InUser
@@ -42,3 +44,13 @@ def simple_registration_params(username, password):
 @pytest.fixture(scope='session')
 def simple_registration():
     return SimpleRegistration()
+
+
+@pytest.fixture(scope='session')
+def adding_user_with_disposable_link():
+    return AddingUserWithDisposableLink[OperatorAddingParams, OperatorToAddingOut]()
+
+
+@pytest.fixture()
+def operator_adding_params():
+    return OperatorAddingParams(last_name='1', first_name='2')
