@@ -75,3 +75,5 @@ reference/
 # database
 my.db
 
+# dev docker-compose
+docker-compose.dev.yaml
