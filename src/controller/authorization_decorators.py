@@ -58,7 +58,7 @@ def auth_handler(func):
             return RedirectResponse(
                 f'{Urls.refresh_token_url.value}?access_token={e.tokens.access_token.decode()}&refresh_token'
                 f'={e.tokens.refresh_token.decode()}',
-                HTTPStatus.FOUND.value,
+                HTTPStatus.SEE_OTHER.value,
             )
         except AuthDataOutdated:
             return JSONResponse(status_code=HTTPStatus.UNAUTHORIZED.value)

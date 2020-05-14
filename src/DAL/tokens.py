@@ -47,6 +47,8 @@ async def check_auth(
     except AccessTokenOutdatedError:
         raise NeedRedirectToLogin()
     except DALError:
+        if not auth_redirect:
+            raise AuthDataOutdated()
         await get_new_tokens(refresh_token)
 
 
