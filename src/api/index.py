@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from fastapi import APIRouter, Request
 from src.controller.index import IndexController
 from src.DAL.auth import refresh_tokens
@@ -34,6 +36,6 @@ async def get_register_form(req: Request, uuid: str):
     return await IndexController.get_register_form(req, uuid)
 
 
-@router.post('/users')
+@router.post('/users', status_code=HTTPStatus.CREATED.value)
 async def add_user(user: InUserWithUUID):
     return await IndexController.register_user(user)

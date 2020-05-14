@@ -17,7 +17,7 @@ class IndexController:
 
     @staticmethod
     def refresh_tokens(
-        req: Request, access_token: str, refresh_token: str
+            req: Request, access_token: str, refresh_token: str
     ) -> _TemplateResponse:
         return templates.TemplateResponse(
             'refresh_tokens.html',
@@ -39,9 +39,9 @@ class IndexController:
     async def get_register_form(req: Request, uuid: str) -> _TemplateResponse:
         if await RegistrationViaUniqueLink.is_valid_uuid(uuid):
             return templates.TemplateResponse(
-                'registration.html', {'request': req, 'base_url': Urls.base_url.value},
+                'registration.html', {'request': req, 'base_url': Urls.base_url.value, 'uuid': uuid},
             )
-        return 'Ссылка недействительна или устарела'
+        return 'Ссылка недействительна или ей уже кто-то воспользовался'
 
     @staticmethod
     async def get_login_page(req: Request):

@@ -19,6 +19,7 @@
                         <input type="text" placeholder="Введите логин" name="username">
                         <input type="password" placeholder="Введите пароль" name="password">
                         <input type="password" placeholder="Повторите пароль" name="repeated_password">
+                        <input type="text" hidden="hidden" value={{uuid}} name="uuid">
                         <button> Зарегистрироваться</button>
                     </div>
                 </div>
@@ -32,17 +33,36 @@
         let form = document.getElementById("reg_form");
         form.onsubmit = submitted.bind(form);
     };
+    const base_url = '{{base_url}}'
 
     async function submitted(event) {
         event.preventDefault();
         const form = new FormData(reg_form);
-        if (form.get('username') === '') {
+        let username = form.get('username');
+        if (username === '') {
             alert('Введите имя пользователя');
             return
         }
-        if (form.get("password") !== form.get("repeated_password")) {
+        let password = form.get("password");
+        if (password !== form.get("repeated_password")) {
             alert("Пароли не совпадают");
             return
+        }
+        const res = await fetch(base_url + "/users", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'username': username, 'password': password, 'uuid': form.get("uuid")
+            })
+        });
+        if (res.status === 201) {
+            window.location = base_url
+        } else {
+            data = await res.json();
+            alert(data.detail)
         }
 
     }

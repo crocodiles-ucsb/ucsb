@@ -2,11 +2,6 @@ from abc import ABC, abstractmethod
 from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel
-from src.DAL.registration import (
-    AbstractRegistration,
-    RegistrationViaUniqueLink,
-    UniqueLinkRegistrationParams,
-)
 from src.DAL.users.user import TRegisterParams, User
 
 TAddingUserParams = TypeVar('TAddingUserParams', bound=Any)

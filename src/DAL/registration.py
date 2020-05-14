@@ -36,10 +36,10 @@ class AbstractRegistration(Generic[TRegisterParams], ABC):
         pass
 
     def _add_user(
-        self, session: Session, username: str, password: str, db_obj: Type[User]
+            self, session: Session, username: str, password: str, db_obj: Type[User]
     ) -> User:
         password_hash = get_password_hash(password)
-        user = db_obj(username=username, password_hash=password_hash,)
+        user = db_obj(username=username, password_hash=password_hash, )
         session.add(user)
         try:
             session.flush()
@@ -69,8 +69,8 @@ class RegistrationViaUniqueLink(AbstractRegistration[UniqueLinkRegistrationParam
     def is_valid_uuid(uuid: str) -> bool:
         with create_session() as session:
             return (
-                RegistrationViaUniqueLink._get_user_to_register(session, uuid)
-                is not None
+                    RegistrationViaUniqueLink._get_user_to_register(session, uuid)
+                    is not None
             )
 
     @staticmethod
