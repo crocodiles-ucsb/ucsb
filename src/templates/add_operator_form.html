@@ -41,6 +41,13 @@
     async function submitted(event) {
         event.preventDefault();
         const form = new FormData(add_form);
+        const first_name = form.get("first_name");
+        const lastName = form.get('last_name');
+        const patronymic = form.get('patronymic');
+        if (first_name === "" || lastName === "") {
+            alert("некорректные данные");
+            return
+        }
         res = await fetch(url, {
             method: 'POST',
             headers: {
@@ -48,17 +55,27 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                'first_name': form.get('first_name'), 'last_name': form.get('last_name'),
-                'patronymic': form.get('patronymic')
+                'first_name': form.get('first_name'), 'last_name': lastName,
+                'patronymic': patronymic
             })
         });
         if (res.status === 401) {
             alert('Данные авторизации устарели, перезагрузите страницу и попробуйте заново')
         }
-        let reponse_json = await res.json();
-        alert('Ссылка на регестриацию пользователя :' + reponse_json.first_name + " " + reponse_json.last_name + ":" +
-            base_url + '/register/' + reponse_json.uuid)
-
+        let response_json = await res.json();
+        var textarea = document.createElement('textarea');
+        textarea.textContent = base_url + '/register/' + response_json.uuid;
+        document.body.appendChild(textarea);
+        var selection = document.getSelection();
+        var range = document.createRange();
+        range.selectNode(textarea);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        document.execCommand('copy');
+        selection.removeAllRanges();
+        alert('Ссылка на регистрацию пользователя ' + response_json.first_name + " " + response_json.last_name +
+            " была скопирована в буфер обмена");
+        document.body.removeChild(textarea);
 
     }
 </script>

@@ -1,9 +1,11 @@
+from http import HTTPStatus
 
 from src.controller.authorization_decorators import auth_required
 from src.DAL.registration import SimpleRegistrationParams
 from src.DAL.users.admin import Admin
 from src.DAL.users.operator import Operator
 from src.database.user_roles import UserRole
+from src.exceptions import DALError
 from src.models import OperatorAddingParams, OperatorIn, OperatorToRegisterOut, OutUser
 from src.templates import templates
 from starlette.requests import Request
@@ -44,6 +46,8 @@ class AdminsController:
     async def add_operator(
         req: Request, operator_in: OperatorIn
     ) -> OperatorToRegisterOut:
+        if operator_in.first_name == "" or operator_in.last_name == "":
+            raise DALError(HTTPStatus.BAD_REQUEST.value)
         return await Operator().add_user(
             OperatorAddingParams(
                 first_name=operator_in.first_name,

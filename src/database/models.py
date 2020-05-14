@@ -64,7 +64,7 @@ class OperatorToRegister(UserToRegister):
     id = sa.Column(sa.Integer, sa.ForeignKey('user_to_register.id'), primary_key=True)
     last_name = sa.Column(sa.String, nullable=False)
     first_name = sa.Column(sa.String, nullable=False)
-    patronymic = sa.Column(sa.String, nullable=False)
+    patronymic = sa.Column(sa.String, nullable=True)
     __mapper_args__ = {
         'polymorphic_identity': 'operator_to_register',
     }

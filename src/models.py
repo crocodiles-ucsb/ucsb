@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -48,10 +50,10 @@ class OperatorToRegisterOut(BaseModel):
 class OperatorAddingParams(BaseModel):
     last_name: str
     first_name: str
-    patronymic: str
+    patronymic: Optional[str] = None
 
 
 class OperatorIn(BaseModel):
     first_name: str
     last_name: str
-    patronymic: str
+    patronymic: Optional[str] = None
