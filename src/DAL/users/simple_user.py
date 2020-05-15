@@ -9,7 +9,9 @@ TAddingUserOut = TypeVar('TAddingUserOut', bound=BaseModel)
 
 
 class SimpleUser(
-    Generic[TAddingUserParams, TAddingUserOut, TRegisterParams], User[TRegisterParams], ABC
+    Generic[TAddingUserParams, TAddingUserOut, TRegisterParams],
+    User[TRegisterParams],
+    ABC,
 ):
     @abstractmethod
     async def add_user(self, params: TAddingUserParams) -> TAddingUserOut:

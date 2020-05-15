@@ -44,3 +44,10 @@ class OperatorIn(BaseModel):
     first_name: str
     last_name: str
     patronymic: Optional[str] = None
+
+
+class SecurityIn(BaseModel):
+    first_name: str
+    last_name: str
+    patronymic: Optional[str] = None
+    position: str

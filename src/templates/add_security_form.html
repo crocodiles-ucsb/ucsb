@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{{ url_for('static', path='/security-add-form.css') }}" rel="stylesheet">
+    <title>Добавление охранника</title>
+</head>
+
+<body>
+<form id="add_form">
+    <div class="outer">
+        <div class="middle">
+            <div class="inner">
+                <div class="add-wr">
+                    <h2>Добавление охранника</h2>
+                    <div class="form">
+                        <input type="surname" placeholder="Фамилия" name="last_name">
+                        <input type="name" placeholder="Имя" name="first_name">
+                        <input type="patronymic" placeholder="Отчество" name="patronymic">
+                        <input type="organization" placeholder="Организация">
+                        <input type="position" placeholder="Должность" name="position">
+                        <button class="add_button"> + Добавить</button>
+                        <button class="back_button"> Назад</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    const base_url = '{{base_url}}';
+    const url = base_url + '/securities/';
+    window.onload = async function () {
+        let form = document.getElementById("add_form");
+        form.onsubmit = submitted.bind(form);
+    };
+
+    async function submitted(event) {
+        event.preventDefault();
+        const form = new FormData(add_form);
+        const first_name = form.get("first_name");
+        const lastName = form.get('last_name');
+        const patronymic = form.get('patronymic');
+        const position = form.get('position');
+        if (first_name === "" || lastName === "" || position === "") {
+            alert("некорректные данные");
+            return
+        }
+        res = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'first_name': form.get('first_name'), 'last_name': lastName,
+                'patronymic': patronymic, 'position': position
+            })
+        });
+        if (res.status === 401) {
+            alert('Данные авторизации устарели, перезагрузите страницу и попробуйте заново')
+        }
+        let response_json = await res.json();
+        var textarea = document.createElement('textarea');
+        textarea.textContent = base_url + '/register/' + response_json.uuid;
+        document.body.appendChild(textarea);
+        var selection = document.getSelection();
+        var range = document.createRange();
+        range.selectNode(textarea);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        document.execCommand('copy');
+        selection.removeAllRanges();
+        alert('Ссылка на регистрацию пользователя ' + response_json.first_name + " " + response_json.last_name +
+            " была скопирована в буфер обмена");
+        document.body.removeChild(textarea);
+    }
+</script>
+</body>
+
+</html>

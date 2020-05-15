@@ -44,8 +44,8 @@ def auth_handler(func):
         try:
             return await func(*args, **kwargs)
         except AccessForbidden:
-            return (
-                RedirectResponse(Urls.forbidden_url.value, HTTPStatus.SEE_OTHER.value)
+            return RedirectResponse(
+                Urls.forbidden_url.value, HTTPStatus.SEE_OTHER.value
             )
         except RedirectToUser as e:
             return RedirectResponse(

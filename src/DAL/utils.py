@@ -50,6 +50,8 @@ def get_db_obj(user_role: UserRole) -> Type[User]:
 def get_obj_from_obj_to_register(user_to_register: UserToRegister) -> Type[User]:
     if isinstance(user_to_register, OperatorToRegister):
         return Operator
+    if isinstance(user_to_register, SecurityToRegister):
+        return Security
     raise ValueError()
 
 

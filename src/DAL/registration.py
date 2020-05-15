@@ -9,7 +9,12 @@ from src.DAL.password import get_password_hash
 from src.DAL.users.user import TRegisterParams
 from src.DAL.utils import get_db_obj, get_obj_from_obj_to_register
 from src.database.database import create_session, run_in_threadpool
-from src.database.models import OperatorToRegister, User, UserToRegister
+from src.database.models import (
+    OperatorToRegister,
+    SecurityToRegister,
+    User,
+    UserToRegister,
+)
 from src.database.user_roles import UserRole
 from src.exceptions import DALError
 from src.messages import Message
@@ -36,10 +41,10 @@ class AbstractRegistration(Generic[TRegisterParams], ABC):
         pass
 
     def _add_user(
-            self, session: Session, username: str, password: str, db_obj: Type[User]
+        self, session: Session, username: str, password: str, db_obj: Type[User]
     ) -> User:
         password_hash = get_password_hash(password)
-        user = db_obj(username=username, password_hash=password_hash, )
+        user = db_obj(username=username, password_hash=password_hash,)
         session.add(user)
         try:
             session.flush()
@@ -69,8 +74,8 @@ class RegistrationViaUniqueLink(AbstractRegistration[UniqueLinkRegistrationParam
     def is_valid_uuid(uuid: str) -> bool:
         with create_session() as session:
             return (
-                    RegistrationViaUniqueLink._get_user_to_register(session, uuid)
-                    is not None
+                RegistrationViaUniqueLink._get_user_to_register(session, uuid)
+                is not None
             )
 
     @staticmethod
@@ -82,6 +87,11 @@ class RegistrationViaUniqueLink(AbstractRegistration[UniqueLinkRegistrationParam
             obj.last_name = obj_to_register.last_name
             obj.first_name = obj_to_register.first_name
             obj.patronymic = obj_to_register.patronymic
+        elif isinstance(obj_to_register, SecurityToRegister):
+            obj.last_name = obj_to_register.last_name
+            obj.first_name = obj_to_register.first_name
+            obj.patronymic = obj_to_register.patronymic
+            obj.position = obj_to_register.position
         return obj
 
     @run_in_threadpool
