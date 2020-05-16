@@ -42,13 +42,15 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN)
     async def get_operators(
-            req: Request, admin_id: int, page: int, pending: bool
+        req: Request, admin_id: int, page: int, pending: bool
     ) -> _TemplateResponse:
         if pending:
             return await AdminsController.get_operators_pending_register(
                 req, admin_id, page
             )
-        operators = await Admin.get_operators(page)
+        list_with_pagination = await Admin.get_operators(page)
+        operators = list_with_pagination.data
+        pagination = list_with_pagination.pagination_params
         return templates.TemplateResponse(
             'admin-operators.html',
             {
@@ -56,30 +58,41 @@ class AdminsController:
                 'admin_id': admin_id,
                 'base_url': Urls.base_url.value,
                 'operators': operators,
+                'pagination': pagination,
             },
         )
 
     @staticmethod
     @auth_required(UserRole.ADMIN)
     async def get_operators_pending_register(
-            req: Request, admin_id: int, page: int
+        req: Request, admin_id: int, page: int
     ) -> _TemplateResponse:
-        operators = await Admin.get_operators_to_register(page)
+        list_with_pagination = await Admin.get_operators_to_register(page)
+        operators = list_with_pagination.data
+        pagination = list_with_pagination.pagination_params
         return templates.TemplateResponse(
             'admin-operators-waiting.html',
-            {'request': req, 'admin_id': admin_id, 'base_url': Urls.base_url.value, "operators": operators},
+            {
+                'request': req,
+                'admin_id': admin_id,
+                'base_url': Urls.base_url.value,
+                'operators': operators,
+                'pagination': pagination,
+            },
         )
 
     @staticmethod
     @auth_required(UserRole.ADMIN)
     async def get_securities_page(
-            req: Request, admin_id: int, page: int, pending: bool
+        req: Request, admin_id: int, page: int, pending: bool
     ) -> _TemplateResponse:
         if pending:
             return await AdminsController.get_securities_pending_register(
                 req, admin_id, page
             )
-        securities = await Admin.get_securities(page)
+        list_with_pagination = await Admin.get_securities(page)
+        securities = list_with_pagination.data
+        pagination = list_with_pagination.pagination_params
         return templates.TemplateResponse(
             'admin-securities.html',
             {
@@ -87,18 +100,27 @@ class AdminsController:
                 'admin_id': admin_id,
                 'base_url': Urls.base_url.value,
                 'securities': securities,
+                'pagination': pagination,
             },
         )
 
     @staticmethod
     @auth_required(UserRole.ADMIN)
     async def get_securities_pending_register(
-            req: Request, admin_id: int, page: int
+        req: Request, admin_id: int, page: int
     ) -> _TemplateResponse:
-        securities = await Admin.get_securities_to_register(page)
+        list_with_pagination = await Admin.get_securities_to_register(page)
+        securities = list_with_pagination.data
+        pagination = list_with_pagination.pagination_params
         return templates.TemplateResponse(
             'admin-securities-waiting.html',
-            {'request': req, 'admin_id': admin_id, 'base_url': Urls.base_url.value, "securities": securities},
+            {
+                'request': req,
+                'admin_id': admin_id,
+                'base_url': Urls.base_url.value,
+                'securities': securities,
+                'pagination': pagination,
+            },
         )
 
     @staticmethod
@@ -116,7 +138,7 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN, check_id=False, auth_redirect=False)
     async def add_operator(
-            req: Request, operator_in: OperatorIn
+        req: Request, operator_in: OperatorIn
     ) -> OperatorToAddingOut:
         return await Operator().add_user(
             OperatorAddingParams(

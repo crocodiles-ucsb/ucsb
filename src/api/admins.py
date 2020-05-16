@@ -24,14 +24,14 @@ async def get_admin(admin_id: int, req: Request) -> _TemplateResponse:
 
 @router.get('/{admin_id}/operators')
 async def get_operators(
-        admin_id: int, req: Request, page: int = 1, pending: bool = False
+    admin_id: int, req: Request, page: int = 1, pending: bool = False
 ) -> _TemplateResponse:
     return await AdminsController.get_operators(req, admin_id, page, pending)
 
 
 @router.get('/{admin_id}/securities')
 async def get_securities(
-        admin_id: int, req: Request, page: int = 1, pending: bool = False
+    admin_id: int, req: Request, page: int = 1, pending: bool = False
 ) -> _TemplateResponse:
     return await AdminsController.get_securities_page(req, admin_id, page, pending)
 
@@ -39,4 +39,3 @@ async def get_securities(
 @router.post('')
 async def add_admin(username: str, password: str) -> OutUser:
     return await AdminsController.add(username, password)
-

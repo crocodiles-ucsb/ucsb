@@ -1,6 +1,7 @@
+from dataclasses import dataclass
 from http import HTTPStatus
 from io import StringIO
-from typing import List, Type, TypeVar
+from typing import Generic, List, Optional, Type, TypeVar
 
 from src.database.models import (
     Admin,
@@ -71,19 +72,46 @@ def get_db_obj_to_register(user_role: UserRole) -> Type[UserToRegister]:
 T = TypeVar('T')
 
 
-def get_pagination(objects: List[T], page: int, size: int) -> List[T]:
+@dataclass(init=False)
+class Pagination:
+    has_next_page: bool = False
+    has_prev_page: bool = False
+    current_page: int = 1
+    prev_page: Optional[int] = None
+    next_page: Optional[int] = None
+
+
+class ListWithPagination(Generic[T]):
+    def __init__(self, data: List[T], pagination_params: Pagination):
+        self.data: List[T] = data
+        self.pagination_params: Pagination = pagination_params
+
+
+def get_pagination(objects: List[T], page: int, size: int) -> ListWithPagination[T]:
+    pagination = Pagination()
     start_index: int = 0
-    if page < 1 or size < 1 or page * size > len(objects) + size:
-        raise DALError(
-            HTTPStatus.BAD_REQUEST.value, Message.INVALID_PAGINATION_PARAMS.value
-        )
+    catch_error(objects, page, size)
+    pagination.current_page = page
     if page > 1:
         start_index = (page - 1) * size
+        pagination.has_prev_page = True
+        pagination.prev_page = page - 1
     end_index: int = start_index + size - 1
     length = len(objects)
     if end_index >= length:
         end_index = length - 1
+    if end_index < length - 1:
+        pagination.has_next_page = True
+        pagination.next_page = page + 1
     res: List[T] = []
     for i in range(start_index, end_index + 1):
         res.append(objects[i])
-    return res
+
+    return ListWithPagination(res, pagination)
+
+
+def catch_error(objects, page, size):
+    if page < 1 or size < 1 or page * size > len(objects) + size:
+        raise DALError(
+            HTTPStatus.BAD_REQUEST.value, Message.INVALID_PAGINATION_PARAMS.value
+        )

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, TypeVar
+from typing import TypeVar
 
 from src.DAL.registration import (
     AbstractRegistration,
@@ -8,8 +8,15 @@ from src.DAL.registration import (
 )
 from src.DAL.users.user import User
 from src.DAL.users_dal import UsersDAL
+from src.DAL.utils import ListWithPagination
 from src.database.user_roles import UserRole
-from src.models import OperatorOut, OutUser, SecurityOut, OperatorToRegisterOut, SecurityToRegisterOut
+from src.models import (
+    OperatorOut,
+    OperatorToRegisterOut,
+    OutUser,
+    SecurityOut,
+    SecurityToRegisterOut,
+)
 
 
 @dataclass
@@ -30,20 +37,32 @@ class Admin(User[SimpleRegistrationParams]):
         return await self.registration.register(params)
 
     @staticmethod
-    async def get_operators(page: int, size: int = 10) -> List[OperatorOut]:
+    async def get_operators(
+        page: int, size: int = 10
+    ) -> ListWithPagination[OperatorOut]:
         return await UsersDAL.get_users(page, size, OperatorOut, UserRole.OPERATOR)
 
     @staticmethod
-    async def get_securities(page: int, size: int = 10) -> List[SecurityOut]:
+    async def get_securities(
+        page: int, size: int = 10
+    ) -> ListWithPagination[SecurityOut]:
         return await UsersDAL.get_users(page, size, SecurityOut, UserRole.SECURITY)
 
     @staticmethod
-    async def get_operators_to_register(page: int, size: int = 10) -> List[OperatorToRegisterOut]:
-        return await UsersDAL.get_users_to_register(page, size, OperatorToRegisterOut, UserRole.OPERATOR)
+    async def get_operators_to_register(
+        page: int, size: int = 10
+    ) -> ListWithPagination[OperatorToRegisterOut]:
+        return await UsersDAL.get_users_to_register(
+            page, size, OperatorToRegisterOut, UserRole.OPERATOR
+        )
 
     @staticmethod
-    async def get_securities_to_register(page: int, size: int = 10) -> List[SecurityToRegisterOut]:
-        return await UsersDAL.get_users_to_register(page, size, SecurityToRegisterOut, UserRole.SECURITY)
+    async def get_securities_to_register(
+        page: int, size: int = 10
+    ) -> ListWithPagination[SecurityToRegisterOut]:
+        return await UsersDAL.get_users_to_register(
+            page, size, SecurityToRegisterOut, UserRole.SECURITY
+        )
 
     @staticmethod
     async def remove_user_to_register(uuid: str) -> None:
