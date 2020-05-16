@@ -1,4 +1,3 @@
-
 from src.controller.authorization_decorators import auth_required
 from src.DAL.registration import SimpleRegistrationParams
 from src.DAL.users.admin import Admin
@@ -36,10 +35,13 @@ class AdminsController:
 
     @staticmethod
     @auth_required(UserRole.ADMIN)
-    async def get_admin_page(req: Request, admin_id: int) -> _TemplateResponse:
+    async def get_admin_page(
+            req: Request, admin_id: int, page: int
+    ) -> _TemplateResponse:
+        operators = await Admin().get_operators(page)
         return templates.TemplateResponse(
             'admin-operators.html',
-            {'request': req, 'admin_id': admin_id, 'base_url': Urls.base_url.value,},
+            {'request': req, 'admin_id': admin_id, 'base_url': Urls.base_url.value, 'operators': operators}
         )
 
     @staticmethod
@@ -47,7 +49,7 @@ class AdminsController:
     async def get_securities_page(req: Request, admin_id: int) -> _TemplateResponse:
         return templates.TemplateResponse(
             'admin-securities.html',
-            {'request': req, 'admin_id': admin_id, 'base_url': Urls.base_url.value,},
+            {'request': req, 'admin_id': admin_id, 'base_url': Urls.base_url.value, },
         )
 
     @staticmethod
@@ -65,7 +67,7 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN, check_id=False, auth_redirect=False)
     async def add_operator(
-        req: Request, operator_in: OperatorIn
+            req: Request, operator_in: OperatorIn
     ) -> OperatorToAddingOut:
         return await Operator().add_user(
             OperatorAddingParams(

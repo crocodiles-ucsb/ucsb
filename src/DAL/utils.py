@@ -1,5 +1,6 @@
+from http import HTTPStatus
 from io import StringIO
-from typing import Type
+from typing import List, Type, TypeVar
 
 from src.database.models import (
     Admin,
@@ -13,6 +14,8 @@ from src.database.models import (
     UserToRegister,
 )
 from src.database.user_roles import UserRole
+from src.exceptions import DALError
+from src.messages import Message
 from src.models import OutUser
 from src.urls import Urls
 
@@ -63,3 +66,24 @@ def get_db_obj_to_register(user_role: UserRole) -> Type[UserToRegister]:
     if user_role == UserRole.CONTRACTOR_REPRESENTATIVE:
         return ContractorRepresentativeToRegister
     raise ValueError()
+
+
+T = TypeVar('T')
+
+
+def get_pagination(objects: List[T], page: int, size: int) -> List[T]:
+    start_index: int = 0
+    if page < 1 or size < 1 or page * size > len(objects) + size:
+        raise DALError(
+            HTTPStatus.BAD_REQUEST.value, Message.INVALID_PAGINATION_PARAMS.value
+        )
+    if page > 1:
+        start_index = (page - 1) * size
+    end_index: int = start_index + size - 1
+    length = len(objects)
+    if end_index >= length:
+        end_index = length - 1
+    res: List[T] = []
+    for i in range(start_index, end_index + 1):
+        res.append(objects[i])
+    return res

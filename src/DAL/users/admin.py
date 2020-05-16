@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TypeVar
+from typing import List, TypeVar
 
 from src.DAL.registration import (
     AbstractRegistration,
@@ -7,7 +7,9 @@ from src.DAL.registration import (
     SimpleRegistrationParams,
 )
 from src.DAL.users.user import User
-from src.models import OutUser
+from src.DAL.users_dal import UsersDAL
+from src.database.user_roles import UserRole
+from src.models import OperatorOut, OutUser
 
 
 @dataclass
@@ -26,3 +28,6 @@ class Admin(User[SimpleRegistrationParams]):
 
     async def register_user(self, params: SimpleRegistrationParams) -> OutUser:
         return await self.registration.register(params)
+
+    async def get_operators(self, page: int, size: int = 10) -> List[OperatorOut]:
+        return await UsersDAL.get_users(page, size, OperatorOut, UserRole.OPERATOR)

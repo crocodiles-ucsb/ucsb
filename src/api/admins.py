@@ -18,8 +18,8 @@ async def get_add_security_form(admin_id: int, req: Request):
 
 
 @router.get('/{admin_id}')
-async def get_admin(admin_id: int, req: Request) -> _TemplateResponse:
-    return await AdminsController.get_admin_page(req, admin_id)
+async def get_admin(admin_id: int, req: Request, page: int = 1) -> _TemplateResponse:
+    return await AdminsController.get_admin_page(req, admin_id, page)
 
 
 @router.get('/{admin_id}/securities')

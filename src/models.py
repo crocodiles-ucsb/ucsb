@@ -46,6 +46,11 @@ class OperatorIn(BaseModel):
     patronymic: Optional[str] = None
 
 
+class OperatorOut(OperatorIn):
+    class Config:
+        orm_mode = True
+
+
 class SecurityIn(BaseModel):
     first_name: str
     last_name: str

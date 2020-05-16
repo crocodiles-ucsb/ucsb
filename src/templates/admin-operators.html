@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="{{ url_for('static', path='/admin.css') }}" rel="stylesheet">
+    <link href="{{url_for('static', path='/admin.css') }}" rel="stylesheet">
     <title>Операторы</title>
 </head>
 
@@ -14,11 +14,11 @@
 
     <div class="sidebar">
         <a class="active" href="{{base_url}}/admins/{{admin_id}}">
-            <img src="./triangle.png" class="triangle"></img>Операторы</a>
+            <img src="{{url_for('static', path='/triangle.png')}}" class="triangle"></img>Операторы</a>
         <a href="{{base_url}}/admins/{{admin_id}}/securities">
-            <img src="./triangle.png" class="triangle"></img>Охранники</a>
+            <img src="{{url_for('static', path='/triangle.png') }}" class="triangle"></img>Охранники</a>
         <a href="./admin_dics.html">
-            <img src="./triangle.png" class="triangle"></img>Словари</a>
+            <img src="{{url_for('static', path='/triangle.png') }}" class="triangle"></img>Словари</a>
     </div>
 
     <div class="search">
@@ -41,66 +41,11 @@
             <tr>
                 <th>ФИО</th>
             </tr>
+            {%for operator in operators%}
             <tr>
-                <td></td>
+                <td>{{operator.last_name}} {{operator.first_name}} {{operator.patronymic}}</td>
             </tr>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
-            <tr>
-                <td></td>
-            </tr>
+            {%endfor%}
         </table>
     </div>
 
