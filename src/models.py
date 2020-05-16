@@ -61,3 +61,11 @@ class SecurityIn(BaseModel):
 class SecurityOut(SecurityIn):
     class Config:
         orm_mode = True
+
+
+class SecurityToRegisterOut(SecurityOut):
+    uuid: str
+
+
+class OperatorToRegisterOut(OperatorOut):
+    uuid: str

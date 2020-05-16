@@ -1,5 +1,3 @@
-from starlette.responses import RedirectResponse
-
 from src.controller.authorization_decorators import auth_required
 from src.DAL.registration import SimpleRegistrationParams
 from src.DAL.users.admin import Admin
@@ -10,6 +8,7 @@ from src.models import OperatorIn, OutUser, SecurityIn
 from src.templates import templates
 from src.urls import Urls
 from starlette.requests import Request
+from starlette.responses import RedirectResponse
 from starlette.templating import _TemplateResponse
 
 
@@ -38,7 +37,7 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN)
     async def get_admin_page(req: Request, admin_id: int) -> RedirectResponse:
-        return RedirectResponse(f"{Urls.base_url.value}/admins/{admin_id}/operators")
+        return RedirectResponse(f'{Urls.base_url.value}/admins/{admin_id}/operators')
 
     @staticmethod
     @auth_required(UserRole.ADMIN)
@@ -46,11 +45,18 @@ class AdminsController:
             req: Request, admin_id: int, page: int, pending: bool
     ) -> _TemplateResponse:
         if pending:
-            return await AdminsController.get_operators_pending_register(req, admin_id, page)
-        operators = await Admin().get_operators(page)
+            return await AdminsController.get_operators_pending_register(
+                req, admin_id, page
+            )
+        operators = await Admin.get_operators(page)
         return templates.TemplateResponse(
             'admin-operators.html',
-            {'request': req, 'admin_id': admin_id, 'base_url': Urls.base_url.value, 'operators': operators}
+            {
+                'request': req,
+                'admin_id': admin_id,
+                'base_url': Urls.base_url.value,
+                'operators': operators,
+            },
         )
 
     @staticmethod
@@ -58,21 +64,30 @@ class AdminsController:
     async def get_operators_pending_register(
             req: Request, admin_id: int, page: int
     ) -> _TemplateResponse:
-        # operators = await Admin().get_operators(page)
+        operators = await Admin.get_operators_to_register(page)
         return templates.TemplateResponse(
             'admin-operators-waiting.html',
-            {'request': req, 'admin_id': admin_id, 'base_url': Urls.base_url.value}
+            {'request': req, 'admin_id': admin_id, 'base_url': Urls.base_url.value, "operators": operators},
         )
 
     @staticmethod
     @auth_required(UserRole.ADMIN)
-    async def get_securities_page(req: Request, admin_id: int, page: int, pending: bool) -> _TemplateResponse:
+    async def get_securities_page(
+            req: Request, admin_id: int, page: int, pending: bool
+    ) -> _TemplateResponse:
         if pending:
-            return await AdminsController.get_securities_pending_register(req, admin_id, page)
-        securities = await Admin().get_securities(page)
+            return await AdminsController.get_securities_pending_register(
+                req, admin_id, page
+            )
+        securities = await Admin.get_securities(page)
         return templates.TemplateResponse(
             'admin-securities.html',
-            {'request': req, 'admin_id': admin_id, 'base_url': Urls.base_url.value, "securities": securities},
+            {
+                'request': req,
+                'admin_id': admin_id,
+                'base_url': Urls.base_url.value,
+                'securities': securities,
+            },
         )
 
     @staticmethod
@@ -80,10 +95,10 @@ class AdminsController:
     async def get_securities_pending_register(
             req: Request, admin_id: int, page: int
     ) -> _TemplateResponse:
-        # operators = await Admin().get_operators(page)
+        securities = await Admin.get_securities_to_register(page)
         return templates.TemplateResponse(
             'admin-securities-waiting.html',
-            {'request': req, 'admin_id': admin_id, 'base_url': Urls.base_url.value}
+            {'request': req, 'admin_id': admin_id, 'base_url': Urls.base_url.value, "securities": securities},
         )
 
     @staticmethod
@@ -110,3 +125,8 @@ class AdminsController:
                 patronymic=operator_in.patronymic,
             )
         )
+
+    @staticmethod
+    @auth_required(UserRole.ADMIN, check_id=False, auth_redirect=False)
+    async def remove_user(req: Request, uuid: str) -> None:
+        await Admin.remove_user_to_register(uuid)

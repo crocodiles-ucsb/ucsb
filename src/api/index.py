@@ -1,6 +1,8 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter, Request
+
+from src.controller.admins import AdminsController
 from src.controller.index import IndexController
 from src.DAL.auth import refresh_tokens
 from src.models import InUserWithUUID
@@ -39,3 +41,8 @@ async def get_register_form(req: Request, uuid: str):
 @router.post('/users', status_code=HTTPStatus.CREATED.value)
 async def add_user(user: InUserWithUUID):
     return await IndexController.register_user(user)
+
+
+@router.delete('/users/{uuid}', status_code=HTTPStatus.NO_CONTENT.value)
+async def remove_user(req: Request, uuid: str):
+    return await AdminsController.remove_user(req, uuid)
