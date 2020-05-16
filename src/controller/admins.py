@@ -1,3 +1,5 @@
+from starlette.responses import RedirectResponse
+
 from src.controller.authorization_decorators import auth_required
 from src.DAL.registration import SimpleRegistrationParams
 from src.DAL.users.admin import Admin
@@ -35,9 +37,16 @@ class AdminsController:
 
     @staticmethod
     @auth_required(UserRole.ADMIN)
-    async def get_admin_page(
-            req: Request, admin_id: int, page: int
+    async def get_admin_page(req: Request, admin_id: int) -> RedirectResponse:
+        return RedirectResponse(f"{Urls.base_url.value}/admins/{admin_id}/operators")
+
+    @staticmethod
+    @auth_required(UserRole.ADMIN)
+    async def get_operators(
+            req: Request, admin_id: int, page: int, pending: bool
     ) -> _TemplateResponse:
+        if pending:
+            return await AdminsController.get_operators_pending_register(req, admin_id, page)
         operators = await Admin().get_operators(page)
         return templates.TemplateResponse(
             'admin-operators.html',
@@ -46,10 +55,35 @@ class AdminsController:
 
     @staticmethod
     @auth_required(UserRole.ADMIN)
-    async def get_securities_page(req: Request, admin_id: int) -> _TemplateResponse:
+    async def get_operators_pending_register(
+            req: Request, admin_id: int, page: int
+    ) -> _TemplateResponse:
+        # operators = await Admin().get_operators(page)
+        return templates.TemplateResponse(
+            'admin-operators-waiting.html',
+            {'request': req, 'admin_id': admin_id, 'base_url': Urls.base_url.value}
+        )
+
+    @staticmethod
+    @auth_required(UserRole.ADMIN)
+    async def get_securities_page(req: Request, admin_id: int, page: int, pending: bool) -> _TemplateResponse:
+        if pending:
+            return await AdminsController.get_securities_pending_register(req, admin_id, page)
+        securities = await Admin().get_securities(page)
         return templates.TemplateResponse(
             'admin-securities.html',
-            {'request': req, 'admin_id': admin_id, 'base_url': Urls.base_url.value, },
+            {'request': req, 'admin_id': admin_id, 'base_url': Urls.base_url.value, "securities": securities},
+        )
+
+    @staticmethod
+    @auth_required(UserRole.ADMIN)
+    async def get_securities_pending_register(
+            req: Request, admin_id: int, page: int
+    ) -> _TemplateResponse:
+        # operators = await Admin().get_operators(page)
+        return templates.TemplateResponse(
+            'admin-securities-waiting.html',
+            {'request': req, 'admin_id': admin_id, 'base_url': Urls.base_url.value}
         )
 
     @staticmethod

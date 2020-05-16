@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="{{url_for('static', path='/admin.css')}}" rel="stylesheet">
+    <link href="{{url_for('static', path='/admin.css') }}" rel="stylesheet">
     <title>Операторы</title>
 </head>
 
@@ -13,8 +13,8 @@
 <div class="grid-container">
 
     <div class="topbar">
-        <a class="active" href="{{base_url}}/admins/{{admin_id}}/operators">Зарегистрированные</a>
-        <a href="{{base_url}}/admins/{{admin_id}}/operators?pending=True">В ожидании регистриации</a>
+        <a href="{{base_url}}/admins/{{admin_id}}/operators">Зарегистрированные</a>
+        <a class="active" href="{{base_url}}/admins/{{admin_id}}/operators?pending=True">В ожидании регистриации</a>
     </div>
 
     <div class="sidebar">
@@ -47,12 +47,18 @@
         <table id="table">
             <tr>
                 <th>ФИО</th>
+                <th>Ссылка</th>
+                <th></th>
             </tr>
-            {%for operator in operators%}
             <tr>
-                <td>{{operator.last_name}} {{operator.first_name}} {{operator.patronymic}}</td>
+                <td>Kek</td>
+                <td>
+                    <button class="copy_button">Скопировать</button>
+                </td>
+                <td>
+                    <button class="delete_button">Удалить</button>
+                </td>
             </tr>
-            {%endfor%}
         </table>
     </div>
 

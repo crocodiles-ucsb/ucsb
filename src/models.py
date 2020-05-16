@@ -56,3 +56,8 @@ class SecurityIn(BaseModel):
     last_name: str
     patronymic: Optional[str] = None
     position: str
+
+
+class SecurityOut(SecurityIn):
+    class Config:
+        orm_mode = True

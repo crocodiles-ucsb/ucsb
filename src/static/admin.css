@@ -11,13 +11,13 @@ body {
 .grid-container {
   display: grid;
   grid-template-columns: 18% auto;
-  grid-template-rows: 150px 60px auto;
+  grid-template-rows: 150px 60px 60px auto;
   grid-column-gap: 2%;
 }
 
 .sidebar {
   grid-column: 1;
-  grid-row: 2/4;
+  grid-row: 2/5;
   font-size: 20px;
 }
 
@@ -42,6 +42,31 @@ body {
   color: black;
 }
 
+.topbar {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: 16px;
+  align-self: center;
+}
+
+.topbar a {
+  color: #3D8AFF;
+  padding: 15px;
+  text-decoration: none;
+  border-radius: 10px;
+}
+
+.topbar a.active {
+  background-color: #f1f1f1;
+  color: black;
+  border-radius: 10px;
+}
+
+.topbar a:hover:not(.active) {
+  background-color: #f1f1f1;
+  color: black;
+}
+
 .triangle {
   margin-left:40%;
   margin-right:7%;
@@ -51,9 +76,8 @@ body {
 
 .search {
   grid-column: 2;
-  grid-row: 1;
-  align-self: end;
-  padding-bottom: 20px
+  grid-row: 2;
+  align-self: center;
 }
 
 input[type="search"] {
@@ -96,7 +120,7 @@ input[type="search"] {
 
 .pagination {
   grid-column: 2;
-  grid-row: 2;
+  grid-row: 3;
   align-self: center;
 }
 
@@ -111,7 +135,7 @@ input[type="search"] {
 
 .table-wr {
   grid-column: 2;
-  grid-row: 3;
+  grid-row: 4;
   font-size: 14px;
   padding-top: 20px;
   padding-bottom: 40px;
@@ -123,9 +147,15 @@ input[type="search"] {
   width: 85%;
 }
 
-#table td, #table th {
+#table th {
   border: 1px solid #ffffff;
-  padding: 10px;
+  padding: 8px;
+}
+
+#table td {
+  font-size: 12px;
+  border: 1px solid #ffffff;
+  padding: 5px;
 }
 
 #table tr:nth-child(even){background-color: #f2f2f2;}
@@ -137,3 +167,25 @@ input[type="search"] {
   background-color: #DEDEDE;
   color: #454545;
 }
+
+.copy_button {
+  height: 20px;
+  border-radius: 5px;
+  border: 1px solid #8497FF;
+  background: none;
+  color: #8497FF;
+  font-size: 12px;
+  font-weight: 100;
+  cursor: pointer;
+  transition: box-shadow .4s ease; }
+
+.delete_button {
+  height: 20px;
+  border-radius: 5px;
+  border: 1px solid #E45D65;
+  background: none;
+  color: #E45D65;
+  font-size: 12px;
+  font-weight: 100;
+  cursor: pointer;
+  transition: box-shadow .4s ease; }

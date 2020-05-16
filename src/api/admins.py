@@ -18,13 +18,18 @@ async def get_add_security_form(admin_id: int, req: Request):
 
 
 @router.get('/{admin_id}')
-async def get_admin(admin_id: int, req: Request, page: int = 1) -> _TemplateResponse:
-    return await AdminsController.get_admin_page(req, admin_id, page)
+async def get_admin(admin_id: int, req: Request) -> _TemplateResponse:
+    return await AdminsController.get_admin_page(req, admin_id)
+
+
+@router.get('/{admin_id}/operators')
+async def get_operators(admin_id: int, req: Request, page: int = 1, pending: bool = False) -> _TemplateResponse:
+    return await AdminsController.get_operators(req, admin_id, page, pending)
 
 
 @router.get('/{admin_id}/securities')
-async def get_admin(admin_id: int, req: Request) -> _TemplateResponse:
-    return await AdminsController.get_securities_page(req, admin_id)
+async def get_securities(admin_id: int, req: Request, page: int = 1, pending: bool = False) -> _TemplateResponse:
+    return await AdminsController.get_securities_page(req, admin_id,page, pending)
 
 
 @router.post('')

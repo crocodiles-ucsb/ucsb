@@ -47,9 +47,7 @@ body {
   padding-top: 20px;
   text-align: center; }
 
-#add_form input[type="name"],
-#add_form input[type="patronymic"],
-#add_form input[type="organization"] {
+#add_form input[type="text"] {
   width: 80%;
   margin-bottom: 20px;
   height: 40px;
@@ -57,29 +55,7 @@ body {
   outline: 0;
   -moz-outline-style: none; }
 
-#add_form input[type="surname"] {
-  width: 80%;
-  margin-bottom: 20px;
-  height: 40px;
-  border-radius: 5px;
-  outline: 0;
-  -moz-outline-style: none; }
-
-#add_form input[type="patronymic_last"],
-#add_form input[type="position"] {
-  width: 80%;
-  margin-bottom: 40px;
-  height: 40px;
-  border-radius: 5px;
-  outline: 0;
-  -moz-outline-style: none; }
-
-#add_form input[type="surname"],
-#add_form input[type="name"],
-#add_form input[type="patronymic"],
-#add_form input[type="patronymic_last"],
-#add_form input[type="organization"],
-#add_form input[type="position"] {
+#add_form input[type="text"] {
   border: 1px solid #ccc;
   padding: 0 0 0 10px;
   text-transform: capitalize;
@@ -88,6 +64,7 @@ body {
 #add_form .add_button {
   width: 40%;
   margin-right: 10px;
+  margin-top: 20px;
   margin-bottom: 30px;
   height: 45px;
   border-radius: 5px;
@@ -101,6 +78,7 @@ body {
 
 #add_form .back_button {
   width: 30%;
+  margin-top: 20px;
   margin-bottom: 30px;
   height: 45px;
   border-radius: 5px;
