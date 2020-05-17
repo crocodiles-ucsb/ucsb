@@ -32,7 +32,7 @@ async def get_operators(
     pending: bool = False,
     substring: Optional[str] = None,
 ) -> _TemplateResponse:
-    return await AdminsController.get_operators(req, admin_id, page, pending,substring)
+    return await AdminsController.get_operators(req, admin_id, page, pending, substring)
 
 
 @router.get('/{admin_id}/securities')
@@ -43,7 +43,9 @@ async def get_securities(
     pending: bool = False,
     substring: Optional[str] = None,
 ) -> _TemplateResponse:
-    return await AdminsController.get_securities(req, admin_id, page, pending, substring)
+    return await AdminsController.get_securities(
+        req, admin_id, page, pending, substring
+    )
 
 
 @router.post('')

@@ -40,20 +40,24 @@ class Admin(User[SimpleRegistrationParams]):
     async def get_operators(
         page: int, substring: Optional[str], size: int = 10
     ) -> ListWithPagination[OperatorOut]:
-        return await UsersDAL.get_users(page, size, substring,OperatorOut, UserRole.OPERATOR)
+        return await UsersDAL.get_users(
+            page, size, substring, OperatorOut, UserRole.OPERATOR
+        )
 
     @staticmethod
     async def get_securities(
         page: int, substring: Optional[str], size: int = 10
     ) -> ListWithPagination[SecurityOut]:
-        return await UsersDAL.get_users(page, size, substring,SecurityOut, UserRole.SECURITY)
+        return await UsersDAL.get_users(
+            page, size, substring, SecurityOut, UserRole.SECURITY
+        )
 
     @staticmethod
     async def get_operators_to_register(
         page: int, substring: Optional[str], size: int = 10
     ) -> ListWithPagination[OperatorToRegisterOut]:
         return await UsersDAL.get_users_to_register(
-            page, size, substring,OperatorToRegisterOut, UserRole.OPERATOR
+            page, size, substring, OperatorToRegisterOut, UserRole.OPERATOR
         )
 
     @staticmethod
@@ -61,7 +65,7 @@ class Admin(User[SimpleRegistrationParams]):
         page: int, substring: Optional[str], size: int = 10
     ) -> ListWithPagination[SecurityToRegisterOut]:
         return await UsersDAL.get_users_to_register(
-            page, size, substring,SecurityToRegisterOut, UserRole.SECURITY
+            page, size, substring, SecurityToRegisterOut, UserRole.SECURITY
         )
 
     @staticmethod

@@ -34,7 +34,10 @@ class UsersDAL:
         if substring:
             users_filtered_by_substring = []
             for user in users:
-                if substring.lower() in f'{user.last_name.lower()} {user.first_name.lower()} {user.patronymic.lower()}':
+                if (
+                    substring.lower()
+                    in f'{user.last_name.lower()} {user.first_name.lower()} {user.patronymic.lower()}'
+                ):
                     users_filtered_by_substring.append(user)
             return users_filtered_by_substring
         return users
