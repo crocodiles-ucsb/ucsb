@@ -76,7 +76,9 @@
                 <td>{{security.last_name}} {{security.first_name}} {{security.patronymic}}</td>
                 <td>{{security.position}}</td>
                 <td>
-                    <button id="copy" onclick="copyUrlToClipboard('{{security.uuid}}')" class="copy_button">Скопировать
+                    <button
+                            onclick="copyUrlToClipboard('{{security.uuid}}','{{security.first_name}}','{{security.last_name}}')"
+                            class="copy_button">Скопировать
                     </button>
                 </td>
                 <td>

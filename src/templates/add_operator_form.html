@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="{{ url_for('static', path='/add_operator_form.css') }}" rel="stylesheet">
     <title>Добавление оператора</title>
+    {% block javascript %}
+    <script src="{{ url_for('static',path='/copy_url_to_clipboard.js') }}"></script>
+    {%endblock%}}
 </head>
 
 <body>
@@ -63,19 +66,8 @@
             alert('Данные авторизации устарели, перезагрузите страницу и попробуйте заново')
         }
         let response_json = await res.json();
-        var textarea = document.createElement('textarea');
-        textarea.textContent = base_url + '/register/' + response_json.uuid;
-        document.body.appendChild(textarea);
-        var selection = document.getSelection();
-        var range = document.createRange();
-        range.selectNode(textarea);
-        selection.removeAllRanges();
-        selection.addRange(range);
-        document.execCommand('copy');
-        selection.removeAllRanges();
-        alert('Ссылка на регистрацию пользователя ' + response_json.first_name + " " + response_json.last_name +
-            " была скопирована в буфер обмена");
-        document.body.removeChild(textarea);
+        copyUrlToClipboard(response_json.uuid, response_json.first_name, response_json.last_name)
+
 
     }
 </script>

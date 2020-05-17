@@ -74,7 +74,9 @@
             <tr>
                 <td>{{operator.last_name}} {{operator.first_name}} {{operator.patronymic}}</td>
                 <td>
-                    <button onclick="copyUrlToClipboard('{{operator.uuid}}')" class="copy_button">Скопировать</button>
+                    <button
+                    onclick="copyUrlToClipboard('{{operator.uuid}}','{{operator.first_name}}','{{operator.last_name}}')"
+                    class="copy_button">Скопировать</button>
                 </td>
                 <td>
                     <button onclick="delete_user_to_register('{{operator.uuid}}')" class="delete_button">Удалить

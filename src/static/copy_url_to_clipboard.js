@@ -1,4 +1,4 @@
-function copyUrlToClipboard(uuid) {
+function copyUrlToClipboard(uuid, firstName, lastName) {
     var textarea = document.createElement('textarea');
     textarea.textContent = base_url + '/register/' + uuid;
     document.body.appendChild(textarea);
@@ -10,6 +10,7 @@ function copyUrlToClipboard(uuid) {
     document.execCommand('copy');
     selection.removeAllRanges();
     document.body.removeChild(textarea);
-    alert("Ссылка была скопирована")
-
+    alert('Ссылка на регистрацию пользователя ' + firstName + " " + lastName +
+        " была скопирована в буфер обмена");
+    document.body.removeChild(textarea);
 }
