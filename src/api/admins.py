@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter
 from fastapi.requests import Request
 from src.controller.admins import AdminsController
@@ -24,16 +26,24 @@ async def get_admin(admin_id: int, req: Request) -> _TemplateResponse:
 
 @router.get('/{admin_id}/operators')
 async def get_operators(
-    admin_id: int, req: Request, page: int = 1, pending: bool = False
+    admin_id: int,
+    req: Request,
+    page: int = 1,
+    pending: bool = False,
+    substring: Optional[str] = None,
 ) -> _TemplateResponse:
-    return await AdminsController.get_operators(req, admin_id, page, pending)
+    return await AdminsController.get_operators(req, admin_id, page, pending,substring)
 
 
 @router.get('/{admin_id}/securities')
 async def get_securities(
-    admin_id: int, req: Request, page: int = 1, pending: bool = False
+    admin_id: int,
+    req: Request,
+    page: int = 1,
+    pending: bool = False,
+    substring: Optional[str] = None,
 ) -> _TemplateResponse:
-    return await AdminsController.get_securities_page(req, admin_id, page, pending)
+    return await AdminsController.get_securities(req, admin_id, page, pending, substring)
 
 
 @router.post('')

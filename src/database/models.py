@@ -9,6 +9,9 @@ class User(Base):
     password_hash = sa.Column(sa.String)
     access_token = sa.Column(sa.String)
     refresh_token = sa.Column(sa.String)
+    last_name = sa.Column(sa.String)
+    first_name = sa.Column(sa.String)
+    patronymic = sa.Column(sa.String)
     type = sa.Column(sa.String(50))
     __mapper_args__ = {'polymorphic_identity': 'user', 'polymorphic_on': type}
 
@@ -24,9 +27,7 @@ class Admin(User):
 class Operator(User):
     __tablename__ = 'operator'
     id = sa.Column(sa.Integer, sa.ForeignKey('user.id'), primary_key=True)
-    last_name = sa.Column(sa.String)
-    first_name = sa.Column(sa.String)
-    patronymic = sa.Column(sa.String)
+
     __mapper_args__ = {
         'polymorphic_identity': 'operator',
     }
@@ -35,9 +36,6 @@ class Operator(User):
 class Security(User):
     __tablename__ = 'security'
     id = sa.Column(sa.Integer, sa.ForeignKey('user.id'), primary_key=True)
-    last_name = sa.Column(sa.String)
-    first_name = sa.Column(sa.String)
-    patronymic = sa.Column(sa.String)
     position = sa.Column(sa.String)
     __mapper_args__ = {
         'polymorphic_identity': 'security',
@@ -57,6 +55,9 @@ class UserToRegister(Base):
     id = sa.Column(sa.Integer, primary_key=True, index=True)
     uuid = sa.Column(sa.String, nullable=False)
     type = sa.Column(sa.String(50))
+    last_name = sa.Column(sa.String, nullable=False)
+    first_name = sa.Column(sa.String, nullable=False)
+    patronymic = sa.Column(sa.String, nullable=True)
     __mapper_args__ = {
         'polymorphic_identity': 'user_to_register',
         'polymorphic_on': type,
@@ -66,9 +67,7 @@ class UserToRegister(Base):
 class OperatorToRegister(UserToRegister):
     __tablename__ = 'operator_to_register'
     id = sa.Column(sa.Integer, sa.ForeignKey('user_to_register.id'), primary_key=True)
-    last_name = sa.Column(sa.String, nullable=False)
-    first_name = sa.Column(sa.String, nullable=False)
-    patronymic = sa.Column(sa.String, nullable=True)
+
     __mapper_args__ = {
         'polymorphic_identity': 'operator_to_register',
     }
@@ -77,9 +76,6 @@ class OperatorToRegister(UserToRegister):
 class SecurityToRegister(UserToRegister):
     __tablename__ = 'security_to_register'
     id = sa.Column(sa.Integer, sa.ForeignKey('user_to_register.id'), primary_key=True)
-    last_name = sa.Column(sa.String, nullable=False)
-    first_name = sa.Column(sa.String, nullable=False)
-    patronymic = sa.Column(sa.String, nullable=False)
     position = sa.Column(sa.String, nullable=False)
     __mapper_args__ = {
         'polymorphic_identity': 'security_to_register',
@@ -89,9 +85,6 @@ class SecurityToRegister(UserToRegister):
 class ContractorRepresentativeToRegister(UserToRegister):
     __tablename__ = 'contractor_representative_to_register'
     id = sa.Column(sa.Integer, sa.ForeignKey('user_to_register.id'), primary_key=True)
-    last_name = sa.Column(sa.String, nullable=False)
-    first_name = sa.Column(sa.String, nullable=False)
-    patronymic = sa.Column(sa.String, nullable=False)
     __mapper_args__ = {
         'polymorphic_identity': 'contractor_representative_to_register',
     }

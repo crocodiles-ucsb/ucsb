@@ -34,10 +34,13 @@
     </div>
 
     <div class="search">
-        <label>
-            <input type="search" placeholder="Поиск">
-        </label>
-        <button class="search_button"> Найти</button>
+        <form method="get" action="{{base_url}}/admins/{{admin_id}}/securities">
+            <label>
+                <input type="search" placeholder="Поиск" name="substring">
+            </label>
+            <input type="hidden" name="pending" value="True">
+            <button class="search_button"> Найти</button>
+        </form>
         <button onclick="location.href='{{base_url}}/admins/{{admin_id}}/add_security'" type="button"
                 class="add_button"> +
             Добавить
@@ -47,11 +50,11 @@
     <div class="pagination">
         {% if pagination.has_prev_page %}
         <a href="{{base_url}}/admins/{{admin_id}}/securities?pending=True&page={{pagination.prev_page}}">{{pagination
-        .prev_page}}</a>
+            .prev_page}}</a>
         {%endif%}
         {%if pagination.has_prev_page or pagination.has_next_page%}
         <a href="{{base_url}}/admins/{{admin_id}}/securities?pending=True&page={{pagination.current_page}}">{{pagination
-        .current_page}}</a>
+            .current_page}}</a>
         {%endif%}
         {%if pagination.has_next_page%}
         <a href="{{base_url}}/admins/{{admin_id}}/securities?pending=True&page={{pagination.next_page}}">

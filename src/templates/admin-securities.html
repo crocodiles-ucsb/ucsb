@@ -27,10 +27,12 @@
     </div>
 
     <div class="search">
-        <label>
-            <input type="search" placeholder="Поиск">
-        </label>
-        <button class="search_button"> Найти</button>
+        <form method="get" action="{{base_url}}/admins/{{admin_id}}/securities">
+            <label>
+                <input type="search" placeholder="Поиск" name="substring">
+            </label>
+            <button class="search_button"> Найти</button>
+        </form>
         <button onclick="location.href='{{base_url}}/admins/{{admin_id}}/add_security'" type="button"
                 class="add_button"> +
             Добавить

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TypeVar
+from typing import Optional, TypeVar
 
 from src.DAL.registration import (
     AbstractRegistration,
@@ -38,30 +38,30 @@ class Admin(User[SimpleRegistrationParams]):
 
     @staticmethod
     async def get_operators(
-        page: int, size: int = 10
+        page: int, substring: Optional[str], size: int = 10
     ) -> ListWithPagination[OperatorOut]:
-        return await UsersDAL.get_users(page, size, OperatorOut, UserRole.OPERATOR)
+        return await UsersDAL.get_users(page, size, substring,OperatorOut, UserRole.OPERATOR)
 
     @staticmethod
     async def get_securities(
-        page: int, size: int = 10
+        page: int, substring: Optional[str], size: int = 10
     ) -> ListWithPagination[SecurityOut]:
-        return await UsersDAL.get_users(page, size, SecurityOut, UserRole.SECURITY)
+        return await UsersDAL.get_users(page, size, substring,SecurityOut, UserRole.SECURITY)
 
     @staticmethod
     async def get_operators_to_register(
-        page: int, size: int = 10
+        page: int, substring: Optional[str], size: int = 10
     ) -> ListWithPagination[OperatorToRegisterOut]:
         return await UsersDAL.get_users_to_register(
-            page, size, OperatorToRegisterOut, UserRole.OPERATOR
+            page, size, substring,OperatorToRegisterOut, UserRole.OPERATOR
         )
 
     @staticmethod
     async def get_securities_to_register(
-        page: int, size: int = 10
+        page: int, substring: Optional[str], size: int = 10
     ) -> ListWithPagination[SecurityToRegisterOut]:
         return await UsersDAL.get_users_to_register(
-            page, size, SecurityToRegisterOut, UserRole.SECURITY
+            page, size, substring,SecurityToRegisterOut, UserRole.SECURITY
         )
 
     @staticmethod
