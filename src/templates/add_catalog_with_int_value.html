@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="{{url_for('static', path='/add_form.css')}}" rel="stylesheet">
+    <title>Справочник</title>
+    {% block javascript %}
+    <script src="{{ url_for('static',path='/add_catalog_element.js') }}"></script>
+    {%endblock%}}
+</head>
+
+<body>
+<script>
+    const base_url = '{{base_url}}';
+</script>
+<form id="add_form">
+    <div class="outer">
+        <div class="middle">
+            <div class="inner">
+                <div class="add-wr">
+                    <h2>Введите название нарушение и его вес</h2>
+                    <div class="form">
+                        <label>
+                            <input placeholder="Название" type="text" name="data">
+                        </label>
+                        <label>
+                            <input placeholder="Вес" type="number" name="value">
+                        </label>
+                        <button class="add_button"> + Добавить</button>
+                        <button type="button" onclick="location.href = '{{base_url}}/admins/catalogs/{{catalog_type}}'"
+                                class="back_button"> Назад
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    _form = document.getElementById('add_form');
+    _form.onsubmit = async (e) => {
+        e.preventDefault();
+        form = new FormData(add_form);
+        add_catalog(form.get("data"), '{{catalog_type}}', form.get('value'))
+    }
+</script>
+</body>
+
+</html>

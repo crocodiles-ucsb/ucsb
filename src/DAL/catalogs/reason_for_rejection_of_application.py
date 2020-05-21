@@ -1,13 +1,21 @@
-from typing import Optional, List
+from typing import List, Optional
 
-from src.DAL.adding_data_to_catalog import AbstractAddingDataToCatalog, SimpleAddingDataToCatalog
-from src.DAL.catalogs.abstract_catalog import AbstractCatalog
-from src.DAL.getting_data_from_catalog import AbstractGettingDataFromCatalog, SimpleGettingDataFromCatalog
 from src.api.catalogs import CatalogType
-from src.models import SimpleCatalogOut, SimpleCatalogIn
+from src.DAL.adding_data_to_catalog import (
+    AbstractAddingDataToCatalog,
+    SimpleAddingDataToCatalog,
+)
+from src.DAL.catalogs.abstract_catalog import AbstractCatalog
+from src.DAL.getting_data_from_catalog import (
+    AbstractGettingDataFromCatalog,
+    SimpleGettingDataFromCatalog,
+)
+from src.models import SimpleCatalogIn, SimpleCatalogOut
 
 
-class ReasonsForRejectionOfApplication(AbstractCatalog[SimpleCatalogOut, SimpleCatalogIn]):
+class ReasonsForRejectionOfApplication(
+    AbstractCatalog[SimpleCatalogOut, SimpleCatalogIn]
+):
     def __init__(self) -> None:
         self.getting_data: AbstractGettingDataFromCatalog[
             SimpleCatalogOut
@@ -23,5 +31,7 @@ class ReasonsForRejectionOfApplication(AbstractCatalog[SimpleCatalogOut, SimpleC
 
     async def get_data(self, substring: Optional[str]) -> List[SimpleCatalogOut]:
         return await self.getting_data.get_data(
-            CatalogType.reasons_for_rejection_of_application, substring, SimpleCatalogOut
+            CatalogType.reasons_for_rejection_of_application,
+            substring,
+            SimpleCatalogOut,
         )

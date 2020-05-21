@@ -20,10 +20,9 @@ class AdminsController:
     T = TypeVar('T')
 
     @staticmethod
-    @auth_required(UserRole.ADMIN, auth_redirect=False)
+    @auth_required(UserRole.ADMIN, check_id=False, auth_redirect=False)
     async def add_catalog_data(
             req: Request,
-            admin_id: int,
             catalog_type: CatalogType,
             data: str,
             value: Optional[int],
@@ -164,10 +163,9 @@ class AdminsController:
         await Admin.remove_user_to_register(uuid)
 
     @staticmethod
-    @auth_required(UserRole.ADMIN)
+    @auth_required(UserRole.ADMIN, check_id=False)
     async def get_catalog(
             req: Request,
-            admin_id: int,
             catalog_type: CatalogType,
             page: int,
             substring: Optional[str],
@@ -179,22 +177,45 @@ class AdminsController:
             catalog_type.html,
             {
                 'request': req,
-                'admin_id': admin_id,
                 'items': items.data,
                 'pagination': items.pagination_params,
                 'catalog_type': catalog_type.value,
-                'description': catalog_type.description
+                'description': catalog_type.description,
             },
         )
 
     @staticmethod
-    @auth_required(UserRole.ADMIN)
-    async def get_catalogs(req: Request, admin_id: int):
+    @auth_required(UserRole.ADMIN, check_id=False)
+    async def get_catalogs(req: Request):
         return RedirectResponse(
-            f'{Urls.base_url.value}/admins/{admin_id}/catalogs/{CatalogType.professions.value}'
+            f'{Urls.base_url.value}/admins/catalogs/{CatalogType.professions.value}'
         )
 
     @staticmethod
     @auth_required(UserRole.ADMIN, check_id=False, auth_redirect=False)
     async def delete_catalog(req: Request, catalog_id: int) -> None:
         await CatalogsDAL.delete_catalog(catalog_id)
+
+    @staticmethod
+    @auth_required(UserRole.ADMIN, check_id=False)
+    async def get_add_catalog_page(
+            req: Request, catalog_type: CatalogType
+    ) -> _TemplateResponse:
+        if catalog_type == CatalogType.violations:
+            return templates.TemplateResponse(
+                'add_catalog_with_int_value.html',
+                {
+                    'request': req,
+                    'base_url': Urls.base_url.value,
+                    'catalog_type': catalog_type.value,
+                },
+            )
+        else:
+            return templates.TemplateResponse(
+                'simple-add-form.html',
+                {
+                    'request': req,
+                    'catalog_type': catalog_type.value,
+                    'base_url': Urls.base_url.value,
+                },
+            )

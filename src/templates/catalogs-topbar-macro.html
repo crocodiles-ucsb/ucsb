@@ -1,31 +1,31 @@
 {% macro nav() -%}
 <div class="topbar">
     {%if catalog_type == "profession"%}
-    <a class="active" href="{{base_url}}/admins/{{admin_id}}/catalogs/profession">Профессии</a>
+    <a class="active" href="{{base_url}}/admins/catalogs/profession">Профессии</a>
     {%else%}
-    <a href="{{base_url}}/admins/{{admin_id}}/catalogs/profession">Профессии</a>
+    <a href="{{base_url}}/admins/catalogs/profession">Профессии</a>
     {%endif%}
     {%if catalog_type == "vehicle"%}
-    <a class="active" href="{{base_url}}/admins/{{admin_id}}/catalogs/vehicle">Виды техники</a>
+    <a class="active" href="{{base_url}}/admins/catalogs/vehicle">Виды техники</a>
     {%else%}
-    <a href="{{base_url}}/admins/{{admin_id}}/catalogs/vehicle">Виды техники</a>
+    <a href="{{base_url}}/admins/catalogs/vehicle">Виды техники</a>
     {%endif%}
     {%if catalog_type == "object_of_work"%}
-    <a class="active" href="{{base_url}}/admins/{{admin_id}}/catalogs/object_of_work">Объекты работы</a>
+    <a class="active" href="{{base_url}}/admins/catalogs/object_of_work">Объекты работы</a>
     {%else%}
-    <a href="{{base_url}}/admins/{{admin_id}}/catalogs/object_of_work">Объекты работы</a>
+    <a href="{{base_url}}/admins/catalogs/object_of_work">Объекты работы</a>
     {%endif%}
     {%if catalog_type == "reason_for_rejection_of_application"%}
-    <a class="active" href="{{base_url}}/admins/{{admin_id}}/catalogs/reason_for_rejection_of_application">Причины
+    <a class="active" href="{{base_url}}/admins/catalogs/reason_for_rejection_of_application">Причины
         отклонения заявки</a>
     {%else%}
-    <a href="{{base_url}}/admins/{{admin_id}}/catalogs/reason_for_rejection_of_application">Причины отклонения
+    <a href="{{base_url}}/admins/catalogs/reason_for_rejection_of_application">Причины отклонения
         заявки</a>
     {%endif%}
     {%if catalog_type ==  "violation"%}
-    <a class="active" href="{{base_url}}/admins/{{admin_id}}/catalogs/violation">Нарушения</a>
+    <a class="active" href="{{base_url}}/admins/catalogs/violation">Нарушения</a>
     {%else%}
-    <a href="{{base_url}}/admins/{{admin_id}}/catalogs/violation">Нарушения</a>
+    <a href="{{base_url}}/admins/catalogs/violation">Нарушения</a>
     {%endif%}
 
 </div>

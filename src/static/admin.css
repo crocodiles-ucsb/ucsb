@@ -166,9 +166,9 @@ input[type="search"] {
 }
 
 #table td {
-    font-size: 12px;
+    font-size: 14px;
     border: 1px solid #ffffff;
-    padding: 5px;
+    padding: 5px 5px 5px 8px;
 }
 
 #table tr:nth-child(even) {

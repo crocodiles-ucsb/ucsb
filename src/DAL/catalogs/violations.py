@@ -1,9 +1,15 @@
-from typing import Optional, List
+from typing import List, Optional
 
-from src.DAL.adding_data_to_catalog import AbstractAddingDataToCatalog, AddingDataCatalogWithIntValue
-from src.DAL.catalogs.abstract_catalog import AbstractCatalog
-from src.DAL.getting_data_from_catalog import AbstractGettingDataFromCatalog, SimpleGettingDataFromCatalog
 from src.api.catalogs import CatalogType
+from src.DAL.adding_data_to_catalog import (
+    AbstractAddingDataToCatalog,
+    AddingDataCatalogWithIntValue,
+)
+from src.DAL.catalogs.abstract_catalog import AbstractCatalog
+from src.DAL.getting_data_from_catalog import (
+    AbstractGettingDataFromCatalog,
+    SimpleGettingDataFromCatalog,
+)
 from src.models import CatalogWithIntValueIn, CatalogWithIntValueOut
 
 

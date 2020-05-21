@@ -6,6 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="{{url_for('static', path='/admin.css')}}" rel="stylesheet">
     <title>Словари</title>
+    <script>
+        base_url = "{{base_url}}"
+    </script>
+    {% block javascript %}
+    <script src="{{ url_for('static',path='/delete_catalog_element.js') }}"></script>
+
+    {% endblock %}
 </head>
 
 <body>
@@ -28,16 +35,18 @@
     </div>
 
     <div class="add_wr">
-        <button class="add_button"> + Добавить</button>
+        <button onclick="location.href = '{{base_url}}/admins/add_catalog/{{catalog_type}}'" class="add_button"> +
+            Добавить
+        </button>
     </div>
 
     <div class="pagination">
         {% if pagination.has_prev_page %}
-        <a href="{{base_url}}/admins/{{admin_id}}/catalogs/{{catalog_type}}?page={{pagination.prev_page}}">&laquo;</a>
+        <a href="{{base_url}}/admins/catalogs/{{catalog_type}}?page={{pagination.prev_page}}">&laquo;</a>
         {%endif%}
-        <a href="{{base_url}}/admins/{{admin_id}}/catalogs/{{catalog_type}}?page={{pagination.current_page}}">{{pagination.current_page}}</a>
+        <a href="{{base_url}}/admins/catalogs/{{catalog_type}}?page={{pagination.current_page}}">{{pagination.current_page}}</a>
         {%if pagination.has_next_page%}
-        <a href="{{base_url}}/admins/{{admin_id}}/catalogs/{{catalog_type}}?page={{pagination.next_page}}">&raquo;</a>
+        <a href="{{base_url}}/admins/catalogs/{{catalog_type}}?page={{pagination.next_page}}">&raquo;</a>
         {% endif%}
     </div>
 
@@ -46,11 +55,15 @@
             <tr>
                 <th>{{description}}</th>
                 <th>Вес нарушения</th>
+                <th></th>
             </tr>
             {%for item in items%}
             <tr>
                 <td>{{item.data}}</td>
                 <td>{{item.value}}</td>
+                <td>
+                    <button onclick="delete_catalog_element('{{item.id}}')" class="delete_button">Удалить</button>
+                </td>
             </tr>
             {%endfor%}
         </table>
