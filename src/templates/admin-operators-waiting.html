@@ -25,14 +25,8 @@
         <a class="active" href="{{base_url}}/admins/{{admin_id}}/operators?pending=True">В ожидании регистриации</a>
     </div>
 
-    <div class="sidebar">
-        <a class="active" href="{{base_url}}/admins/{{admin_id}}">
-            <img src="{{url_for('static', path='/triangle.png')}}" class="triangle"></img>Операторы</a>
-        <a href="{{base_url}}/admins/{{admin_id}}/securities">
-            <img src="{{url_for('static', path='/triangle.png') }}" class="triangle"></img>Охранники</a>
-        <a href="./admin_dics.html">
-            <img src="{{url_for('static', path='/triangle.png') }}" class="triangle"></img>Словари</a>
-    </div>
+    {%import 'nav-macros.html' as nav with context %}
+    {{nav.nav(1)}}
 
     <div class="search">
         <form method="get" action="{{base_url}}/admins/{{admin_id}}/operators">
@@ -42,6 +36,9 @@
             <input type="hidden" name="pending" value="True">
             <button class="search_button"> Найти</button>
         </form>
+    </div>
+
+    <div class="add_wr">
         <button onclick="location.href='{{base_url}}/admins/{{admin_id}}/add_operator'" class="add_button"
                 type="button"> +
             Добавить
@@ -50,16 +47,12 @@
 
     <div class="pagination">
         {% if pagination.has_prev_page %}
-            <a href="{{base_url}}/admins/{{admin_id}}/operators?pending=True&page={{pagination.prev_page}}">{{pagination
-            .prev_page}}</a>
+        <a href="{{base_url}}/admins/{{admin_id}}/operators?pending=True&page={{pagination.prev_page}}">&laquo;</a>
         {%endif%}
-        {%if pagination.has_prev_page or pagination.has_next_page%}
-            <a href="{{base_url}}/admins/{{admin_id}}/operators?pending=True&page={{pagination.current_page}}">
+        <a href="{{base_url}}/admins/{{admin_id}}/operators?pending=True&page={{pagination.current_page}}">
             {{pagination.current_page}}</a>
-        {%endif%}
         {%if pagination.has_next_page%}
-            <a href="{{base_url}}/admins/{{admin_id}}/operators?pending=True&page={{pagination.next_page}}">{{pagination
-            .next_page}}</a>
+        <a href="{{base_url}}/admins/{{admin_id}}/operators?pending=True&page={{pagination.next_page}}">&raquo;</a>
         {% endif%}
     </div>
 
@@ -75,8 +68,9 @@
                 <td>{{operator.last_name}} {{operator.first_name}} {{operator.patronymic}}</td>
                 <td>
                     <button
-                    onclick="copyUrlToClipboard('{{operator.uuid}}','{{operator.first_name}}','{{operator.last_name}}')"
-                    class="copy_button">Скопировать</button>
+                            onclick="copyUrlToClipboard('{{operator.uuid}}','{{operator.first_name}}','{{operator.last_name}}')"
+                            class="copy_button">Скопировать
+                    </button>
                 </td>
                 <td>
                     <button onclick="delete_user_to_register('{{operator.uuid}}')" class="delete_button">Удалить

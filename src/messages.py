@@ -36,3 +36,6 @@ class Message(Enum):
     USER_NOT_SUBSCRIBED_ON_THIS_USER = 'User not subscribed on this user'
     INVALID_PAGINATION_PARAMS = 'Invalid page or size params'
     INVALID_PARAMS_FOR_GETTING_TOKEN = 'Endpoint needs login/password or refresh token'
+    INVALID_CATALOG_VALUE = 'Неверное значение поля'
+    ELEMENT_OF_CATALOG_ALREADY_EXISTS = 'Такой элемиент справочника уже существует'
+    CATALOG_DOES_NOT_EXISTS = 'Такого каталога не существует, обновите страницу'

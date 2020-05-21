@@ -4,11 +4,13 @@ function delete_user_to_register(uuid) {
     }).then((response) => {
         if (response.status === 204) {
             window.location = base_url
-        } else {
-            response.json().then((json) => {
-                alert(json.detail)
-            })
-
+        }else{
+            if (response.status === 401){
+                alert("Данные авторизации устарели, пожалуйста обновите страницу")
+            }
         }
+
+
+
     })
 }

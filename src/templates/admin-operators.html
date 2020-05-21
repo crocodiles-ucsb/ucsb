@@ -17,14 +17,8 @@
         <a href="{{base_url}}/admins/{{admin_id}}/operators?pending=True">В ожидании регистриации</a>
     </div>
 
-    <div class="sidebar">
-        <a class="active" href="{{base_url}}/admins/{{admin_id}}">
-            <img src="{{url_for('static', path='/triangle.png')}}" class="triangle"></img>Операторы</a>
-        <a href="{{base_url}}/admins/{{admin_id}}/securities">
-            <img src="{{url_for('static', path='/triangle.png') }}" class="triangle"></img>Охранники</a>
-        <a href="./admin_dics.html">
-            <img src="{{url_for('static', path='/triangle.png') }}" class="triangle"></img>Словари</a>
-    </div>
+    {%import 'nav-macros.html' as nav with context %}
+    {{nav.nav(1)}}
 
     <div class="search">
         <form method="get" action="{{base_url}}/admins/{{admin_id}}/operators">
@@ -33,6 +27,9 @@
             </label>
             <button class="search_button"> Найти</button>
         </form>
+    </div>
+
+    <div class="add_wr">
         <button onclick="location.href='{{base_url}}/admins/{{admin_id}}/add_operator'" class="add_button"
                 type="button"> +
             Добавить
@@ -41,13 +38,11 @@
 
     <div class="pagination">
         {% if pagination.has_prev_page %}
-            <a href="{{base_url}}/admins/{{admin_id}}/operators?page={{pagination.prev_page}}">{{pagination.prev_page}}</a>
+        <a href="{{base_url}}/admins/{{admin_id}}/operators?page={{pagination.prev_page}}">&laquo;</a>
         {%endif%}
-        {%if pagination.has_prev_page or pagination.has_next_page%}
-            <a href="{{base_url}}/admins/{{admin_id}}/operators?page={{pagination.current_page}}">{{pagination.current_page}}</a>
-        {%endif%}
+        <a href="{{base_url}}/admins/{{admin_id}}/operators?page={{pagination.current_page}}">{{pagination.current_page}}</a>
         {%if pagination.has_next_page%}
-            <a href="{{base_url}}/admins/{{admin_id}}/operators?page={{pagination.next_page}}">{{pagination.next_page}}</a>
+        <a href="{{base_url}}/admins/{{admin_id}}/operators?page={{pagination.next_page}}">&raquo;</a>
         {% endif%}
     </div>
 

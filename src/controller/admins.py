@@ -1,6 +1,8 @@
-from typing import Optional
+from typing import Optional, Type, TypeVar
 
+from src.api.catalogs import CatalogType
 from src.controller.authorization_decorators import auth_required
+from src.DAL.catalogs_dal import CatalogsDAL
 from src.DAL.registration import SimpleRegistrationParams
 from src.DAL.users.admin import Admin
 from src.DAL.users.operator import Operator, OperatorAddingParams, OperatorToAddingOut
@@ -15,6 +17,20 @@ from starlette.templating import _TemplateResponse
 
 
 class AdminsController:
+    T = TypeVar('T')
+
+    @staticmethod
+    @auth_required(UserRole.ADMIN, auth_redirect=False)
+    async def add_catalog_data(
+            req: Request,
+            admin_id: int,
+            catalog_type: CatalogType,
+            data: str,
+            value: Optional[int],
+            out_model: Type[T],
+    ) -> T:
+        return await CatalogsDAL.add_item(catalog_type, data, value, out_model)
+
     @staticmethod
     async def add(username: str, password: str) -> OutUser:
         return await Admin().register_user(
@@ -44,7 +60,7 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN)
     async def get_operators(
-        req: Request, admin_id: int, page: int, pending: bool, substring: Optional[str]
+            req: Request, admin_id: int, page: int, pending: bool, substring: Optional[str]
     ) -> _TemplateResponse:
         if pending:
             return await AdminsController.get_operators_pending_register(
@@ -65,7 +81,7 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN)
     async def get_operators_pending_register(
-        req: Request, admin_id: int, page: int, substring: Optional[str]
+            req: Request, admin_id: int, page: int, substring: Optional[str]
     ) -> _TemplateResponse:
         list_with_pagination = await Admin.get_operators_to_register(page, substring)
         return templates.TemplateResponse(
@@ -82,7 +98,7 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN)
     async def get_securities(
-        req: Request, admin_id: int, page: int, pending: bool, substring: Optional[str]
+            req: Request, admin_id: int, page: int, pending: bool, substring: Optional[str]
     ) -> _TemplateResponse:
         if pending:
             return await AdminsController.get_securities_pending_register(
@@ -103,7 +119,7 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN)
     async def get_securities_pending_register(
-        req: Request, admin_id: int, page: int, substring: Optional[str]
+            req: Request, admin_id: int, page: int, substring: Optional[str]
     ) -> _TemplateResponse:
         list_with_pagination = await Admin.get_securities_to_register(page, substring)
         return templates.TemplateResponse(
@@ -132,7 +148,7 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN, check_id=False, auth_redirect=False)
     async def add_operator(
-        req: Request, operator_in: OperatorIn
+            req: Request, operator_in: OperatorIn
     ) -> OperatorToAddingOut:
         return await Operator().add_user(
             OperatorAddingParams(
@@ -146,3 +162,39 @@ class AdminsController:
     @auth_required(UserRole.ADMIN, check_id=False, auth_redirect=False)
     async def remove_user(req: Request, uuid: str) -> None:
         await Admin.remove_user_to_register(uuid)
+
+    @staticmethod
+    @auth_required(UserRole.ADMIN)
+    async def get_catalog(
+            req: Request,
+            admin_id: int,
+            catalog_type: CatalogType,
+            page: int,
+            substring: Optional[str],
+    ) -> _TemplateResponse:
+        items = await CatalogsDAL.get_items(
+            catalog_type, catalog_type.out_model, page, substring
+        )
+        return templates.TemplateResponse(
+            catalog_type.html,
+            {
+                'request': req,
+                'admin_id': admin_id,
+                'items': items.data,
+                'pagination': items.pagination_params,
+                'catalog_type': catalog_type.value,
+                'description': catalog_type.description
+            },
+        )
+
+    @staticmethod
+    @auth_required(UserRole.ADMIN)
+    async def get_catalogs(req: Request, admin_id: int):
+        return RedirectResponse(
+            f'{Urls.base_url.value}/admins/{admin_id}/catalogs/{CatalogType.professions.value}'
+        )
+
+    @staticmethod
+    @auth_required(UserRole.ADMIN, check_id=False, auth_redirect=False)
+    async def delete_catalog(req: Request, catalog_id: int) -> None:
+        await CatalogsDAL.delete_catalog(catalog_id)

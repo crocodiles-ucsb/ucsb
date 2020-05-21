@@ -29,10 +29,4 @@ format:
 up: 
 	uvicorn $(CODE).app:app --host=0.0.0.0 --reload
 
-
-
-# build_on_prod:
-#     export base_address='185.189.14.105'
-#     export port=80
-
 ci:	lint test

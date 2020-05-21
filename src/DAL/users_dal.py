@@ -15,11 +15,11 @@ class UsersDAL:
     @staticmethod
     @run_in_threadpool
     def get_users(
-            page: int,
-            size: int,
-            substring: Optional[str],
-            out_model: Type[TOutModel],
-            user_type: UserRole,
+        page: int,
+        size: int,
+        substring: Optional[str],
+        out_model: Type[TOutModel],
+        user_type: UserRole,
     ) -> Awaitable[ListWithPagination[TOutModel]]:
         with create_session() as session:
             users = session.query(User).filter(User.type == user_type.value).all()
@@ -29,14 +29,14 @@ class UsersDAL:
 
     @staticmethod
     def _filter_by_substring(
-            substring, users: List[Union[User, UserToRegister]]
+        substring, users: List[Union[User, UserToRegister]]
     ) -> List[Union[User, UserToRegister]]:
         if substring:
             users_filtered_by_substring = []
             for user in users:
                 if (
-                        substring.lower()
-                        in f'{user.last_name.lower()} {user.first_name.lower()} {user.patronymic.lower()}'
+                    substring.lower()
+                    in f'{user.last_name.lower()} {user.first_name.lower()} {user.patronymic.lower()}'
                 ):
                     users_filtered_by_substring.append(user)
             return users_filtered_by_substring
@@ -45,11 +45,11 @@ class UsersDAL:
     @staticmethod
     @run_in_threadpool
     def get_users_to_register(
-            page: int,
-            size: int,
-            substring: Optional[str],
-            out_model: Type[TOutModel],
-            user_type: UserRole,
+        page: int,
+        size: int,
+        substring: Optional[str],
+        out_model: Type[TOutModel],
+        user_type: UserRole,
     ) -> Awaitable[ListWithPagination[TOutModel]]:
         with create_session() as session:
             obj = get_db_obj_to_register(user_type)
@@ -66,8 +66,8 @@ class UsersDAL:
         with create_session() as session:
             user = (
                 session.query(UserToRegister)
-                    .filter(UserToRegister.uuid == uuid)
-                    .first()
+                .filter(UserToRegister.uuid == uuid)
+                .first()
             )
             if not user:
                 raise DALError(

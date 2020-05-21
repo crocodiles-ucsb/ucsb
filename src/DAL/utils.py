@@ -3,16 +3,23 @@ from http import HTTPStatus
 from io import StringIO
 from typing import Generic, List, Optional, Type, TypeVar
 
+from src.api.catalogs import CatalogType
 from src.database.models import (
     Admin,
+    Catalog,
     ContractorRepresentative,
     ContractorRepresentativeToRegister,
+    ObjectOfWork,
     Operator,
     OperatorToRegister,
+    Profession,
+    ReasonForRejectionOfApplication,
     Security,
     SecurityToRegister,
     User,
     UserToRegister,
+    Vehicle,
+    Violation,
 )
 from src.database.user_roles import UserRole
 from src.exceptions import DALError
@@ -115,3 +122,17 @@ def catch_error(objects, page, size):
         raise DALError(
             HTTPStatus.BAD_REQUEST.value, Message.INVALID_PAGINATION_PARAMS.value
         )
+
+
+def get_catalog_db_obj(catalog_type: CatalogType) -> Type[Catalog]:
+    if catalog_type == CatalogType.professions:
+        return Profession
+    if catalog_type == CatalogType.objects_of_work:
+        return ObjectOfWork
+    if catalog_type == CatalogType.vehicles:
+        return Vehicle
+    if catalog_type == CatalogType.reasons_for_rejection_of_application:
+        return ReasonForRejectionOfApplication
+    if catalog_type == CatalogType.violations:
+        return Violation
+    raise ValueError()

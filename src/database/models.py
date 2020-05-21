@@ -88,3 +88,55 @@ class ContractorRepresentativeToRegister(UserToRegister):
     __mapper_args__ = {
         'polymorphic_identity': 'contractor_representative_to_register',
     }
+
+
+class Catalog(Base):
+    __tablename__ = 'catalog'
+    id = sa.Column(sa.Integer, primary_key=True, index=True)
+    type = sa.Column(sa.String(50))
+    data = sa.Column(sa.String, nullable=False, unique=True)
+    __mapper_args__ = {
+        'polymorphic_identity': 'catalog',
+        'polymorphic_on': type,
+    }
+
+
+class Profession(Catalog):
+    __tablename__ = 'profession'
+    id = sa.Column(sa.Integer, sa.ForeignKey('catalog.id'), primary_key=True)
+    __mapper_args__ = {
+        'polymorphic_identity': __tablename__,
+    }
+
+
+class Vehicle(Catalog):
+    __tablename__ = 'vehicle'
+    id = sa.Column(sa.Integer, sa.ForeignKey('catalog.id'), primary_key=True)
+    __mapper_args__ = {
+        'polymorphic_identity': __tablename__,
+    }
+
+
+class ObjectOfWork(Catalog):
+    __tablename__ = 'object_of_work'
+    id = sa.Column(sa.Integer, sa.ForeignKey('catalog.id'), primary_key=True)
+    __mapper_args__ = {
+        'polymorphic_identity': __tablename__,
+    }
+
+
+class ReasonForRejectionOfApplication(Catalog):
+    __tablename__ = 'reason_for_rejection_of_application'
+    id = sa.Column(sa.Integer, sa.ForeignKey('catalog.id'), primary_key=True)
+    __mapper_args__ = {
+        'polymorphic_identity': __tablename__,
+    }
+
+
+class Violation(Catalog):
+    __tablename__ = 'violation'
+    id = sa.Column(sa.Integer, sa.ForeignKey('catalog.id'), primary_key=True)
+    value = sa.Column(sa.Integer, nullable=False)
+    __mapper_args__ = {
+        'polymorphic_identity': __tablename__,
+    }

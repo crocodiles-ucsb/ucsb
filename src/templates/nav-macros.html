@@ -1,0 +1,25 @@
+{% macro nav(number_of_selected) -%}
+<div class="sidebar">
+    {%if number_of_selected == 1%}
+    <a class="active" href="{{base_url}}/admins/{{admin_id}}">
+        <img src="{{url_for('static', path='/triangle.png')}}" class="triangle"></img>Операторы</a>
+    {%else%}
+    <a href="{{base_url}}/admins/{{admin_id}}">
+        <img src="{{url_for('static', path='/triangle.png')}}" class="triangle"></img>Операторы</a>
+    {%endif%}
+    {%if number_of_selected == 2%}
+    <a class="active" href="{{base_url}}/admins/{{admin_id}}/securities">
+        <img src="{{url_for('static', path='/triangle.png') }}" class="triangle"></img>Охранники</a>
+    {%else%}
+    <a href="{{base_url}}/admins/{{admin_id}}/securities">
+        <img src="{{url_for('static', path='/triangle.png') }}" class="triangle"></img>Охранники</a>
+    {%endif%}
+    {%if number_of_selected == 3%}
+    <a class="active" href="{{base_url}}/admins/{{admin_id}}/catalogs">
+        <img src="{{url_for('static', path='/triangle.png') }}" class="triangle"></img>Словари</a>
+    {%else%}
+    <a href="{{base_url}}/admins/{{admin_id}}/catalogs">
+        <img src="{{url_for('static', path='/triangle.png') }}" class="triangle"></img>Словари</a>
+    {%endif%}
+</div>
+{%- endmacro %}

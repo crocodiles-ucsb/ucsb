@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="{{url_for('static', path='/admin.css')}}" rel="stylesheet">
+    <title>Словари</title>
+</head>
+
+<body>
+
+<div class="grid-container">
+
+    {%import 'catalogs-topbar-macro.html' as topbar_nav with context %}
+    {{topbar_nav.nav()}}
+
+    {%import 'nav-macros.html' as nav with context %}
+    {{nav.nav(3)}}
+
+    <div class="search">
+        <form method="get" action="{{base_url}}/admins/{{admin_id}}/catalogs/{{catalog_type}}">
+            <label>
+                <input type="search" placeholder="Поиск" name="substring">
+            </label>
+            <button class="search_button"> Найти</button>
+        </form>
+    </div>
+
+    <div class="add_wr">
+        <button class="add_button"> + Добавить</button>
+    </div>
+
+    <div class="pagination">
+        {% if pagination.has_prev_page %}
+        <a href="{{base_url}}/admins/{{admin_id}}/catalogs/{{catalog_type}}?page={{pagination.prev_page}}">&laquo;</a>
+        {%endif%}
+        <a href="{{base_url}}/admins/{{admin_id}}/catalogs/{{catalog_type}}?page={{pagination.current_page}}">{{pagination.current_page}}</a>
+        {%if pagination.has_next_page%}
+        <a href="{{base_url}}/admins/{{admin_id}}/catalogs/{{catalog_type}}?page={{pagination.next_page}}">&raquo;</a>
+        {% endif%}
+    </div>
+
+    <div class="table-wr">
+        <table id="table">
+            <tr>
+                <th>{{description}}</th>
+                <th>Вес нарушения</th>
+            </tr>
+            {%for item in items%}
+            <tr>
+                <td>{{item.data}}</td>
+                <td>{{item.value}}</td>
+            </tr>
+            {%endfor%}
+        </table>
+    </div>
+
+</div>
+
+</body>
+
+</html>

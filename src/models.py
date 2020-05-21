@@ -69,3 +69,23 @@ class SecurityToRegisterOut(SecurityOut):
 
 class OperatorToRegisterOut(OperatorOut):
     uuid: str
+
+
+class SimpleCatalogOut(BaseModel):
+    id: int
+    data: str
+
+    class Config:
+        orm_mode = True
+
+
+class CatalogWithIntValueOut(SimpleCatalogOut):
+    value: int
+
+
+class SimpleCatalogIn(BaseModel):
+    data: str
+
+
+class CatalogWithIntValueIn(SimpleCatalogIn):
+    value: int
