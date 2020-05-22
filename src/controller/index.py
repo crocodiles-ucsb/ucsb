@@ -1,3 +1,5 @@
+from starlette.responses import RedirectResponse
+
 from src.controller.authorization_decorators import auth_handler
 from src.DAL import tokens
 from src.DAL.registration import RegistrationViaUniqueLink, UniqueLinkRegistrationParams
@@ -17,7 +19,7 @@ class IndexController:
 
     @staticmethod
     def refresh_tokens(
-        req: Request, access_token: str, refresh_token: str
+            req: Request, access_token: str, refresh_token: str
     ) -> _TemplateResponse:
         return templates.TemplateResponse(
             'refresh_tokens.html',
@@ -58,3 +60,7 @@ class IndexController:
                 username=in_user.username, password=in_user.password, uuid=in_user.uuid
             )
         )
+
+    @staticmethod
+    async def logout(req: Request) -> _TemplateResponse:
+        return templates.TemplateResponse("logout.html", {"request": req, "base_url": Urls.base_url.value})

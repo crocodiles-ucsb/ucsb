@@ -45,3 +45,8 @@ async def add_user(user: InUserWithUUID):
 @router.delete('/users/{uuid}', status_code=HTTPStatus.NO_CONTENT.value)
 async def remove_user(req: Request, uuid: str):
     return await AdminsController.remove_user(req, uuid)
+
+
+@router.get('/logout')
+async def logout(req: Request):
+    return await IndexController.logout(req)
