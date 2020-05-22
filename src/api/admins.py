@@ -50,45 +50,48 @@ async def delete_catalog_item(req: Request, catalog_id: int):
     return await AdminsController.delete_catalog(req, catalog_id)
 
 
-@router.get('/{admin_id}/add_operator')
-async def get_add_operator_form(req: Request, admin_id: int):
-    return await AdminsController.add_operator_form(req, admin_id)
+@router.get('/add_operator')
+async def get_add_operator_form(req: Request):
+    return await AdminsController.add_operator_form(req)
 
 
-@router.get('/{admin_id}/add_security')
-async def get_add_security_form(admin_id: int, req: Request):
-    return await AdminsController.add_security_form(req, admin_id)
+@router.get('/add_security')
+async def get_add_security_form(req: Request):
+    return await AdminsController.add_security_form(req)
 
 
-@router.get('/{admin_id}')
-async def get_admin(req: Request, admin_id: int) -> _TemplateResponse:
-    return await AdminsController.get_admin_page(req, admin_id)
-
-
-@router.get('/{admin_id}/operators')
-async def get_operators(
-        admin_id: int,
-        req: Request,
-        page: int = 1,
-        pending: bool = False,
-        substring: Optional[str] = None,
-) -> _TemplateResponse:
-    return await AdminsController.get_operators(req, admin_id, page, pending, substring)
-
-
-@router.get('/{admin_id}/securities')
+@router.get('/securities')
 async def get_securities(
-        admin_id: int,
         req: Request,
         page: int = 1,
         pending: bool = False,
         substring: Optional[str] = None,
 ) -> _TemplateResponse:
     return await AdminsController.get_securities(
-        req, admin_id, page, pending, substring
+        req, page, pending, substring
     )
+
+
+@router.get('/operators')
+async def get_operators(
+        req: Request,
+        page: int = 1,
+        pending: bool = False,
+        substring: Optional[str] = None,
+) -> _TemplateResponse:
+    return await AdminsController.get_operators(req, page, pending, substring)
+
+
+@router.get('/{admin_id}')
+async def get_admin(req: Request, admin_id: int) -> _TemplateResponse:
+    return await AdminsController.get_admin_page(req)
 
 
 @router.post('')
 async def add_admin(username: str, password: str) -> OutUser:
     return await AdminsController.add(username, password)
+
+
+@router.get('')
+async def get_admin_page(req: Request):
+    return await AdminsController.get_admin_page(req)

@@ -38,7 +38,6 @@ def get_url_postfix(user: OutUser) -> str:
         res.write(user.type)
         res.write('s')
     res.write('/')
-    res.write(str(user.id))
     return res.getvalue()
 
 

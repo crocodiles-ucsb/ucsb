@@ -37,40 +37,39 @@ class AdminsController:
         )
 
     @staticmethod
-    @auth_required(UserRole.ADMIN)
-    async def add_operator_form(req: Request, admin_id: int) -> _TemplateResponse:
+    @auth_required(UserRole.ADMIN, check_id=False)
+    async def add_operator_form(req: Request) -> _TemplateResponse:
         return templates.TemplateResponse(
             'add_operator_form.html', {'request': req, 'base_url': Urls.base_url.value},
         )
 
     @staticmethod
-    @auth_required(UserRole.ADMIN)
-    async def add_security_form(req: Request, admin_id: int) -> _TemplateResponse:
+    @auth_required(UserRole.ADMIN, check_id=False)
+    async def add_security_form(req: Request) -> _TemplateResponse:
         return templates.TemplateResponse(
             'add_security_form.html',
-            {'request': req, 'base_url': Urls.base_url.value, 'admin_id': admin_id},
+            {'request': req, 'base_url': Urls.base_url.value},
         )
 
     @staticmethod
-    @auth_required(UserRole.ADMIN)
-    async def get_admin_page(req: Request, admin_id: int) -> RedirectResponse:
-        return RedirectResponse(f'{Urls.base_url.value}/admins/{admin_id}/operators')
+    @auth_required(UserRole.ADMIN, check_id=False)
+    async def get_admin_page(req: Request) -> RedirectResponse:
+        return RedirectResponse(f'{Urls.base_url.value}/admins/operators')
 
     @staticmethod
-    @auth_required(UserRole.ADMIN)
+    @auth_required(UserRole.ADMIN, check_id=False)
     async def get_operators(
-            req: Request, admin_id: int, page: int, pending: bool, substring: Optional[str]
+            req: Request,  page: int, pending: bool, substring: Optional[str]
     ) -> _TemplateResponse:
         if pending:
             return await AdminsController.get_operators_pending_register(
-                req, admin_id, page, substring
+                req, page, substring
             )
         list_with_pagination = await Admin.get_operators(page, substring)
         return templates.TemplateResponse(
             'admin-operators.html',
             {
                 'request': req,
-                'admin_id': admin_id,
                 'base_url': Urls.base_url.value,
                 'operators': list_with_pagination.data,
                 'pagination': list_with_pagination.pagination_params,
@@ -78,16 +77,15 @@ class AdminsController:
         )
 
     @staticmethod
-    @auth_required(UserRole.ADMIN)
+    @auth_required(UserRole.ADMIN, check_id=False)
     async def get_operators_pending_register(
-            req: Request, admin_id: int, page: int, substring: Optional[str]
+            req: Request, page: int, substring: Optional[str]
     ) -> _TemplateResponse:
         list_with_pagination = await Admin.get_operators_to_register(page, substring)
         return templates.TemplateResponse(
             'admin-operators-waiting.html',
             {
                 'request': req,
-                'admin_id': admin_id,
                 'base_url': Urls.base_url.value,
                 'operators': list_with_pagination.data,
                 'pagination': list_with_pagination.pagination_params,
@@ -95,20 +93,20 @@ class AdminsController:
         )
 
     @staticmethod
-    @auth_required(UserRole.ADMIN)
+    @auth_required(UserRole.ADMIN, check_id=False)
     async def get_securities(
-            req: Request, admin_id: int, page: int, pending: bool, substring: Optional[str]
+            req: Request, page: int, pending: bool, substring: Optional[str]
     ) -> _TemplateResponse:
         if pending:
             return await AdminsController.get_securities_pending_register(
-                req, admin_id, page, substring
+                req,  page, substring
             )
         list_with_pagination = await Admin.get_securities(page, substring)
         return templates.TemplateResponse(
             'admin-securities.html',
             {
                 'request': req,
-                'admin_id': admin_id,
+
                 'base_url': Urls.base_url.value,
                 'securities': list_with_pagination.data,
                 'pagination': list_with_pagination.pagination_params,
@@ -116,16 +114,15 @@ class AdminsController:
         )
 
     @staticmethod
-    @auth_required(UserRole.ADMIN)
+    @auth_required(UserRole.ADMIN, check_id=False)
     async def get_securities_pending_register(
-            req: Request, admin_id: int, page: int, substring: Optional[str]
+            req: Request,  page: int, substring: Optional[str]
     ) -> _TemplateResponse:
         list_with_pagination = await Admin.get_securities_to_register(page, substring)
         return templates.TemplateResponse(
             'admin-securities-waiting.html',
             {
                 'request': req,
-                'admin_id': admin_id,
                 'base_url': Urls.base_url.value,
                 'securities': list_with_pagination.data,
                 'pagination': list_with_pagination.pagination_params,

@@ -13,15 +13,15 @@
 <div class="grid-container">
 
     <div class="topbar">
-        <a class="active" href="{{base_url}}/admins/{{admin_id}}/operators">Зарегистрированные</a>
-        <a href="{{base_url}}/admins/{{admin_id}}/operators?pending=True">В ожидании регистриации</a>
+        <a class="active" href="{{base_url}}/admins/operators">Зарегистрированные</a>
+        <a href="{{base_url}}/admins/operators?pending=True">В ожидании регистриации</a>
     </div>
 
     {%import 'nav-macros.html' as nav with context %}
     {{nav.nav(1)}}
 
     <div class="search">
-        <form method="get" action="{{base_url}}/admins/{{admin_id}}/operators">
+        <form method="get" action="{{base_url}}/admins/operators">
             <label>
                 <input type="search" placeholder="Поиск" name="substring">
             </label>
@@ -30,7 +30,7 @@
     </div>
 
     <div class="add_wr">
-        <button onclick="location.href='{{base_url}}/admins/{{admin_id}}/add_operator'" class="add_button"
+        <button onclick="location.href='{{base_url}}/admins/add_operator'" class="add_button"
                 type="button"> +
             Добавить
         </button>
@@ -38,11 +38,11 @@
 
     <div class="pagination">
         {% if pagination.has_prev_page %}
-        <a href="{{base_url}}/admins/{{admin_id}}/operators?page={{pagination.prev_page}}">&laquo;</a>
+        <a href="{{base_url}}/admins/operators?page={{pagination.prev_page}}">&laquo;</a>
         {%endif%}
-        <a href="{{base_url}}/admins/{{admin_id}}/operators?page={{pagination.current_page}}">{{pagination.current_page}}</a>
+        <a href="{{base_url}}/admins/operators?page={{pagination.current_page}}">{{pagination.current_page}}</a>
         {%if pagination.has_next_page%}
-        <a href="{{base_url}}/admins/{{admin_id}}/operators?page={{pagination.next_page}}">&raquo;</a>
+        <a href="{{base_url}}/admins/operators?page={{pagination.next_page}}">&raquo;</a>
         {% endif%}
     </div>
 
