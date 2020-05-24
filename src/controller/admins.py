@@ -22,11 +22,11 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN, check_id=False, auth_redirect=False)
     async def add_catalog_data(
-            req: Request,
-            catalog_type: CatalogType,
-            data: str,
-            value: Optional[int],
-            out_model: Type[T],
+        req: Request,
+        catalog_type: CatalogType,
+        data: str,
+        value: Optional[int],
+        out_model: Type[T],
     ) -> T:
         return await CatalogsDAL.add_item(catalog_type, data, value, out_model)
 
@@ -47,8 +47,7 @@ class AdminsController:
     @auth_required(UserRole.ADMIN, check_id=False)
     async def add_security_form(req: Request) -> _TemplateResponse:
         return templates.TemplateResponse(
-            'add_security_form.html',
-            {'request': req, 'base_url': Urls.base_url.value},
+            'add_security_form.html', {'request': req, 'base_url': Urls.base_url.value},
         )
 
     @staticmethod
@@ -59,7 +58,7 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN, check_id=False)
     async def get_operators(
-            req: Request,  page: int, pending: bool, substring: Optional[str]
+        req: Request, page: int, pending: bool, substring: Optional[str]
     ) -> _TemplateResponse:
         if pending:
             return await AdminsController.get_operators_pending_register(
@@ -79,7 +78,7 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN, check_id=False)
     async def get_operators_pending_register(
-            req: Request, page: int, substring: Optional[str]
+        req: Request, page: int, substring: Optional[str]
     ) -> _TemplateResponse:
         list_with_pagination = await Admin.get_operators_to_register(page, substring)
         return templates.TemplateResponse(
@@ -95,18 +94,17 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN, check_id=False)
     async def get_securities(
-            req: Request, page: int, pending: bool, substring: Optional[str]
+        req: Request, page: int, pending: bool, substring: Optional[str]
     ) -> _TemplateResponse:
         if pending:
             return await AdminsController.get_securities_pending_register(
-                req,  page, substring
+                req, page, substring
             )
         list_with_pagination = await Admin.get_securities(page, substring)
         return templates.TemplateResponse(
             'admin-securities.html',
             {
                 'request': req,
-
                 'base_url': Urls.base_url.value,
                 'securities': list_with_pagination.data,
                 'pagination': list_with_pagination.pagination_params,
@@ -116,7 +114,7 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN, check_id=False)
     async def get_securities_pending_register(
-            req: Request,  page: int, substring: Optional[str]
+        req: Request, page: int, substring: Optional[str]
     ) -> _TemplateResponse:
         list_with_pagination = await Admin.get_securities_to_register(page, substring)
         return templates.TemplateResponse(
@@ -144,7 +142,7 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN, check_id=False, auth_redirect=False)
     async def add_operator(
-            req: Request, operator_in: OperatorIn
+        req: Request, operator_in: OperatorIn
     ) -> OperatorToAddingOut:
         return await Operator().add_user(
             OperatorAddingParams(
@@ -162,10 +160,7 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN, check_id=False)
     async def get_catalog(
-            req: Request,
-            catalog_type: CatalogType,
-            page: int,
-            substring: Optional[str],
+        req: Request, catalog_type: CatalogType, page: int, substring: Optional[str],
     ) -> _TemplateResponse:
         items = await CatalogsDAL.get_items(
             catalog_type, catalog_type.out_model, page, substring
@@ -196,7 +191,7 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN, check_id=False)
     async def get_add_catalog_page(
-            req: Request, catalog_type: CatalogType
+        req: Request, catalog_type: CatalogType
     ) -> _TemplateResponse:
         if catalog_type == CatalogType.violations:
             return templates.TemplateResponse(

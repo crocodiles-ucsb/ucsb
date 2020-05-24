@@ -18,14 +18,12 @@ async def get_catalogs(req: Request):
 
 @router.get('/catalogs/{catalog_type}')
 async def get_catalog(
-        req: Request,
-        catalog_type: CatalogType,
-        page: int = 1,
-        substring: Optional[str] = None,
+    req: Request,
+    catalog_type: CatalogType,
+    page: int = 1,
+    substring: Optional[str] = None,
 ):
-    return await AdminsController.get_catalog(
-        req, catalog_type, page, substring
-    )
+    return await AdminsController.get_catalog(req, catalog_type, page, substring)
 
 
 @router.get('/add_catalog/{catalog_type}')
@@ -35,10 +33,7 @@ async def get_add_catalog_page(req: Request, catalog_type: CatalogType):
 
 @router.post('/catalogs/{catalog_type}', status_code=HTTPStatus.CREATED.value)
 async def add_catalog(
-        req: Request,
-        catalog_type: CatalogType,
-        data: str,
-        value: Optional[int] = None,
+    req: Request, catalog_type: CatalogType, data: str, value: Optional[int] = None,
 ):
     return await AdminsController.add_catalog_data(
         req, catalog_type, data, value, catalog_type.out_model
@@ -62,22 +57,14 @@ async def get_add_security_form(req: Request):
 
 @router.get('/securities')
 async def get_securities(
-        req: Request,
-        page: int = 1,
-        pending: bool = False,
-        substring: Optional[str] = None,
+    req: Request, page: int = 1, pending: bool = False, substring: Optional[str] = None,
 ) -> _TemplateResponse:
-    return await AdminsController.get_securities(
-        req, page, pending, substring
-    )
+    return await AdminsController.get_securities(req, page, pending, substring)
 
 
 @router.get('/operators')
 async def get_operators(
-        req: Request,
-        page: int = 1,
-        pending: bool = False,
-        substring: Optional[str] = None,
+    req: Request, page: int = 1, pending: bool = False, substring: Optional[str] = None,
 ) -> _TemplateResponse:
     return await AdminsController.get_operators(req, page, pending, substring)
 
