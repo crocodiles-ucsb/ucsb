@@ -57,7 +57,7 @@ class ContractorRepresentative(User):
     id = sa.Column(sa.Integer, sa.ForeignKey('user.id'), primary_key=True)
     contractor_id = sa.Column(sa.ForeignKey('contractor.id'))
 
-    contractor = relationship("Contractor", back_populates="representatives")
+    contractor = relationship('Contractor', back_populates='representatives')
     telephone_number = sa.Column(sa.String, nullable=False)
     email = sa.Column(sa.String, nullable=False)
     __mapper_args__ = {
@@ -119,6 +119,8 @@ class Catalog(Base):
 class Profession(Catalog):
     __tablename__ = 'profession'
     id = sa.Column(sa.Integer, sa.ForeignKey('catalog.id'), primary_key=True)
+
+    workers = relationship('Worker', back_populates='profession')
     __mapper_args__ = {
         'polymorphic_identity': __tablename__,
     }
@@ -136,8 +138,11 @@ class ObjectOfWork(Catalog):
     __tablename__ = 'object_of_work'
     id = sa.Column(sa.Integer, sa.ForeignKey('catalog.id'), primary_key=True)
 
-    workers = relationship("Worker", secondary=association_table_worker_object_of_work,
-                           back_populates="objects_of_work")
+    workers = relationship(
+        'Worker',
+        secondary=association_table_worker_object_of_work,
+        back_populates='objects_of_work',
+    )
     requests = relationship('Request', back_populates='object_of_work')
     __mapper_args__ = {
         'polymorphic_identity': __tablename__,
@@ -148,7 +153,9 @@ class ReasonForRejectionOfApplication(Catalog):
     __tablename__ = 'reason_for_rejection_of_application'
     id = sa.Column(sa.Integer, sa.ForeignKey('catalog.id'), primary_key=True)
 
-    workers_requests = relationship("WorkerInRequest", back_populates='reason_for_rejection')
+    workers_requests = relationship(
+        'WorkerInRequest', back_populates='reason_for_rejection'
+    )
     __mapper_args__ = {
         'polymorphic_identity': __tablename__,
     }
@@ -168,7 +175,7 @@ class Document(Base):
     id = sa.Column(sa.Integer, primary_key=True, index=True)
     type = sa.Column(sa.String(50))
     path_to_document = sa.Column(sa.String, nullable=False, unique=True)
-
+    uuid = sa.Column(sa.String)
     __mapper_args__ = {
         'polymorphic_identity': __tablename__,
         'polymorphic_on': type,
@@ -185,11 +192,11 @@ class Identification(Document):
     }
 
 
-class DriversLicense(Document):
-    __tablename__ = 'drivers_license'
+class DrivingLicense(Document):
+    __tablename__ = 'driving_license'
     id = sa.Column(sa.Integer, sa.ForeignKey('document.id'), primary_key=True)
 
-    worker = relationship('Worker', back_populates='drivers_license', uselist=False)
+    worker = relationship('Worker', back_populates='driving_license', uselist=False)
     __mapper_args__ = {
         'polymorphic_identity': __tablename__,
     }
@@ -317,7 +324,7 @@ class Contract(Document):
     __tablename__ = 'contract'
     id = sa.Column(sa.Integer, sa.ForeignKey('document.id'), primary_key=True)
     file_name = sa.Column(sa.String, nullable=False)
-    contractor_id = sa.Column(sa.ForeignKey("contractor.id"))
+    contractor_id = sa.Column(sa.ForeignKey('contractor.id'))
 
     contractor = relationship('Contractor', back_populates='contracts')
     requests = relationship('Request', back_populates='contract')
@@ -335,22 +342,31 @@ class Worker(Base):
     birth_date = sa.Column(sa.Date, nullable=False)
     profession_id = sa.Column(sa.ForeignKey(Profession.id))
     identification_id = sa.Column(sa.ForeignKey(Identification.id))
-    drivers_license_id = sa.Column(sa.ForeignKey(DriversLicense.id))
-    order_of_acceptance_to_work_id = sa.Column(sa.ForeignKey(OrderOfAcceptanceToWork.id))
+    driving_license_id = sa.Column(sa.ForeignKey(DrivingLicense.id))
+    order_of_acceptance_to_work_id = sa.Column(
+        sa.ForeignKey(OrderOfAcceptanceToWork.id)
+    )
     training_information_id = sa.Column(sa.ForeignKey(TrainingInformation.id))
-    speciality_course_information_id = sa.Column(sa.ForeignKey(SpecialityCourseInformation.id))
+    speciality_course_information_id = sa.Column(
+        sa.ForeignKey(SpecialityCourseInformation.id)
+    )
     another_driver_license_id = sa.Column(sa.ForeignKey(AnotherDriveLicense.id))
     medical_certificate_id = sa.Column(sa.ForeignKey(MedicalCertificate.id))
     certificate_of_competency_id = sa.Column(sa.ForeignKey(CertificateOfCompetency.id))
     instructed_information_id = sa.Column(sa.ForeignKey(InstructedInformation.id))
-    emergency_driver_certificate_id = sa.Column(sa.ForeignKey(EmergencyDrivingCertificate.id))
+    emergency_driver_certificate_id = sa.Column(
+        sa.ForeignKey(EmergencyDrivingCertificate.id)
+    )
 
-    worker_requests = relationship("WorkerInRequest", back_populates='worker')
-    objects_of_work = relationship(ObjectOfWork, secondary=association_table_worker_object_of_work,
-                                   back_populates="workers")
+    worker_requests = relationship('WorkerInRequest', back_populates='worker')
+    objects_of_work = relationship(
+        ObjectOfWork,
+        secondary=association_table_worker_object_of_work,
+        back_populates='workers',
+    )
     profession = relationship(Profession, back_populates='workers')
     identification = relationship(Identification, back_populates='worker')
-    drivers_license = relationship(DriversLicense, back_populates='worker')
+    driving_license = relationship(DrivingLicense, back_populates='worker')
     order_of_acceptance_to_work = relationship(
         OrderOfAcceptanceToWork, back_populates='worker'
     )
@@ -371,32 +387,46 @@ class Worker(Base):
     )
 
 
+class RequestStatus(Enum):
+    WAITING_FOR_READINESS = 'waiting for readiness'
+    WAITING_FOR_VERIFICATION = 'waiting for verification'
+    CLOSED = 'closed'
+
+
 class Request(Base):
     __tablename__ = 'request'
     id = sa.Column(sa.Integer, primary_key=True, index=True)
     object_of_work_id = sa.Column(sa.Integer, sa.ForeignKey(ObjectOfWork.id))
     contract_id = sa.Column(sa.Integer, sa.ForeignKey(Contract.id))
+    status = sa.Column(sa.Enum(RequestStatus))
 
     object_of_work = relationship(ObjectOfWork, back_populates='requests')
     contract = relationship(Contract, back_populates='requests')
-    workers_in_request = relationship("WorkerInRequest", back_populates='request')
+    workers_in_request = relationship('WorkerInRequest', back_populates='request')
 
 
-class Status(Enum):
-    pass
+class WorkerInRequestStatus(Enum):
+    WAITING_FOR_READINESS = 'waiting for readiness'
+    WAITING_FOR_VERIFICATION = 'waiting for verification'
+    ACCEPTED = 'accepted'
+    CANCELLED = 'cancelled'
 
 
 class WorkerInRequest(Base):
     __tablename__ = 'worker_in_request'
     id = sa.Column(sa.Integer, primary_key=True, index=True)
     worker_id = sa.Column(sa.ForeignKey(Worker.id))
-    request_id = sa.Column(sa.ForeignKey(Request.id))
-    status = sa.Column(sa.Enum(Status))
-    reason_for_rejection_id = sa.Column(sa.ForeignKey(ReasonForRejectionOfApplication.id), nullable=True)
+    request_id = sa.Column(sa.ForeignKey(Request.id), nullable=True)
+    status = sa.Column(sa.Enum(WorkerInRequestStatus))
+    reason_for_rejection_id = sa.Column(
+        sa.ForeignKey(ReasonForRejectionOfApplication.id), nullable=True
+    )
     comment = sa.Column(sa.String)
 
-    reason_for_rejection = relationship(ReasonForRejectionOfApplication, back_populates="workers_requests")
-    worker = relationship(Worker, back_populates="worker_in_requests")
+    reason_for_rejection = relationship(
+        ReasonForRejectionOfApplication, back_populates='workers_requests'
+    )
+    worker = relationship(Worker, back_populates='worker_requests')
     request = relationship(Request, back_populates='workers_in_request')
 
 
@@ -410,7 +440,9 @@ class Contractor(Base):
     ogrn_document_id = sa.Column(sa.ForeignKey(Ogrn.id))
     inn_document_id = sa.Column(sa.ForeignKey(Inn.id))
 
-    representatives = relationship(ContractorRepresentative, back_populates="contractor")
+    representatives = relationship(
+        ContractorRepresentative, back_populates='contractor'
+    )
     ogrn_document = relationship(Ogrn, back_populates='contractor')
     inn_document = relationship(Inn, back_populates='contractor')
-    contracts = relationship(Contract, back_populates="contractor")
+    contracts = relationship(Contract, back_populates='contractor')

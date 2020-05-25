@@ -8,17 +8,16 @@ from src.models import OutUser
 
 
 @pytest.mark.parametrize(
-    'user_id, user_type, postfix',
+    'user_type, postfix',
     [
-        (1, UserRole.ADMIN.value, '/admins/1'),
-        (2, UserRole.ADMIN.value, '/admins/2'),
-        (3, UserRole.OPERATOR.value, '/operators/3'),
-        (3, UserRole.SECURITY.value, '/securities/3'),
-        (3, UserRole.CONTRACTOR_REPRESENTATIVE.value, '/Contractor representatives/3'),
+        (UserRole.ADMIN.value, '/admins'),
+        (UserRole.OPERATOR.value, '/operators'),
+        (UserRole.SECURITY.value, '/securities'),
+        (UserRole.CONTRACTOR_REPRESENTATIVE.value, '/Contractor_representatives'),
     ],
 )
-def test_get_user_role(user_id, user_type, postfix, username):
-    user = OutUser(id=user_id, type=user_type, username=username)
+def test_get_user_role(user_type, postfix, username):
+    user = OutUser(id=1, type=user_type, username=username)
     assert get_url_postfix(user) == postfix
 
 

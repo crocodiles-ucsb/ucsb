@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="{{url_for('static',path='/add_form.css')}}" rel="stylesheet" type="text/css">
+    <title>Добавление контрагента</title>
+</head>
+
+<body>
+<form id="add_form">
+    <div class="outer">
+        <div class="middle">
+            <div class="inner">
+                <div class="add-wr">
+                    <h2>Добавление контрагента</h2>
+                    <div class="form">
+                        <label>
+                            <input placeholder="Наименование" type="text">
+                        </label>
+                        <label>
+                            <input placeholder="Адрес юр. лица" type="text">
+                        </label>
+                        <label>
+                            <input placeholder="ОГРН" type="number">
+                        </label>
+                        <label>
+                            <input placeholder="ИНН" type="number">
+                        </label>
+                        <h3>Документы</h3>
+                        <p>ОГРН:
+                            <label class="custom_upload">
+                                Загрузить файл
+                                <input type="file">
+                            </label>
+                        </p>
+                        <p>ИНН:
+                            <label class="custom_upload">
+                                Загрузить файл
+                                <input type="file">
+                            </label>
+                        </p>
+                        <button class="add_button"> + Добавить</button>
+                        <button class="back_button"> Назад</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+</body>
+
+</html>

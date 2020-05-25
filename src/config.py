@@ -14,6 +14,10 @@ class ServiceSettings(BaseSettings):
     port = 8000
 
 
+class StorageSettings(BaseSettings):
+    main_directory_name: str = 'storage'
+
+
 @lru_cache()
 def _get_service_settings() -> ServiceSettings:
     return ServiceSettings()
@@ -26,3 +30,4 @@ def _get_tokens_settings() -> TokensSettings:
 
 tokens_settings = _get_tokens_settings()
 service_settings = _get_service_settings()
+storage_settings = StorageSettings()

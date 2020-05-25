@@ -3,12 +3,16 @@ from http import HTTPStatus
 from io import StringIO
 from typing import Generic, List, Optional, Type, TypeVar
 
+from pydantic import BaseModel
 from src.api.catalogs import CatalogType
 from src.database.models import (
     Admin,
     Catalog,
     ContractorRepresentative,
     ContractorRepresentativeToRegister,
+    Document,
+    DrivingLicense,
+    Identification,
     ObjectOfWork,
     Operator,
     OperatorToRegister,
@@ -24,7 +28,7 @@ from src.database.models import (
 from src.database.user_roles import UserRole
 from src.exceptions import DALError
 from src.messages import Message
-from src.models import OutUser
+from src.models import DocumentWithTitleOut, OutUser, SimpleDocumentOut
 from src.urls import Urls
 
 
@@ -37,7 +41,6 @@ def get_url_postfix(user: OutUser) -> str:
     else:
         res.write(user.type)
         res.write('s')
-    res.write('/')
     return res.getvalue()
 
 
@@ -134,4 +137,18 @@ def get_catalog_db_obj(catalog_type: CatalogType) -> Type[Catalog]:
         return ReasonForRejectionOfApplication
     if catalog_type == CatalogType.violations:
         return Violation
+    raise ValueError()
+
+
+def get_document_out_model(document_type: str) -> Type[BaseModel]:
+    if document_type == 'contract':
+        return DocumentWithTitleOut
+    return SimpleDocumentOut
+
+
+def get_document_db_type(type: str) -> Type[Document]:
+    if type == 'identification':
+        return Identification
+    if type == 'driving_license':
+        return DrivingLicense
     raise ValueError()

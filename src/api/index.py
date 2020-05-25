@@ -3,7 +3,6 @@ from http import HTTPStatus
 from fastapi import APIRouter, Request
 from src.controller.admins import AdminsController
 from src.controller.index import IndexController
-from src.DAL.auth import refresh_tokens
 from src.models import InUserWithUUID
 
 router = APIRouter()

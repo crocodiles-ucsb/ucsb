@@ -39,3 +39,4 @@ class Message(Enum):
     INVALID_CATALOG_VALUE = 'Неверное значение поля'
     ELEMENT_OF_CATALOG_ALREADY_EXISTS = 'Такой элемиент справочника уже существует'
     CATALOG_DOES_NOT_EXISTS = 'Такого каталога не существует, обновите страницу'
+    PROFESSION_DOES_NOT_EXITS = 'Указанная профессия была удалена'

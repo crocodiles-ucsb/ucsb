@@ -1,5 +1,7 @@
+from pathlib import Path
 from typing import Optional
 
+from fastapi import UploadFile
 from pydantic import BaseModel
 
 
@@ -89,3 +91,19 @@ class SimpleCatalogIn(BaseModel):
 
 class CatalogWithIntValueIn(SimpleCatalogIn):
     value: int
+
+
+class SimpleDocumentIn(BaseModel):
+    file: UploadFile
+
+
+class DocumentWithTitleIn(SimpleDocumentIn):
+    title: str
+
+
+class SimpleDocumentOut(BaseModel):
+    path_to_file: Path
+
+
+class DocumentWithTitleOut(SimpleCatalogOut):
+    title: str
