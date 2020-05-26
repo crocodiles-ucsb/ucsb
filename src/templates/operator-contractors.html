@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="{{url_for('static', path='/operator.css')}}" rel="stylesheet" type="text/css">
+    <title>Контрагенты</title>
+</head>
+
+<body>
+
+<div class="grid-container">
+
+    <div class="sidebar">
+        <a class="active" href="operator_companies.html">
+            <img class="triangle" src="{{url_for('static',path='/triangle.png')}}">Контрагенты</a>
+        <a href="operator_requests.html">
+            <img class="triangle" src="{{url_for('static',path='/triangle.png')}}">Заявки</a>
+    </div>
+
+    <form class="search" method="get" action="{{base_url}}/contractors">
+        <label>
+            {%if substring != None%}
+            <input placeholder="Поиск" type="search" name="substring" value="{{substring}}">
+            {%else%}
+            <input placeholder="Поиск" type="search" name="substring">
+            {%endif%}
+        </label>
+        <button class="search_button" type="submit"> Найти</button>
+    </form>
+
+    <div class="add_wr">
+        <button class="add_button" onclick="window.location.replace('{{base_url}}/operators/contractor_add_form')"> +
+            Добавить
+        </button>
+    </div>
+    <div class="pagination">
+        {% if pagination.has_prev_page %}
+        <a href="{{base_url}}/contractors?page={{pagination.prev_page}}&substring={{substring}}">&laquo;</a>
+        {%endif%}
+        <a href="{{base_url}}/contractors?page={{pagination.current_page}}&substring={{substring}}">{{pagination
+            .current_page}}</a>
+        {%if pagination.has_next_page%}
+        <a href="{{base_url}}/contractors?page={{pagination.next_page}}&substring={{substring}}">&raquo;</a>
+        {% endif%}
+    </div>
+
+    <div class="table-wr">
+        <table id="table">
+            <tr>
+                <th>Наименование</th>
+                <th>Рабочие</th>
+                <th>Техника</th>
+            </tr>
+            {%for contractor in contractors%}
+            <tr>
+                <td><a href="{{base_url}}/contractors/{{contractor.id}}">{{contractor.title}}</a></td>
+                <td>{{contractor.count_of_workers}}</td>
+                <td>{{contractor.count_of_vehicles}}</td>
+            </tr>
+            {%endfor%}
+        </table>
+    </div>
+
+    {%import 'logout_macro.html' as logout with context%}
+    {{logout.logout()}}
+
+</div>
+
+</body>
+
+</html>

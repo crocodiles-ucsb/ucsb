@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Awaitable, List, Optional, Type, TypeVar, Union
+from typing import Awaitable, List, Type, TypeVar, Union
 
 from src.DAL.utils import ListWithPagination, get_db_obj_to_register, get_pagination
 from src.database.database import create_session, run_in_threadpool
@@ -17,7 +17,7 @@ class UsersDAL:
     def get_users(
         page: int,
         size: int,
-        substring: Optional[str],
+        substring: str,
         out_model: Type[TOutModel],
         user_type: UserRole,
     ) -> Awaitable[ListWithPagination[TOutModel]]:
@@ -29,7 +29,7 @@ class UsersDAL:
 
     @staticmethod
     def _filter_by_substring(
-        substring, users: List[Union[User, UserToRegister]]
+        substring: str, users: List[Union[User, UserToRegister]]
     ) -> List[Union[User, UserToRegister]]:
         if substring:
             users_filtered_by_substring = []
@@ -47,7 +47,7 @@ class UsersDAL:
     def get_users_to_register(
         page: int,
         size: int,
-        substring: Optional[str],
+        substring: str,
         out_model: Type[TOutModel],
         user_type: UserRole,
     ) -> Awaitable[ListWithPagination[TOutModel]]:

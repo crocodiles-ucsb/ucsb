@@ -58,7 +58,7 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN, check_id=False)
     async def get_operators(
-        req: Request, page: int, pending: bool, substring: Optional[str]
+        req: Request, page: int, pending: bool, substring: str
     ) -> _TemplateResponse:
         if pending:
             return await AdminsController.get_operators_pending_register(
@@ -72,13 +72,14 @@ class AdminsController:
                 'base_url': Urls.base_url.value,
                 'operators': list_with_pagination.data,
                 'pagination': list_with_pagination.pagination_params,
+                'substring': substring,
             },
         )
 
     @staticmethod
     @auth_required(UserRole.ADMIN, check_id=False)
     async def get_operators_pending_register(
-        req: Request, page: int, substring: Optional[str]
+        req: Request, page: int, substring: str
     ) -> _TemplateResponse:
         list_with_pagination = await Admin.get_operators_to_register(page, substring)
         return templates.TemplateResponse(
@@ -88,13 +89,14 @@ class AdminsController:
                 'base_url': Urls.base_url.value,
                 'operators': list_with_pagination.data,
                 'pagination': list_with_pagination.pagination_params,
+                'substring': substring,
             },
         )
 
     @staticmethod
     @auth_required(UserRole.ADMIN, check_id=False)
     async def get_securities(
-        req: Request, page: int, pending: bool, substring: Optional[str]
+        req: Request, page: int, pending: bool, substring: str
     ) -> _TemplateResponse:
         if pending:
             return await AdminsController.get_securities_pending_register(
@@ -108,13 +110,14 @@ class AdminsController:
                 'base_url': Urls.base_url.value,
                 'securities': list_with_pagination.data,
                 'pagination': list_with_pagination.pagination_params,
+                'substring': substring,
             },
         )
 
     @staticmethod
     @auth_required(UserRole.ADMIN, check_id=False)
     async def get_securities_pending_register(
-        req: Request, page: int, substring: Optional[str]
+        req: Request, page: int, substring: str
     ) -> _TemplateResponse:
         list_with_pagination = await Admin.get_securities_to_register(page, substring)
         return templates.TemplateResponse(
@@ -124,6 +127,7 @@ class AdminsController:
                 'base_url': Urls.base_url.value,
                 'securities': list_with_pagination.data,
                 'pagination': list_with_pagination.pagination_params,
+                'substring': substring,
             },
         )
 
@@ -160,7 +164,7 @@ class AdminsController:
     @staticmethod
     @auth_required(UserRole.ADMIN, check_id=False)
     async def get_catalog(
-        req: Request, catalog_type: CatalogType, page: int, substring: Optional[str],
+        req: Request, catalog_type: CatalogType, page: int, substring: str,
     ) -> _TemplateResponse:
         items = await CatalogsDAL.get_items(
             catalog_type, catalog_type.out_model, page, substring
@@ -173,6 +177,7 @@ class AdminsController:
                 'pagination': items.pagination_params,
                 'catalog_type': catalog_type.value,
                 'description': catalog_type.description,
+                'substring': substring,
             },
         )
 

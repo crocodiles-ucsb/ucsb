@@ -7,19 +7,29 @@ from pydantic import BaseModel
 from src.api.catalogs import CatalogType
 from src.database.models import (
     Admin,
+    AnotherDriveLicense,
     Catalog,
+    CertificateOfCompetency,
     ContractorRepresentative,
     ContractorRepresentativeToRegister,
     Document,
     DrivingLicense,
+    EmergencyDrivingCertificate,
     Identification,
+    Inn,
+    InstructedInformation,
+    MedicalCertificate,
     ObjectOfWork,
+    Ogrn,
     Operator,
     OperatorToRegister,
+    OrderOfAcceptanceToWork,
     Profession,
     ReasonForRejectionOfApplication,
     Security,
     SecurityToRegister,
+    SpecialityCourseInformation,
+    TrainingInformation,
     User,
     UserToRegister,
     Vehicle,
@@ -151,4 +161,24 @@ def get_document_db_type(type: str) -> Type[Document]:
         return Identification
     if type == 'driving_license':
         return DrivingLicense
+    if type == 'order_of_acceptance_to_work':
+        return OrderOfAcceptanceToWork
+    if type == 'training_information':
+        return TrainingInformation
+    if type == 'speciality_course_information':
+        return SpecialityCourseInformation
+    if type == 'another_drive_license':
+        return AnotherDriveLicense
+    if type == 'medical_certificate':
+        return MedicalCertificate
+    if type == 'certificate_of_competency':
+        return CertificateOfCompetency
+    if type == 'instructed_information':
+        return InstructedInformation
+    if type == 'emergency_driving_certificate':
+        return EmergencyDrivingCertificate
+    if type == 'ogrn_document':
+        return Ogrn
+    if type == 'inn_document':
+        return Inn
     raise ValueError()

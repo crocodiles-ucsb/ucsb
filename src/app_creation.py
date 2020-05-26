@@ -3,7 +3,7 @@ from pathlib import Path
 import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from src.api import admins, auth, index, operators, securitites
+from src.api import admins, auth, contractors, files, index, operators, securitites
 from src.database.database import Base
 
 
@@ -16,6 +16,8 @@ def create_app() -> FastAPI:
     app.include_router(index.router, tags=['index'])
     app.include_router(operators.router, tags=['operators'], prefix='/operators')
     app.include_router(securitites.router, tags=['securities'], prefix='/securities')
+    app.include_router(contractors.router, tags=['contractors'], prefix='/contractors')
+    app.include_router(files.router, tags=['files'], prefix='/files')
     return app
 
 

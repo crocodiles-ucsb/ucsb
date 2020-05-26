@@ -18,10 +18,7 @@ async def get_catalogs(req: Request):
 
 @router.get('/catalogs/{catalog_type}')
 async def get_catalog(
-    req: Request,
-    catalog_type: CatalogType,
-    page: int = 1,
-    substring: Optional[str] = None,
+    req: Request, catalog_type: CatalogType, page: int = 1, substring: str = '',
 ):
     return await AdminsController.get_catalog(req, catalog_type, page, substring)
 
@@ -57,14 +54,14 @@ async def get_add_security_form(req: Request):
 
 @router.get('/securities')
 async def get_securities(
-    req: Request, page: int = 1, pending: bool = False, substring: Optional[str] = None,
+    req: Request, page: int = 1, pending: bool = False, substring: str = '',
 ) -> _TemplateResponse:
     return await AdminsController.get_securities(req, page, pending, substring)
 
 
 @router.get('/operators')
 async def get_operators(
-    req: Request, page: int = 1, pending: bool = False, substring: Optional[str] = None,
+    req: Request, page: int = 1, pending: bool = False, substring: str = '',
 ) -> _TemplateResponse:
     return await AdminsController.get_operators(req, page, pending, substring)
 

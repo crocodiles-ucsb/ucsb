@@ -1,3 +1,4 @@
+
 from fastapi import APIRouter
 from src.controller.admins import AdminsController
 from src.controller.operator import OperatorsController
@@ -10,6 +11,11 @@ router = APIRouter()
 @router.get('/representative_add_form')
 async def get_representative_add_form(req: Request):
     return await OperatorsController.get_representative_add_form(req)
+
+
+@router.get('/contractor_add_form')
+async def get_contractor_add_form(req: Request):
+    return await OperatorsController.get_contractor_add_form(req)
 
 
 @router.post('/representatives')

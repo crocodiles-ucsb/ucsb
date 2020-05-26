@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="{{url_for('static', path='/add_form.css')}}" rel="stylesheet" type="text/css">
+    <title>Добавление контрагента</title>
+</head>
+<body>
+<form id="add_form">
+    <div class="outer">
+        <div class="middle">
+            <div class="inner">
+                <div class="add-wr">
+                    <h2>Добавление контрагента</h2>
+                    <div class="form">
+                        <label>
+                            <input placeholder="Наименование" type="text" name="title">
+                        </label>
+                        <label>
+                            <input placeholder="Адрес юр. лица" type="text" name="address">
+                        </label>
+                        <label>
+                            <input placeholder="ОГРН" type="number" name="ogrn">
+                        </label>
+                        <label>
+                            <input placeholder="ИНН" type="number" name="inn">
+                        </label>
+                        <h3>Документы</h3>
+                        <p>ОГРН:
+                            <label class="custom_upload">
+                                Загрузить файл
+                                <input id="ogrn-document" type="file" accept="application/pdf,application/vnd.ms-excel"
+                                       name="ogrn_document">
+                            </label>
+                        </p>
+                        <p>ИНН:
+                            <label class="custom_upload">
+                                Загрузить файл
+                                <input id="inn-document" type="file" accept="application/pdf,application/vnd.ms-excel"
+                                       name="inn_document">
+                            </label>
+                        </p>
+                        <button type="submit" class="add_button"> + Добавить</button>
+                        <button type="button" class="back_button"
+                        onclick="window.location.replace('{{base_url}}/contractors')"> Назад</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    base_url = '{{base_url}}';
+    window.onload = async function () {
+        let form = document.getElementById("add_form");
+        form.onsubmit = submitted.bind(form);
+    };
+
+    async function submitted(e) {
+        e.preventDefault();
+        const form = new FormData(add_form);
+        const title = form.get('title');
+        const address = form.get('address');
+        const ogrn = form.get('ogrn');
+        const inn = form.get('inn');
+        const ogrn_document = form.get('ogrn_document');
+        const inn_document = form.get('inn_document');
+        if (title === "" || address === "" || ogrn === "" || inn === "" || document.getElementById("inn-document").files.length == 0 ||
+            document.getElementById("ogrn-document").files.length == 0) {
+            alert("Данные введены некорректно");
+            return
+        }
+        const response = await fetch(base_url + '/contractors', {
+            method: 'post',
+            body: form
+        });
+        switch (response.status) {
+            case 201:
+                window.location.replace('{{base_url}}/contractors');
+                return;
+            case 401:
+                alert("Данные авторизации устарели, обновите страницу и попробуйте еще раз");
+                return;
+            case 400:
+                alert("Подрядчик с таким названием или огрн или инн уже существует");
+                return;
+        }
+    }
+</script>
+</body>
+
+</html>

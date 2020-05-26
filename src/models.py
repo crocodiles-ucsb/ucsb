@@ -107,3 +107,19 @@ class SimpleDocumentOut(BaseModel):
 
 class DocumentWithTitleOut(SimpleCatalogOut):
     title: str
+
+
+class ContractorOut(BaseModel):
+    title: str
+    address: str
+    ogrn: str
+    inn: str
+
+    class Config:
+        orm_mode = True
+
+
+class ContractorInListOut(BaseModel):
+    id: int
+    title: str
+    count_of_workers: int

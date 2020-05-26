@@ -20,7 +20,7 @@ class CatalogsDAL:
         catalog_type: CatalogType,
         out_model: Type[T],
         page: int,
-        substring: Optional[str],
+        substring: str,
         size: int = 10,
     ) -> ListWithPagination[T]:
         catalog = get_catalog(catalog_type, out_model)

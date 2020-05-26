@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <link href="{{ url_for('static', path='/login.css') }}" rel="stylesheet">
     <title>Вход в систему</title>
+    {% block javascript %}
+    <script src="{{ url_for('static',path='/cookie_clearing.js') }}"></script>
+    {% endblock %}
 </head>
 <body>
 <form id="auth_form">
@@ -47,6 +50,7 @@
 
         if (response.status === 200) {
             let json = await response.json();
+            deleteAllCookies();
             add_to_cookie(json);
             Redirect('')
 

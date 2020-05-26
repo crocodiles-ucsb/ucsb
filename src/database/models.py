@@ -357,7 +357,9 @@ class Worker(Base):
     emergency_driver_certificate_id = sa.Column(
         sa.ForeignKey(EmergencyDrivingCertificate.id)
     )
+    contractor_id = sa.Column(sa.ForeignKey('contractor.id'))
 
+    contractor = relationship('Contractor', back_populates='workers')
     worker_requests = relationship('WorkerInRequest', back_populates='worker')
     objects_of_work = relationship(
         ObjectOfWork,
@@ -440,6 +442,7 @@ class Contractor(Base):
     ogrn_document_id = sa.Column(sa.ForeignKey(Ogrn.id))
     inn_document_id = sa.Column(sa.ForeignKey(Inn.id))
 
+    workers = relationship(Worker, back_populates='contractor')
     representatives = relationship(
         ContractorRepresentative, back_populates='contractor'
     )

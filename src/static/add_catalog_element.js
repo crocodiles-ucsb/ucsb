@@ -11,12 +11,12 @@ const add_catalog = async (data, catalog_type, value = null) => {
         }
         url = url + '&' + 'value=' + value;
     }
-    const response = await fetch(url,{
-        method : 'post'
+    const response = await fetch(url, {
+        method: 'post'
     });
     switch (response.status) {
         case 201:
-            alert("Данные успешно добавлены");
+            window.location.replace(url + catalog_type);
             return;
         case 401:
             alert("Данные авториазации устарели, обновите страницу");

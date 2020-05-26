@@ -4,7 +4,7 @@ from pydantic import BaseSettings
 
 
 class TokensSettings(BaseSettings):
-    access_token_expire_minutes = 1
+    access_token_expire_minutes = 20
     refresh_toke_expire_time_days = 7
     token_type = 'bearer'
 

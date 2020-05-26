@@ -23,7 +23,11 @@
     <div class="search">
         <form method="get" action="{{base_url}}/admins/securities">
             <label>
-                <input type="search" placeholder="Поиск" name="substring">
+                {%if substring != None%}
+                <input placeholder="Поиск" type="search" name="substring" value="{{substring}}">
+            {%else%}
+                <input placeholder="Поиск" type="search" name="substring">
+            {%endif%}
             </label>
             <button class="search_button"> Найти</button>
         </form>
@@ -62,6 +66,8 @@
             {% endfor %}
         </table>
     </div>
+    {%import 'logout_macro.html' as logout with context%}
+    {{logout.logout()}}
 
 </div>
 
