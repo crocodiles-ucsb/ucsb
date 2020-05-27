@@ -1,6 +1,12 @@
-function copyUrlToClipboard(uuid, firstName, lastName) {
+function copyUrlToClipboard(uuid, firstName, lastName, url = null) {
+
     var textarea = document.createElement('textarea');
-    textarea.textContent = base_url + '/register/' + uuid;
+    if (url != null) {
+        textarea.textContent = url + '/register/' + uuid;
+    } else {
+        textarea.textContent = base_url + '/register/' + uuid;
+    }
+
     document.body.appendChild(textarea);
     var selection = document.getSelection();
     var range = document.createRange();
