@@ -58,8 +58,8 @@ class ContractorRepresentative(User):
     contractor_id = sa.Column(sa.ForeignKey('contractor.id'))
 
     contractor = relationship('Contractor', back_populates='representatives')
-    telephone_number = sa.Column(sa.String, nullable=False)
-    email = sa.Column(sa.String, nullable=False)
+    telephone_number = sa.Column(sa.String)
+    email = sa.Column(sa.String)
     __mapper_args__ = {
         'polymorphic_identity': 'contractor_representative',
     }
@@ -100,6 +100,11 @@ class SecurityToRegister(UserToRegister):
 class ContractorRepresentativeToRegister(UserToRegister):
     __tablename__ = 'contractor_representative_to_register'
     id = sa.Column(sa.Integer, sa.ForeignKey('user_to_register.id'), primary_key=True)
+    telephone_number = sa.Column(sa.String)
+    email = sa.Column(sa.String)
+    contractor_id = sa.Column(sa.ForeignKey('contractor.id'))
+
+    contractor = relationship('Contractor', back_populates='contractors_to_register')
     __mapper_args__ = {
         'polymorphic_identity': 'contractor_representative_to_register',
     }
@@ -323,7 +328,7 @@ class Inn(Document):
 class Contract(Document):
     __tablename__ = 'contract'
     id = sa.Column(sa.Integer, sa.ForeignKey('document.id'), primary_key=True)
-    file_name = sa.Column(sa.String, nullable=False)
+    title = sa.Column(sa.String, nullable=False)
     contractor_id = sa.Column(sa.ForeignKey('contractor.id'))
 
     contractor = relationship('Contractor', back_populates='contracts')
@@ -442,6 +447,9 @@ class Contractor(Base):
     ogrn_document_id = sa.Column(sa.ForeignKey(Ogrn.id))
     inn_document_id = sa.Column(sa.ForeignKey(Inn.id))
 
+    contractors_to_register = relationship(
+        ContractorRepresentativeToRegister, back_populates='contractor'
+    )
     workers = relationship(Worker, back_populates='contractor')
     representatives = relationship(
         ContractorRepresentative, back_populates='contractor'

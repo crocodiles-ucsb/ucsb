@@ -4,8 +4,11 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1" name="viewport">
-    <link href="{{url_for('static',path='/add_form.css')}}" rel="stylesheet" type="text/css">
-    <title>Добавление контрагента</title>
+    <link href="{{url_for('static', path='/add_form.css')}}" rel="stylesheet" type="text/css">
+    <title>Добавление контактного лица</title>
+    {% block javascript %}
+    <script src="{{ url_for('static',path='/copy_url_to_clipboard.js') }}"></script>
+    {%endblock%}
 </head>
 
 <body>
@@ -14,41 +17,84 @@
         <div class="middle">
             <div class="inner">
                 <div class="add-wr">
-                    <h2>Добавление контрагента</h2>
+                    <h2>Добавление контакного лица</h2>
                     <div class="form">
                         <label>
-                            <input placeholder="Наименование" type="text">
+                            <input placeholder="Имя" type="text" name="first_name">
                         </label>
                         <label>
-                            <input placeholder="Адрес юр. лица" type="text">
+                            <input placeholder="Фамилия" type="text" name="last_name">
                         </label>
                         <label>
-                            <input placeholder="ОГРН" type="number">
+                            <input placeholder="Отчество" type="text" name="patronymic">
                         </label>
                         <label>
-                            <input placeholder="ИНН" type="number">
+                            <div class="example">В формате: +7 (123) 456-78-90</div>
+                            <input placeholder="Телефон" type="tel" name="phone_number">
                         </label>
-                        <h3>Документы</h3>
-                        <p>ОГРН:
-                            <label class="custom_upload">
-                                Загрузить файл
-                                <input type="file">
-                            </label>
-                        </p>
-                        <p>ИНН:
-                            <label class="custom_upload">
-                                Загрузить файл
-                                <input type="file">
-                            </label>
-                        </p>
-                        <button class="add_button"> + Добавить</button>
-                        <button class="back_button"> Назад</button>
+                        <label>
+                            <div class="example">В формате: example@mail.ru</div>
+                            <input placeholder="e-mail" type="email" name="email">
+                        </label>
+                        <button type="submit" class="add_button"> + Добавить</button>
+                        <button type="button" class="back_button"
+                                onclick="window.location.replace('{{base_url}}/contractors/{{contractor_id}}')"> Назад
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </form>
+<script>
+    base_url = '{{base_url}}';
+    window.onload = async function () {
+        let form = document.getElementById('add_form');
+        form.onsubmit = submitted.bind(form);
+    };
+
+    async function submitted(e) {
+        e.preventDefault();
+        const form_data = new FormData(add_form);
+        const first_name = form_data.get('first_name');
+        const last_name = form_data.get('last_name');
+        const patronymic = form_data.get('patronymic');
+        const phoneNumber = form_data.get('phone_number');
+        const email = form_data.get('email');
+        if (email === '' || phoneNumber === '' || patronymic === '' || last_name === '' || first_name === '') {
+            alert('Данные введены некоректно');
+            return;
+        }
+        const response = await fetch(base_url + '/representatives/', {
+            method: 'post',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                'last_name': last_name,
+                'first_name': first_name,
+                'patronymic': patronymic, 'telephone_number': phoneNumber,
+                'email': email,
+                'contractor_id': '{{contractor_id}}'
+            })
+        });
+        switch (response.status) {
+            case 201:
+                const res = await response.json();
+                copyUrlToClipboard(res.uuid, res.first_name, res.last_name);
+                return;
+            case 401:
+                alert('Данные авторизации устарели, обновите страницу');
+                return;
+            case 400:
+                alert('Пользователь с такими данными уже есть');
+                return;
+
+        }
+
+    }
+</script>
 </body>
 
 </html>

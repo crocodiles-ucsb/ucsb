@@ -1,11 +1,13 @@
-from datetime import datetime
 
+from src.controller.authorization_decorators import auth_required
 from src.DAL.representatives_dal import RepresentativesDAL
+from src.DAL.users.contractor_representative import ContractorRepresentativeAddingParams
+from src.database.user_roles import UserRole
+from starlette.requests import Request
 
 
 class RepresentativesController:
     @staticmethod
-    async def add(
-        last_name: str, first_name: str, birthday: datetime, profession: str, **kwargs
-    ):
-        RepresentativesDAL.add(last_name, first_name, birthday, profession, **kwargs)
+    @auth_required(UserRole.OPERATOR, check_id=False, auth_redirect=False)
+    async def add(req: Request, params: ContractorRepresentativeAddingParams):
+        return await RepresentativesDAL.add(params)

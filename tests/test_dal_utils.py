@@ -13,7 +13,7 @@ from src.models import OutUser
         (UserRole.ADMIN.value, '/admins'),
         (UserRole.OPERATOR.value, '/operators'),
         (UserRole.SECURITY.value, '/securities'),
-        (UserRole.CONTRACTOR_REPRESENTATIVE.value, '/Contractor_representatives'),
+        (UserRole.CONTRACTOR_REPRESENTATIVE.value, '/contractor_representatives'),
     ],
 )
 def test_get_user_role(user_type, postfix, username):

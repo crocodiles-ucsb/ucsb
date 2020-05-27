@@ -5,4 +5,4 @@ class UserRole(Enum):
     ADMIN = 'admin'
     OPERATOR = 'operator'
     SECURITY = 'security'
-    CONTRACTOR_REPRESENTATIVE = 'Contractor_representative'
+    CONTRACTOR_REPRESENTATIVE = 'contractor_representative'

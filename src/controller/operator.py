@@ -29,9 +29,12 @@ class OperatorsController:
 
     @staticmethod
     @auth_required(UserRole.OPERATOR, check_id=False)
-    async def get_representative_add_form(req: Request) -> _TemplateResponse:
+    async def get_representative_add_form(
+        req: Request, contractor_id: int
+    ) -> _TemplateResponse:
         return templates.TemplateResponse(
-            'operator-representative-add-form.html', {'request': req}
+            'operator-representative-add-form.html',
+            {'request': req, 'contractor_id': contractor_id},
         )
 
     @staticmethod

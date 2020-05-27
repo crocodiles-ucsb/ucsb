@@ -1,4 +1,4 @@
-from pathlib import Path
+from datetime import date
 from typing import Optional
 
 from fastapi import UploadFile
@@ -102,14 +102,18 @@ class DocumentWithTitleIn(SimpleDocumentIn):
 
 
 class SimpleDocumentOut(BaseModel):
-    path_to_file: Path
+    uuid: str
+
+    class Config:
+        orm_mode = True
 
 
-class DocumentWithTitleOut(SimpleCatalogOut):
+class DocumentWithTitleOut(SimpleDocumentOut):
     title: str
 
 
 class ContractorOut(BaseModel):
+    id: int
     title: str
     address: str
     ogrn: str
@@ -119,7 +123,44 @@ class ContractorOut(BaseModel):
         orm_mode = True
 
 
+class ContractorRepresentativeOut(BaseModel):
+    id: int
+    last_name: str
+    first_name: str
+    patronymic: Optional[str] = None
+    telephone_number: str
+    email: str
+
+    class Config:
+        orm_mode = True
+
+
+class ContractorWithLinksOut(BaseModel):
+    id: int
+    title: str
+    address: str
+    ogrn: str
+    inn: str
+    inn_link: str
+    ogrn_link: str
+
+
 class ContractorInListOut(BaseModel):
     id: int
     title: str
     count_of_workers: int
+
+
+class WorkerOut(BaseModel):
+    id: int
+    last_name: str
+    first_name: str
+    birth_date: date
+    contractor_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class WorkerWithProfessionOut(WorkerOut):
+    profession: str

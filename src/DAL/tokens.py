@@ -1,8 +1,11 @@
 from dataclasses import dataclass
-from typing import Optional, cast
+from http import HTTPStatus
+from typing import Awaitable, Optional, cast
 
 from src.DAL import auth
 from src.DAL.auth import check_authorization
+from src.database.database import create_session, run_in_threadpool
+from src.database.models import User
 from src.exceptions import (
     AccessTokenOutdatedError,
     AuthDataOutdated,
@@ -24,6 +27,18 @@ class Tokens:
 def get_tokens(req: Request) -> Tokens:
     cookies = req.cookies
     return Tokens(cookies.get('access_token'), cookies.get('refresh_token'))
+
+
+@run_in_threadpool
+def get_user(req: Request) -> Awaitable[OutUser]:
+    tokens = get_tokens(req)
+    with create_session() as session:
+        user = (
+            session.query(User).filter(User.access_token == tokens.access_token).first()
+        )
+        if user:
+            return OutUser.from_orm(user)  # type: ignore
+        raise DALError(HTTPStatus.UNAUTHORIZED.value)
 
 
 async def check_auth(

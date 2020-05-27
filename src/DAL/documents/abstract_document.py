@@ -30,7 +30,7 @@ class AbstractDocument(Generic[TInput, TDbObj, TOutModel], ABC):
     @abstractmethod
     async def add(
         self, session: Session, db_obj: TDbObj, document_type: str, params: TInput
-    ) -> None:
+    ) -> TOutModel:
         pass
 
     @run_in_threadpool

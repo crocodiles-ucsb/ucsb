@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Данные</h1>
+<p>название - {{contractor.title}}</p>
+<p>юр адрес - {{contractor.address}}</p>
+<p>огрн - {{contractor.ogrn}}</p>
+<p>инн - {{contractor.inn}}</p>
+<a href="{{contractor.ogrn_link}}">ссылка на огрн</a>
+<a href="{{contractor.inn_link}}">ссылка на инн</a>
+
+<h1>Договры</h1>
+{%for contract in contracts%}
+
+<a href="{{base_url}}/files/{{contract.uuid}}">ссылка на договор</a>
+<p>название договора {{contract.title}}</p>
+{%endfor%}
+<a href="{{base_url}}/operators/representative_add_form?contractor_id={{contractor.id}}">Добавить представителя</a>
+
+Представители
+{%for representative in representatives%}
+<p>
+    ФИО - {{representative.last_name}} {{representative.first_name}} {{representative.patronymic}}
+</p>
+<p>
+    номер - {{representative.telephone_number}}
+</p>
+<p>
+    Почта - {{representative.email}}
+</p>
+{%endfor%}
+</body>
+</html>

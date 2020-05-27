@@ -99,7 +99,6 @@ input[type="tel"],
 input[type="email"] {
     border: 1px solid #ccc;
     padding: 0 0 0 10px;
-    text-transform: capitalize;
     font-size: 14px;
 }
 

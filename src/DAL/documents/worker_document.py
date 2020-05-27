@@ -12,7 +12,7 @@ class WorkerDocument(AbstractDocument[SimpleDocumentIn, Worker, SimpleDocumentOu
         db_obj: Worker,
         document_type: str,
         params: SimpleDocumentIn,
-    ) -> None:
+    ) -> SimpleDocumentOut:
         file_params = await self.save_file(params.file)
         document_db_model = get_document_db_type(document_type)
         document = document_db_model(
@@ -20,3 +20,4 @@ class WorkerDocument(AbstractDocument[SimpleDocumentIn, Worker, SimpleDocumentOu
         )
         session.add(document)
         document.worker = db_obj
+        return SimpleDocumentOut.from_orm(document)

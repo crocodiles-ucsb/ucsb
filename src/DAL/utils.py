@@ -10,6 +10,7 @@ from src.database.models import (
     AnotherDriveLicense,
     Catalog,
     CertificateOfCompetency,
+    Contract,
     ContractorRepresentative,
     ContractorRepresentativeToRegister,
     Document,
@@ -75,6 +76,8 @@ def get_obj_from_obj_to_register(user_to_register: UserToRegister) -> Type[User]
         return Operator
     if isinstance(user_to_register, SecurityToRegister):
         return Security
+    if isinstance(user_to_register, ContractorRepresentativeToRegister):
+        return ContractorRepresentative
     raise ValueError()
 
 
@@ -181,4 +184,6 @@ def get_document_db_type(type: str) -> Type[Document]:
         return Ogrn
     if type == 'inn_document':
         return Inn
+    if type == 'contract':
+        return Contract
     raise ValueError()

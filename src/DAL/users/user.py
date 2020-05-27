@@ -15,7 +15,7 @@ TRegisterParams = TypeVar('TRegisterParams')
 class User(ABC, Generic[TRegisterParams]):
     @staticmethod
     def _get_user(user_id: int, session: Session) -> DBUser:
-        user = session.query(DBUser).filter(DBUser.id == user_id).one()
+        user = session.query(DBUser).filter(DBUser.id == user_id).first()
         if user:
             return user
         raise DALError(HTTPStatus.NOT_FOUND.value, Message.USER_DOES_NOT_EXISTS.value)

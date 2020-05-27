@@ -3,6 +3,7 @@ from http import HTTPStatus
 from fastapi import APIRouter, File, Form, UploadFile
 from src.controller.contractors import ContractorsController
 from starlette.requests import Request
+from starlette.templating import _TemplateResponse
 
 router = APIRouter()
 
@@ -33,3 +34,15 @@ async def contractors(
         ogrn_document=ogrn_document,
         inn_document=inn_document,
     )
+
+
+@router.post('/{contractor_id}/documents', status_code=HTTPStatus.CREATED.value)
+async def add_document(
+    request: Request, contractor_id: int, title: str, file: UploadFile = File(...)
+):
+    return await ContractorsController.add_contract(request, contractor_id, title, file)
+
+
+@router.get('/{contractor_id}')
+async def get_contractor(req: Request, contractor_id: int) -> _TemplateResponse:
+    return await ContractorsController.get_contractor(req, contractor_id)
