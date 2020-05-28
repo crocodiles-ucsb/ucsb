@@ -2,12 +2,15 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
+from src.DAL.contractors_dal import ContractorsDAL
 from src.DAL.documents.abstract_document import AbstractDocument, DocumentParams
 from src.DAL.representatives_dal import RepresentativesDAL
+from src.DAL.users.contractor_representative import ContractorRepresentativeAddingParams
 from src.database.database import create_session
 from src.database.models import Profession, Worker
 from src.exceptions import DALError
 from src.messages import Message
+from src.models import OutUser
 
 
 @pytest.fixture()
@@ -15,13 +18,33 @@ def representatives_fields():
     return {'last_name': '1', 'first_name': '2', 'birthday': datetime.utcnow()}
 
 
+@pytest.fixture()
+async def contractor(upload_file):
+    return await ContractorsDAL.add(
+        'title',
+        'address',
+        'ogrn',
+        'inn',
+        inn_document=upload_file,
+        ogrn_document=upload_file,
+    )
+@pytest.fixture()
+def out_user():
+    return OutUser(id=2,type='contractor_representative', username='123')
+
+@pytest.fixture()
+def _mock_contractor_representative(mocker, contractor):
+    mocker.patch.object(RepresentativesDAL,'_get_contractor_representative')
+    RepresentativesDAL._get_contractor_representative.return_value.contractor_id = contractor.id
+
 @pytest.mark.asyncio
+@pytest.mark.usefixtures('_mock_contractor_representative')
 async def test_add_with_not_existence_profession_will_raise_error(
-    representatives_fields,
+        representatives_fields, out_user
 ):
     with pytest.raises(DALError) as e:
         await RepresentativesDAL.add_worker(
-            **representatives_fields, profession='not existence profession'
+            **representatives_fields, profession='not existence profession', contractor_representative=out_user
         )
     assert e.value.detail == Message.PROFESSION_DOES_NOT_EXITS.value
 
@@ -39,24 +62,24 @@ def _add_profession(profession):
 
 
 @pytest.mark.asyncio
-@pytest.mark.usefixtures('_add_profession')
-async def test_add_with_real_profession_will_raise_error(
-    representatives_fields, profession
+@pytest.mark.usefixtures('_add_profession', '_mock_contractor_representative')
+async def test_add_with_real_profession_will_raise_error(out_user,
+        representatives_fields, profession
 ):
-    await RepresentativesDAL.add_worker(**representatives_fields, profession=profession)
+    await RepresentativesDAL.add_worker(**representatives_fields, profession=profession, contractor_representative=out_user)
     with create_session() as session:
         worker = session.query(Worker).filter(Worker.id == 1).first()
         assert worker.profession.data == profession
 
 
 @pytest.mark.asyncio
-@pytest.mark.usefixtures('_add_profession', '_mock_uuid', '_patch_save_file')
+@pytest.mark.usefixtures('_mock_contractor_representative','_add_profession', '_mock_uuid', '_patch_save_file')
 async def test_add_with_one_document(
-    upload_file, representatives_fields, profession, path, uuid4
+        upload_file, representatives_fields, profession, path, uuid4
 ):
     AbstractDocument.save_file.return_value = DocumentParams(path, uuid4)
     await RepresentativesDAL.add_worker(
-        **representatives_fields, profession=profession, identification=upload_file
+        **representatives_fields, profession=profession, identification=upload_file,contractor_representative=out_user
     )
     with create_session() as session:
         worker = session.query(Worker).filter(Worker.id == 1).one()
@@ -65,9 +88,9 @@ async def test_add_with_one_document(
 
 
 @pytest.mark.asyncio
-@pytest.mark.usefixtures('_add_profession', '_mock_uuid', '_patch_save_file')
+@pytest.mark.usefixtures( '_mock_contractor_representative','_add_profession', '_mock_uuid', '_patch_save_file')
 async def test_add_with_multiple_documents(
-    upload_file, representatives_fields, profession, path, uuid4
+        upload_file, representatives_fields, profession, path, uuid4, out_user
 ):
     another_path = Path() / '1'
     AbstractDocument.save_file.side_effect = [
@@ -78,7 +101,8 @@ async def test_add_with_multiple_documents(
         **representatives_fields,
         profession=profession,
         identification=upload_file,
-        driving_license=upload_file
+        driving_license=upload_file,
+        contractor_representative=out_user
     )
     with create_session() as session:
         worker = session.query(Worker).filter(Worker.id == 1).one()

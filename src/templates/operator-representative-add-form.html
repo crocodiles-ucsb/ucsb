@@ -83,6 +83,7 @@
             case 201:
                 const res = await response.json();
                 copyUrlToClipboard(res.uuid, res.first_name, res.last_name);
+                window.location.replace('{{base_url}}/contractors/{{contractor_id}}');
                 return;
             case 401:
                 alert('Данные авторизации устарели, обновите страницу');

@@ -2,6 +2,7 @@ from datetime import date
 
 from src.controller.authorization_decorators import auth_required
 from src.DAL.representatives_dal import RepresentativesDAL
+from src.DAL.tokens import get_user
 from src.database.user_roles import UserRole
 from src.models import WorkerWithProfessionOut
 from starlette.requests import Request
@@ -20,6 +21,12 @@ class WorkersController:
         profession: str,
         **kwargs
     ) -> WorkerWithProfessionOut:
+        contractor_representative = await get_user(req)
         return await RepresentativesDAL.add_worker(
-            req, last_name, first_name, birthday, profession, **kwargs
+            contractor_representative,
+            last_name,
+            first_name,
+            birthday,
+            profession,
+            **kwargs
         )

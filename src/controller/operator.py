@@ -34,7 +34,11 @@ class OperatorsController:
     ) -> _TemplateResponse:
         return templates.TemplateResponse(
             'operator-representative-add-form.html',
-            {'request': req, 'contractor_id': contractor_id, 'base_url': Urls.base_url.value},
+            {
+                'request': req,
+                'contractor_id': contractor_id,
+                'base_url': Urls.base_url.value,
+            },
         )
 
     @staticmethod

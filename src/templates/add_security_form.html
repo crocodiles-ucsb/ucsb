@@ -59,7 +59,7 @@
                 alert("некорректные данные");
                 return
             }
-            res = await fetch(url, {
+            const res = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -71,10 +71,12 @@
                 })
             });
             if (res.status === 401) {
-                alert('Данные авторизации устарели, перезагрузите страницу и попробуйте заново')
+                alert('Данные авторизации устарели, перезагрузите страницу и попробуйте заново');
+                return
             }
             let response_json = await res.json();
-            copyUrlToClipboard(response_json.uuid, response_json.first_name, response_json.last_name)
+            copyUrlToClipboard(response_json.uuid, response_json.first_name, response_json.last_name);
+            window.location.replace(base_url + '/admins/securities');
 
         }
     </script>

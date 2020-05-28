@@ -1,12 +1,7 @@
-function copyUrlToClipboard(uuid, firstName, lastName, url = null) {
+function copyUrlToClipboard(uuid, firstName, lastName) {
 
     var textarea = document.createElement('textarea');
-    if (url != null) {
-        textarea.textContent = url + '/register/' + uuid;
-    } else {
-        textarea.textContent = base_url + '/register/' + uuid;
-    }
-
+    textarea.textContent = base_url + '/register/' + uuid;
     document.body.appendChild(textarea);
     var selection = document.getSelection();
     var range = document.createRange();
@@ -18,5 +13,4 @@ function copyUrlToClipboard(uuid, firstName, lastName, url = null) {
     document.body.removeChild(textarea);
     alert('Ссылка на регистрацию пользователя ' + firstName + " " + lastName +
         " была скопирована в буфер обмена");
-    document.body.removeChild(textarea);
 }

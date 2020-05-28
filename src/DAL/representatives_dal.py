@@ -3,7 +3,6 @@ from http import HTTPStatus
 
 from sqlalchemy.orm.exc import NoResultFound
 from src.DAL.documents_dal import DocumentsDAL
-from src.DAL.tokens import get_user
 from src.DAL.users.contractor_representative import (
     ContractorRepresentativeAddingParams,
     ContractorRepresentatives,
@@ -15,24 +14,23 @@ from src.exceptions import DALError
 from src.messages import Message
 from src.models import (
     ContractorRepresentativeOut,
+    OutUser,
     SimpleDocumentIn,
     WorkerOut,
     WorkerWithProfessionOut,
 )
-from starlette.requests import Request
 
 
 class RepresentativesDAL:
     @staticmethod
     async def add_worker(
-        req: Request,
+        contractor_representative: OutUser,
         last_name: str,
         first_name: str,
         birthday: date,
         profession: str,
         **kwargs
     ) -> WorkerWithProfessionOut:
-        contractor_representative = await get_user(req)
         with create_session() as session:
             try:
                 profession = (
@@ -45,15 +43,9 @@ class RepresentativesDAL:
                     HTTPStatus.BAD_REQUEST.value,
                     Message.PROFESSION_DOES_NOT_EXITS.value,
                 )
-            contractor_representative_from_db: ContractorRepresentative = session.query(
-                ContractorRepresentative
-            ).filter(
-                ContractorRepresentative.id == contractor_representative.id
-            ).first()
-            if not contractor_representative_from_db:
-                raise DALError(
-                    HTTPStatus.BAD_REQUEST.value, 'contractor representative not found'
-                )
+            contractor_representative_from_db = await RepresentativesDAL._get_contractor_representative(
+                contractor_representative, session
+            )
             worker = Worker(
                 last_name=last_name,
                 first_name=first_name,
@@ -71,6 +63,17 @@ class RepresentativesDAL:
             return WorkerWithProfessionOut(
                 **worker_out.dict(), profession=worker.profession.data
             )
+
+    @staticmethod
+    async def _get_contractor_representative(contractor_representative, session):
+        contractor_representative_from_db: ContractorRepresentative = session.query(
+            ContractorRepresentative
+        ).filter(ContractorRepresentative.id == contractor_representative.id).first()
+        if not contractor_representative_from_db:
+            raise DALError(
+                HTTPStatus.BAD_REQUEST.value, 'contractor representative not found'
+            )
+        return contractor_representative_from_db
 
     @staticmethod
     async def add(

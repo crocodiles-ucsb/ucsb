@@ -1,4 +1,3 @@
-
 from src.controller.authorization_decorators import auth_required
 from src.DAL.representatives_dal import RepresentativesDAL
 from src.DAL.users.contractor_representative import ContractorRepresentativeAddingParams
