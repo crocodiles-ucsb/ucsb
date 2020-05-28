@@ -3,6 +3,7 @@ from typing import Optional
 
 from fastapi import UploadFile
 from pydantic import BaseModel
+from src.database.models import WorkerInRequestStatus
 
 
 class TokensResponse(BaseModel):
@@ -164,3 +165,30 @@ class WorkerOut(BaseModel):
 
 class WorkerWithProfessionOut(WorkerOut):
     profession: str
+
+
+class RequestIn(BaseModel):
+    object_of_work_id: int
+    contract_id: int
+
+
+class RequestOut(RequestIn):
+    id: int
+    contractor_id: int
+
+    class Config:
+        orm_mode = True
+
+
+class WorkerInRequestOut(BaseModel):
+    id: int
+    worker_id: int
+    request_id: int
+    status: WorkerInRequestStatus
+
+    class Config:
+        orm_mode = True
+
+
+class WorkerInRequestIn(BaseModel):
+    worker_id: int

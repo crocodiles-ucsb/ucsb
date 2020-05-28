@@ -406,7 +406,9 @@ class Request(Base):
     object_of_work_id = sa.Column(sa.Integer, sa.ForeignKey(ObjectOfWork.id))
     contract_id = sa.Column(sa.Integer, sa.ForeignKey(Contract.id))
     status = sa.Column(sa.Enum(RequestStatus))
+    contractor_id = sa.Column(sa.Integer, sa.ForeignKey('contractor.id'))
 
+    contractor = relationship('Contractor', back_populates='requests')
     object_of_work = relationship(ObjectOfWork, back_populates='requests')
     contract = relationship(Contract, back_populates='requests')
     workers_in_request = relationship('WorkerInRequest', back_populates='request')
@@ -447,6 +449,7 @@ class Contractor(Base):
     ogrn_document_id = sa.Column(sa.ForeignKey(Ogrn.id))
     inn_document_id = sa.Column(sa.ForeignKey(Inn.id))
 
+    requests = relationship(Request, back_populates='contractor')
     contractors_to_register = relationship(
         ContractorRepresentativeToRegister, back_populates='contractor'
     )

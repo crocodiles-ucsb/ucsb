@@ -11,6 +11,7 @@ from src.api import (
     index,
     operators,
     representatives,
+    requests,
     securitites,
     workers,
 )
@@ -32,6 +33,7 @@ def create_app() -> FastAPI:
         representatives.router, tags=['representatives'], prefix='/representatives'
     )
     app.include_router(workers.router, tags=['workers'], prefix='/workers')
+    app.include_router(requests.router, tags=['requests'], prefix='/requests')
     return app
 
 

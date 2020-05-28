@@ -5,6 +5,7 @@ import typing
 from typing import Any
 
 import sqlalchemy as sa
+from sqlalchemy import event
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.util.compat import contextmanager
@@ -14,6 +15,14 @@ DB_URL = f'sqlite:////{cur_path}'
 engine = sa.create_engine(DB_URL)
 
 Base = declarative_base(bind=engine)
+
+
+def fk_pragma_on_connect(dbapi_con: Any, con_record: Any) -> None:
+    # pylint: disable=unused-argument
+    dbapi_con.execute('pragma foreign_keys=ON')
+
+
+event.listen(engine, 'connect', fk_pragma_on_connect)
 
 
 @contextmanager

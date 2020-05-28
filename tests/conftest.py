@@ -1,3 +1,4 @@
+from datetime import datetime
 from io import BytesIO
 from pathlib import Path
 
@@ -5,11 +6,13 @@ import pytest
 from fastapi import UploadFile
 from src.config import storage_settings
 from src.DAL.adding_user import AddingUserWithDisposableLink
+from src.DAL.contractors_dal import ContractorsDAL
 from src.DAL.documents.abstract_document import AbstractDocument
 from src.DAL.documents.worker_document import WorkerDocument
 from src.DAL.registration import SimpleRegistration, SimpleRegistrationParams
 from src.DAL.users.operator import OperatorAddingParams, OperatorToAddingOut
-from src.database.database import Base, engine
+from src.database.database import Base, create_session, engine
+from src.database.models import Profession
 from src.database.user_roles import UserRole
 from src.models import InUser
 
@@ -109,6 +112,11 @@ def simple_registration():
     return SimpleRegistration()
 
 
+@pytest.fixture()
+def worker_fields():
+    return {'last_name': '1', 'first_name': '2', 'birthday': datetime.utcnow()}
+
+
 @pytest.fixture(scope='session')
 def adding_user_with_disposable_link():
     return AddingUserWithDisposableLink[OperatorAddingParams, OperatorToAddingOut]()
@@ -122,3 +130,27 @@ def operator_adding_params():
 @pytest.fixture()
 def path():
     return Path(__file__)
+
+
+@pytest.fixture()
+async def contractor(upload_file):
+    return await ContractorsDAL.add(
+        'title',
+        'address',
+        'ogrn',
+        'inn',
+        inn_document=upload_file,
+        ogrn_document=upload_file,
+    )
+
+
+@pytest.fixture()
+def profession():
+    return 'profession'
+
+
+@pytest.fixture()
+def _add_profession(profession):
+    with create_session() as session:
+        prof_name = profession
+        session.add(Profession(data=prof_name))
