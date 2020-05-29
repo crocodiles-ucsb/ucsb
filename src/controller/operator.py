@@ -1,6 +1,8 @@
 from typing import Optional
 
 from pydantic import BaseModel
+
+from src.DAL.requests import RequestsDAL
 from src.controller.authorization_decorators import auth_required
 from src.database.user_roles import UserRole
 from src.templates import templates
@@ -24,13 +26,21 @@ class OperatorOut(BaseModel):
 class OperatorsController:
     @staticmethod
     @auth_required(UserRole.OPERATOR, check_id=False)
+    async def get_requests(req: Request, substring: str, page: int, size: int) -> _TemplateResponse:
+        requests_with_pagination = await RequestsDAL.get_operators_requests(substring, page, size)
+        return templates.TemplateResponse('operator-requests.html', {'request': req, 'requests':
+            requests_with_pagination.data, 'pagination': requests_with_pagination.pagination_params, 'base_url':
+                                                                         Urls.base_url.value, 'substring': substring})
+
+    @staticmethod
+    @auth_required(UserRole.OPERATOR, check_id=False)
     async def get_operator_page(request: Request):
         return RedirectResponse(f'{Urls.base_url.value}/contractors')
 
     @staticmethod
     @auth_required(UserRole.OPERATOR, check_id=False)
     async def get_representative_add_form(
-        req: Request, contractor_id: int
+            req: Request, contractor_id: int
     ) -> _TemplateResponse:
         return templates.TemplateResponse(
             'operator-representative-add-form.html',

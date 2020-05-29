@@ -18,6 +18,11 @@ async def get_contractor_add_form(req: Request):
     return await OperatorsController.get_contractor_add_form(req)
 
 
+@router.get('/requests')
+async def get_requests(req: Request, substring: str = '', page: int = 1, size: int = 10):
+    return await OperatorsController.get_requests(req, substring, page, size)
+
+
 @router.post('/')
 async def add_operator(req: Request, operator_in: OperatorIn):
     return await AdminsController.add_operator(req, operator_in)

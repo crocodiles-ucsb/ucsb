@@ -181,6 +181,16 @@ class RequestOut(RequestIn):
         orm_mode = True
 
 
+class RequestInListOut(BaseModel):
+    id: int
+    contractor_id: int
+    title_of_organization: str
+    name_of_object: str
+    workers_count: int
+    contract_link: str
+    contract_title: str
+
+
 class WorkerInRequestOut(BaseModel):
     id: int
     worker_id: int
@@ -193,3 +203,8 @@ class WorkerInRequestOut(BaseModel):
 
 class WorkerInRequestIn(BaseModel):
     worker_id: int
+
+
+class DenyWorkerIn(BaseModel):
+    reason_for_rejection_id: int
+    comment: Optional[str]

@@ -21,7 +21,7 @@ from src.database.models import (
     WorkerInRequestStatus,
 )
 from src.exceptions import DALError
-from src.models import OutUser, RequestIn
+from src.models import DenyWorkerIn, OutUser, RequestIn, SimpleCatalogOut
 
 
 @pytest.fixture()
@@ -364,6 +364,16 @@ async def test_send_request_changes_status_of_all_workers_in_request(
         )
 
 
+@pytest.fixture()
+async def _add_worker_to_request(contractor_representative_out):
+    await RequestsDAL.add_worker_to_request(contractor_representative_out, 1, 1)
+
+
+@pytest.fixture()
+async def _send_request(contractor_representative_out):
+    await RequestsDAL.send_request(contractor_representative_out, 1)
+
+
 @pytest.mark.asyncio
 @pytest.mark.usefixtures(
     '_add_object_of_work',
@@ -372,12 +382,12 @@ async def test_send_request_changes_status_of_all_workers_in_request(
     '_add_contractor_representative',
     '_add_request',
     '_add_worker',
+    '_add_worker_to_request',
+    '_send_request',
 )
 async def test_send_request_if_request_was_already_sent_will_raise_error(
     contractor_representative_out,
 ):
-    await RequestsDAL.add_worker_to_request(contractor_representative_out, 1, 1)
-    await RequestsDAL.send_request(contractor_representative_out, 1)
     with pytest.raises(DALError):
         await RequestsDAL.send_request(contractor_representative_out, 1)
 
@@ -441,3 +451,237 @@ async def test_send_request_if_request_not_belongs_to_contractor(
     )
     with pytest.raises(DALError):
         await RequestsDAL.send_request(representative, request_id=1)
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures(
+    '_add_object_of_work',
+    '_add_contractor',
+    '_add_contract',
+    '_add_contractor_representative',
+    '_add_request',
+    '_add_worker',
+    '_add_worker_to_request',
+    '_send_request',
+)
+async def test_accept_worker(contractor_representative_out,):
+    res = await RequestsDAL.accept_worker(1, 1)
+    assert res.status == WorkerInRequestStatus.ACCEPTED
+    with create_session() as session:
+        worker_in_request: WorkerInRequest = session.query(WorkerInRequest).filter(
+            WorkerInRequest.id == 1
+        ).one()
+        assert worker_in_request.status == WorkerInRequestStatus.ACCEPTED
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures(
+    '_add_object_of_work',
+    '_add_contractor',
+    '_add_contract',
+    '_add_contractor_representative',
+    '_add_request',
+    '_add_worker',
+    '_add_worker_to_request',
+    '_send_request',
+)
+async def test_accept_worker_if_request_status_already_accepted(
+    contractor_representative_out,
+):
+    await RequestsDAL.accept_worker(1, 1)
+    with pytest.raises(DALError):
+        await RequestsDAL.accept_worker(1, 1)
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures(
+    '_add_object_of_work',
+    '_add_contractor',
+    '_add_contract',
+    '_add_contractor_representative',
+    '_add_request',
+    '_add_worker',
+    '_add_worker_to_request',
+    '_send_request',
+)
+async def test_accept_worker_if_request_status_closed(contractor_representative_out,):
+    await RequestsDAL.accept_worker(1, 1)
+    await RequestsDAL.close(1)
+    with pytest.raises(DALError):
+        await RequestsDAL.accept_worker(1, 1)
+
+
+@pytest.fixture()
+def deny_worker_in():
+    return DenyWorkerIn(reason_for_rejection_id=3, comment='comment')
+
+
+@pytest.fixture()
+async def _add_reason_for_rejecting():
+    await CatalogsDAL.add_item(
+        CatalogType.reasons_for_rejection_of_application,
+        'reason',
+        None,
+        SimpleCatalogOut,
+    )
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures(
+    '_add_object_of_work',
+    '_add_contractor',
+    '_add_contract',
+    '_add_contractor_representative',
+    '_add_request',
+    '_add_worker',
+    '_add_worker_to_request',
+    '_send_request',
+    '_add_reason_for_rejecting',
+)
+async def test_deny_worker(deny_worker_in):
+    res = await RequestsDAL.deny_worker(1, 1, deny_worker_in)
+    assert res.status == WorkerInRequestStatus.CANCELLED
+    with create_session() as session:
+        worker_in_request = (
+            session.query(WorkerInRequest).filter(WorkerInRequest.id == 1).one()
+        )
+        assert worker_in_request.status == WorkerInRequestStatus.CANCELLED
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures(
+    '_add_object_of_work',
+    '_add_contractor',
+    '_add_contract',
+    '_add_contractor_representative',
+    '_add_request',
+    '_add_worker',
+    '_add_worker_to_request',
+    '_send_request',
+    '_add_reason_for_rejecting',
+)
+async def test_accept_worker_if_worker_request_cancelled(
+    contractor_representative_out, deny_worker_in
+):
+    await RequestsDAL.deny_worker(1, 1, deny_worker_in)
+    with pytest.raises(DALError):
+        await RequestsDAL.accept_worker(1, 1)
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures(
+    '_add_object_of_work',
+    '_add_contractor',
+    '_add_contract',
+    '_add_contractor_representative',
+    '_add_request',
+    '_add_worker',
+    '_add_worker_to_request',
+    '_send_request',
+)
+async def test_close_request(contractor_representative_out):
+    await RequestsDAL.accept_worker(1, 1)
+    res = await RequestsDAL.close(1)
+    assert res.status == RequestStatus.CLOSED
+    with create_session() as session:
+        request = session.query(Request).filter(Request.id == 1).one()
+        assert request.status == RequestStatus.CLOSED
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures(
+    '_add_object_of_work',
+    '_add_contractor',
+    '_add_contract',
+    '_add_contractor_representative',
+    '_add_request',
+    '_add_worker',
+    '_add_worker_to_request',
+    '_send_request',
+)
+async def test_close_request_if_request_already_closed(contractor_representative_out):
+    await RequestsDAL.accept_worker(1, 1)
+    await RequestsDAL.close(1)
+    with pytest.raises(DALError):
+        await RequestsDAL.close(1)
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures(
+    '_add_object_of_work',
+    '_add_contractor',
+    '_add_contract',
+    '_add_contractor_representative',
+    '_add_request',
+    '_add_worker',
+    '_add_worker_to_request',
+    '_send_request',
+)
+async def test_close_request_if_not_all_workers_marked_in_request_will_raise_error(
+    contractor_representative_out,
+):
+    with pytest.raises(DALError):
+        await RequestsDAL.close(1)
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures(
+    '_add_object_of_work',
+    '_add_contractor',
+    '_add_contract',
+    '_add_contractor_representative',
+    '_add_request',
+    '_add_worker',
+    '_add_worker_to_request',
+    '_send_request',
+)
+async def test_reset_worker_in_request_status(contractor_representative_out,):
+    await RequestsDAL.accept_worker(1, 1)
+    res = await RequestsDAL.reset_worker_in_request_status(1, 1)
+    assert res.status == WorkerInRequestStatus.WAITING_FOR_VERIFICATION
+    with create_session() as session:
+        worker = session.query(WorkerInRequest).filter(WorkerInRequest.id == 1).one()
+        assert worker.status == WorkerInRequestStatus.WAITING_FOR_VERIFICATION
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures(
+    '_add_object_of_work',
+    '_add_contractor',
+    '_add_contract',
+    '_add_contractor_representative',
+    '_add_request',
+    '_add_worker',
+    '_add_worker_to_request',
+    '_send_request',
+    '_add_reason_for_rejecting',
+)
+async def test_reset_worker_in_request_status_if_worker_was_cancelled(
+    contractor_representative_out, deny_worker_in
+):
+    await RequestsDAL.deny_worker(1, 1, deny_worker_in)
+    res = await RequestsDAL.reset_worker_in_request_status(1, 1)
+    assert res.status == WorkerInRequestStatus.WAITING_FOR_VERIFICATION
+    with create_session() as session:
+        worker = session.query(WorkerInRequest).filter(WorkerInRequest.id == 1).one()
+        assert worker.status == WorkerInRequestStatus.WAITING_FOR_VERIFICATION
+        assert not worker.reason_for_rejection
+        assert not worker.comment
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures(
+    '_add_object_of_work',
+    '_add_contractor',
+    '_add_contract',
+    '_add_contractor_representative',
+    '_add_request',
+    '_add_worker',
+    '_add_worker_to_request',
+    '_send_request',
+)
+async def test_reset_worker_in_request_status_if_status_waiting_for_verification_already(
+    contractor_representative_out, deny_worker_in
+):
+    with pytest.raises(DALError):
+        await RequestsDAL.reset_worker_in_request_status(1, 1)

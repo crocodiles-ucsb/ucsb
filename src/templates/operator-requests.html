@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="{{url_for('static',path='/operator.css')}}" rel="stylesheet" type="text/css">
+    <title>Заявки</title>
+</head>
+
+<body>
+
+<div class="grid-container">
+
+    <div class="sidebar">
+        <a href="{{base_url}}/contractors">
+            <img class="triangle" src="{{url_for('static',path='triangle.png')}}">Контрагенты</a>
+        <a class="active" href="{{base_url}}/operators/requests">
+            <img class="triangle" src="{{url_for('static',path='triangle.png')}}">Заявки</a>
+    </div>
+
+    <form class="search" method="get" action="{{base_url}}/operators/requests">
+        <label>
+            <input placeholder="Поиск" type="search" name="substring" value="{{substring}}">
+        </label>
+        <button class="search_button"> Найти</button>
+    </form>
+
+    <div class="add_wr">
+        <button class="add_button"> + Добавить</button>
+    </div>
+
+    <div class="pagination">
+        {% if pagination.has_prev_page %}
+        <a href="{{base_url}}/operators/requests?page={{pagination.prev_page}}&substring={{substring}}">&laquo;</a>
+        {%endif%}
+        <a href="{{base_url}}/operators/requests?page={{pagination.current_page}}&substring={{substring}}">{{pagination
+            .current_page}}</a>
+        {%if pagination.has_next_page%}
+        <a href="{{base_url}}/operators/requests?page={{pagination.next_page}}&substring={{substring}}">&raquo;</a>
+        {% endif%}
+    </div>
+
+    <div class="table-wr">
+        <table id="table">
+            <tr>
+                <th>Наименование</th>
+                <th>Объект</th>
+                <th>Кол-во рабочих</th>
+                <th>Договор</th>
+            </tr>
+            {%for request_ in requests%}
+            <tr>
+                <td><a
+                href="{{base_url}}/contractors/requests/{{request_.contractor_id}}">"{{request_.title_of_organization
+                }}"</a></td>
+                <td>{{request_.name_of_object}}</td>
+                <td>{{request_.workers_count}}</td>
+                <td><a href="{{request_.contract_link}}">{{request_.contract_title}}</a></td>
+            </tr>
+            {%endfor%}
+        </table>
+    </div>
+
+    <div class="exit_wr">
+        <button class="exit_button">Выйти</button>
+    </div>
+
+</div>
+
+</body>
+
+</html>

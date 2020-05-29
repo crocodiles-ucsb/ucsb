@@ -1,39 +1,94 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Title</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<h1>Данные</h1>-->
+<!--<p>название - {{contractor.title}}</p>-->
+<!--<p>юр адрес - {{contractor.address}}</p>-->
+<!--<p>огрн - {{contractor.ogrn}}</p>-->
+<!--<p>инн - {{contractor.inn}}</p>-->
+<!--<a href="{{contractor.ogrn_link}}">ссылка на огрн</a>-->
+<!--<a href="{{contractor.inn_link}}">ссылка на инн</a>-->
+
+<!--<h1>Договры</h1>-->
+<!--<p>Добавить договор</p>-->
+
+<!--{%for contract in contracts%}-->
+
+<!--<a href="{{base_url}}/files/{{contract.uuid}}">ссылка на договор</a>-->
+<!--<p>название договора {{contract.title}}</p>-->
+<!--{%endfor%}-->
+<!--<a href="{{base_url}}/operators/representative_add_form?contractor_id={{contractor.id}}">Добавить представителя</a>-->
+
+<!--Представители-->
+<!--{%for representative in representatives%}-->
+<!--<p>-->
+<!--    ФИО - {{representative.last_name}} {{representative.first_name}} {{representative.patronymic}}-->
+<!--</p>-->
+<!--<p>-->
+<!--    номер - {{representative.telephone_number}}-->
+<!--</p>-->
+<!--<p>-->
+<!--    Почта - {{representative.email}}-->
+<!--</p>-->
+<!--{%endfor%}-->
+<!--</body>-->
+<!--</html>-->
+
+
+
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="{{url_for('static', path='/view.css')}}" rel="stylesheet" type="text/css">
+    <title>Просмотр контрагента</title>
 </head>
+
 <body>
-<h1>Данные</h1>
-<p>название - {{contractor.title}}</p>
-<p>юр адрес - {{contractor.address}}</p>
-<p>огрн - {{contractor.ogrn}}</p>
-<p>инн - {{contractor.inn}}</p>
-<a href="{{contractor.ogrn_link}}">ссылка на огрн</a>
-<a href="{{contractor.inn_link}}">ссылка на инн</a>
 
-<h1>Договры</h1>
-<p>Добавить договор</p>
+<div class="grid-container">
 
-{%for contract in contracts%}
+    <div class="company_head_wr">
+        <h2> Контрагент </h2>
+    </div>
 
-<a href="{{base_url}}/files/{{contract.uuid}}">ссылка на договор</a>
-<p>название договора {{contract.title}}</p>
-{%endfor%}
-<a href="{{base_url}}/operators/representative_add_form?contractor_id={{contractor.id}}">Добавить представителя</a>
+    <div class="company_info_wr">
+        <p><b>Намиенование: </b>{{contractor.title}}"</p>
+        <p><b>Юр. адрес: </b>{{contractor.address}}</p>
+        <p><b>ОГРН: </b>{{contractor.ogrn}}</p>
+        <p><b>ИНН: </b>{{contractor.inn}}</p>
+    </div>
 
-Представители
-{%for representative in representatives%}
-<p>
-    ФИО - {{representative.last_name}} {{representative.first_name}} {{representative.patronymic}}
-</p>
-<p>
-    номер - {{representative.telephone_number}}
-</p>
-<p>
-    Почта - {{representative.email}}
-</p>
-{%endfor%}
+    <div class="contacts_head_wr">
+        <h2> Представители </h2>
+    </div>
+
+    <div class="contacts_info_wr">
+        {%for representative in representatives%}
+        <div class="info">
+            <p><b>ФИО: </b>{{representative.last_name}} {{representative.first_name}} {{representative.patronymic}}</p>
+            <p><b>Телефон: </b>{{representative.telephone_number}}</p>
+            <p><b>E-mail: </b>{{representative.email}}</p>
+        </div>
+        {%endfor%}
+
+        <div><button
+        onclick="window.location.replace('{{base_url}}/operators/representative_add_form?contractor_id={{contractor.id}}')" class="add_button">+ Добавить</button></div>
+    </div>
+
+    <div class="exit_wr">
+        <button onclick="window.location.replace('{{base_url}}/logout')" class="exit_button">Выйти</button>
+    </div>
+
+</div>
+
 </body>
+
 </html>

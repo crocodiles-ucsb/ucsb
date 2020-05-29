@@ -1,8 +1,9 @@
 from http import HTTPStatus
-from typing import Awaitable, Optional
+from typing import Awaitable, List, Optional
 
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
+from src.DAL.utils import ListWithPagination, get_pagination
 from src.database.database import create_session, run_in_threadpool
 from src.database.models import (
     ContractorRepresentative,
@@ -13,7 +14,15 @@ from src.database.models import (
     WorkerInRequestStatus,
 )
 from src.exceptions import DALError
-from src.models import OutUser, RequestIn, RequestOut, WorkerInRequestOut
+from src.models import (
+    DenyWorkerIn,
+    OutUser,
+    RequestIn,
+    RequestInListOut,
+    RequestOut,
+    WorkerInRequestOut,
+)
+from src.urls import Urls
 
 
 class RequestsDAL:
@@ -146,3 +155,115 @@ class RequestsDAL:
             for worker in request.workers_in_request:
                 worker.status = WorkerInRequestStatus.WAITING_FOR_VERIFICATION
             return RequestOut.from_orm(request)  # type: ignore
+
+    @staticmethod
+    @run_in_threadpool
+    def accept_worker(request_id: int, worker_id: int) -> Awaitable[WorkerInRequestOut]:
+        with create_session() as session:
+            request = RequestsDAL._get_request(request_id, session)
+            worker = RequestsDAL._get_worker(session, worker_id)
+            RequestsDAL._validate_data(request, worker)
+            worker.status = WorkerInRequestStatus.ACCEPTED
+            return WorkerInRequestOut.from_orm(worker)
+
+    @staticmethod
+    @run_in_threadpool
+    def deny_worker(
+        request_id: int, worker_id: int, params: DenyWorkerIn
+    ) -> Awaitable[WorkerInRequestOut]:
+        with create_session() as session:
+            request = RequestsDAL._get_request(request_id, session)
+            worker = RequestsDAL._get_worker(session, worker_id)
+            RequestsDAL._validate_data(request, worker)
+            worker.status = WorkerInRequestStatus.CANCELLED
+            worker.reason_for_rejection_id = params.reason_for_rejection_id
+            if params.comment:
+                worker.comment = params.comment
+            return WorkerInRequestOut.from_orm(worker)  # type: ignore
+
+    @staticmethod
+    def _validate_data(request, worker):
+        if request.status != RequestStatus.WAITING_FOR_VERIFICATION:
+            raise DALError(HTTPStatus.BAD_REQUEST.value)
+        if worker not in request.workers_in_request:
+            raise DALError(HTTPStatus.BAD_REQUEST.value)
+        if worker.status != WorkerInRequestStatus.WAITING_FOR_VERIFICATION:
+            raise DALError(HTTPStatus.BAD_REQUEST.value)
+
+    @staticmethod
+    def _get_worker(session: Session, worker_id: int) -> WorkerInRequest:
+        try:
+            return (
+                session.query(WorkerInRequest)
+                .filter(WorkerInRequest.id == worker_id)
+                .one()
+            )
+        except NoResultFound:
+            raise DALError(HTTPStatus.BAD_REQUEST.value)
+
+    @staticmethod
+    @run_in_threadpool
+    def close(request_id: int) -> Awaitable[RequestOut]:
+        with create_session() as session:
+            request = RequestsDAL._get_request(request_id, session)
+            if request.status != RequestStatus.WAITING_FOR_VERIFICATION:
+                raise DALError(HTTPStatus.BAD_REQUEST.value)
+            if WorkerInRequestStatus.WAITING_FOR_VERIFICATION in map(
+                lambda worker: worker.status, request.workers_in_request
+            ):
+                raise DALError(HTTPStatus.BAD_REQUEST.value)
+            request.status = RequestStatus.CLOSED
+            return RequestOut.from_orm(request)  # type: ignore
+
+    @staticmethod
+    @run_in_threadpool
+    def reset_worker_in_request_status(
+        request_id: int, worker_id: int
+    ) -> Awaitable[WorkerInRequestOut]:
+        with create_session() as session:
+            worker = RequestsDAL._get_worker(session, worker_id)
+            request = RequestsDAL._get_request(request_id, session)
+            if worker not in request.workers_in_request:
+                raise DALError(HTTPStatus.BAD_REQUEST.value)
+            if (
+                worker.status != WorkerInRequestStatus.ACCEPTED
+                and worker.status != WorkerInRequestStatus.CANCELLED
+            ):
+                raise DALError(HTTPStatus.BAD_REQUEST.value)
+            if worker.status == WorkerInRequestStatus.CANCELLED:
+                worker.reason_for_rejection = None
+                worker.comment = None
+            worker.status = WorkerInRequestStatus.WAITING_FOR_VERIFICATION
+            return WorkerInRequestOut.from_orm(worker)
+
+    @staticmethod
+    @run_in_threadpool
+    def get_operators_requests(
+        substring: str, page: int, size: int
+    ) -> Awaitable[ListWithPagination[RequestInListOut]]:
+        with create_session() as session:
+            requests = (
+                session.query(Request)
+                .filter(Request.status == RequestStatus.WAITING_FOR_VERIFICATION)
+                .all()
+            )
+            if substring:
+                requests = [
+                    request.contractor.title
+                    for request in requests
+                    if substring in request.contractor.title
+                ]
+            serialized_requests = []
+            for request in requests:
+                serialized_requests.append(
+                    RequestInListOut(
+                        id=request.id,
+                        contractor_id=request.contractor.id,
+                        title_of_organization=request.contractor.title,
+                        name_of_object=request.object_of_work.data,
+                        workers_count=len(request.workers_in_request),
+                        contract_link=f'{Urls.base_url.value}/files/{request.contract.uuid}',
+                        contract_title=request.contract.title
+                    )
+                )
+            return get_pagination(serialized_requests, page, size)  # type: ignore
