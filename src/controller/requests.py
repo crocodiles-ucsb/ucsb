@@ -35,3 +35,7 @@ class RequestsController:
         return await RequestsDAL.delete_worker_from_request(
             await get_user(req), request_id, worker_id
         )
+
+    @staticmethod
+    async def send_request(req: Request, request_id: int) -> RequestOut:
+        return await RequestsDAL.send_request(await get_user(req), request_id)

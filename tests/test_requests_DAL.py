@@ -178,6 +178,27 @@ async def test_add_worker_to_request(contractor_representative_out):
     '_add_contractor',
     '_add_contract',
     '_add_contractor_representative',
+    '_add_request',
+    '_add_worker',
+)
+async def test_add_worker_to_request_if_worker_already_exists_in_request_which_waiting_for_verification(
+    contractor_representative_out, request_in
+):
+    res = await RequestsDAL.add_worker_to_request(contractor_representative_out, 1, 1)
+    await RequestsDAL.send_request(contractor_representative_out, 1)
+    new_request = await RequestsDAL.add(contractor_representative_out, request_in)
+    with pytest.raises(DALError):
+        await RequestsDAL.add_worker_to_request(
+            contractor_representative_out, new_request.id, 1
+        )
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures(
+    '_add_object_of_work',
+    '_add_contractor',
+    '_add_contract',
+    '_add_contractor_representative',
     '_add_worker',
 )
 async def test_add_worker_to_request_if_request_does_not_exists(
@@ -293,10 +314,130 @@ async def test_delete_worker_from_request_if_worker_does_not_exists(
     '_add_contract',
     '_add_contractor_representative',
 )
-async def test_delete_worker_from_request_if_request_doe_not_exists(
+async def test_delete_worker_from_request_if_request_does_not_exists(
     contractor_representative_out,
 ):
     with pytest.raises(DALError):
         await RequestsDAL.delete_worker_from_request(
             contractor_representative_out, request_id=1, worker_id=1
         )
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures(
+    '_add_object_of_work',
+    '_add_contractor',
+    '_add_contract',
+    '_add_contractor_representative',
+    '_add_request',
+    '_add_worker',
+)
+async def test_send_request_changes_request_status(contractor_representative_out):
+    await RequestsDAL.add_worker_to_request(contractor_representative_out, 1, 1)
+    res = await RequestsDAL.send_request(contractor_representative_out, 1)
+    assert res.status == RequestStatus.WAITING_FOR_VERIFICATION
+    with create_session() as session:
+        request = session.query(Request).filter(Request.id == 1).one()
+        assert request.status == RequestStatus.WAITING_FOR_VERIFICATION
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures(
+    '_add_object_of_work',
+    '_add_contractor',
+    '_add_contract',
+    '_add_contractor_representative',
+    '_add_request',
+    '_add_worker',
+)
+async def test_send_request_changes_status_of_all_workers_in_request(
+    contractor_representative_out,
+):
+    await RequestsDAL.add_worker_to_request(contractor_representative_out, 1, 1)
+    await RequestsDAL.send_request(contractor_representative_out, 1)
+    with create_session() as session:
+        worker_in_request = (
+            session.query(WorkerInRequest).filter(WorkerInRequest.id == 1).one()
+        )
+        assert (
+            worker_in_request.status == WorkerInRequestStatus.WAITING_FOR_VERIFICATION
+        )
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures(
+    '_add_object_of_work',
+    '_add_contractor',
+    '_add_contract',
+    '_add_contractor_representative',
+    '_add_request',
+    '_add_worker',
+)
+async def test_send_request_if_request_was_already_sent_will_raise_error(
+    contractor_representative_out,
+):
+    await RequestsDAL.add_worker_to_request(contractor_representative_out, 1, 1)
+    await RequestsDAL.send_request(contractor_representative_out, 1)
+    with pytest.raises(DALError):
+        await RequestsDAL.send_request(contractor_representative_out, 1)
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures(
+    '_add_object_of_work',
+    '_add_contractor',
+    '_add_contract',
+    '_add_contractor_representative',
+)
+async def test_send_request_if_request_does_not_exists(contractor_representative_out):
+    with pytest.raises(DALError):
+        await RequestsDAL.send_request(contractor_representative_out, 1)
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures(
+    '_add_object_of_work',
+    '_add_contractor',
+    '_add_contract',
+    '_add_contractor_representative',
+    '_add_request',
+)
+async def test_send_request_if_request_does_not_have_any_workers_will_raise_error(
+    contractor_representative_out,
+):
+    with pytest.raises(DALError):
+        await RequestsDAL.send_request(contractor_representative_out, 1)
+
+
+@pytest.mark.asyncio
+@pytest.mark.usefixtures(
+    '_add_object_of_work',
+    '_add_contractor',
+    '_add_contract',
+    '_add_contractor_representative',
+    '_add_request',
+)
+async def test_send_request_if_request_not_belongs_to_contractor(
+    contractor_representative_out, profession, upload_file, representative_adding_params
+):
+    res = await ContractorsDAL.add(
+        'another_title',
+        'another_address',
+        'another_ogrn',
+        'another_inn',
+        inn_document=upload_file,
+        ogrn_document=upload_file,
+    )
+    representative_adding_params.contractor_id = res.id
+    representative_to_adding = await RepresentativesDAL.add(
+        representative_adding_params
+    )
+    representative = await ContractorRepresentatives().register_user(
+        UniqueLinkRegistrationParams(
+            username='another_representative',
+            password='123',
+            uuid=representative_to_adding.uuid,
+        )
+    )
+    with pytest.raises(DALError):
+        await RequestsDAL.send_request(representative, request_id=1)

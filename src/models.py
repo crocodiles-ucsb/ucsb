@@ -3,7 +3,7 @@ from typing import Optional
 
 from fastapi import UploadFile
 from pydantic import BaseModel
-from src.database.models import WorkerInRequestStatus
+from src.database.models import RequestStatus, WorkerInRequestStatus
 
 
 class TokensResponse(BaseModel):
@@ -175,6 +175,7 @@ class RequestIn(BaseModel):
 class RequestOut(RequestIn):
     id: int
     contractor_id: int
+    status: RequestStatus
 
     class Config:
         orm_mode = True

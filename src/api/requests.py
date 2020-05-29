@@ -29,3 +29,8 @@ async def delete_worker_from_request(
     return await RequestsController.delete_worker_from_request(
         req, request_id, worker_id
     )
+
+
+@router.post('{request_id}/send_request')
+async def send_request(req: Request, request_id: int) -> RequestOut:
+    return await RequestsController.send_request(req, request_id)
