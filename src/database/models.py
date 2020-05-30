@@ -21,7 +21,7 @@ class User(Base):
     refresh_token = sa.Column(sa.String)
     last_name = sa.Column(sa.String)
     first_name = sa.Column(sa.String)
-    patronymic = sa.Column(sa.String)
+    patronymic = sa.Column(sa.String, default='')
     type = sa.Column(sa.String(50))
     __mapper_args__ = {'polymorphic_identity': 'user', 'polymorphic_on': type}
 
@@ -170,6 +170,8 @@ class Violation(Catalog):
     __tablename__ = 'violation'
     id = sa.Column(sa.Integer, sa.ForeignKey('catalog.id'), primary_key=True)
     value = sa.Column(sa.Integer, nullable=False)
+
+    penalties = relationship('Penalty', back_populates='violation')
     __mapper_args__ = {
         'polymorphic_identity': __tablename__,
     }
@@ -338,6 +340,17 @@ class Contract(Document):
     }
 
 
+class Penalty(Base):
+    __tablename__ = 'penalty'
+    id = sa.Column(sa.Integer, primary_key=True, index=True)
+    violation_id = sa.Column(sa.ForeignKey(Violation.id))
+    worker_id = sa.Column(sa.ForeignKey('worker.id'))
+
+    created_at = sa.Column(sa.Date)
+    violation = relationship(Violation, back_populates='penalties')
+    worker = relationship('Worker', back_populates='penalties')
+
+
 class Worker(Base):
     __tablename__ = 'worker'
     id = sa.Column(sa.Integer, primary_key=True, index=True)
@@ -363,7 +376,9 @@ class Worker(Base):
         sa.ForeignKey(EmergencyDrivingCertificate.id)
     )
     contractor_id = sa.Column(sa.ForeignKey('contractor.id'))
+    penalty_points = sa.Column(sa.Integer, default=0)
 
+    penalties = relationship(Penalty, back_populates='worker')
     contractor = relationship('Contractor', back_populates='workers')
     worker_requests = relationship('WorkerInRequest', back_populates='worker')
     objects_of_work = relationship(

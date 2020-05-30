@@ -42,25 +42,44 @@ async def send_request(req: Request, request_id: int) -> RequestOut:
     return await RequestsController.send_request(req, request_id)
 
 
-@router.post('{request_id}/accepted_workers/{worker_id}')
+@router.post('/{request_id}/accepted_workers/{worker_id}')
 async def accept_worker(
     req: Request, request_id: int, worker_id: int
 ) -> WorkerInRequestOut:
     return await RequestsController.accept_worker(req, request_id, worker_id)
 
 
-@router.post('{request_id}/cancelled_workers/{worker_id}')
+@router.post('/{request_id}/cancelled_workers/{worker_id}')
 async def deny_worker(
     req: Request, request_id: int, worker_id: int, params: DenyWorkerIn
 ) -> WorkerInRequestOut:
     return await RequestsController.deny_worker(req, request_id, worker_id, params)
 
 
-@router.post('{request_id}/close')
+@router.post('/{request_id}/close')
 async def close_request(req: Request, request_id: int) -> RequestOut:
     return await RequestsController.close(req, request_id)
 
 
-@router.post('{request_id}/workers/{worker_id}/reset')
+@router.get('/{request_id}/workers/{worker_id}/deny_form')
+async def get_deny_form(req: Request, request_id: int, worker_id: int):
+    return await RequestsController.get_deny_form(req, request_id, worker_id)
+
+
+@router.post('/{request_id}/workers/{worker_id}/reset')
 async def reset(req: Request, request_id: int, worker_id: int):
     return await RequestsController.reset_worker_in_request(req, request_id, worker_id)
+
+
+@router.get('/{request_id}/workers/{worker_id}')
+async def get_worker_in_request(req: Request, request_id: int, worker_id: int):
+    return await RequestsController.get_worker(req, request_id, worker_id)
+
+
+@router.get('/{request_id}/result')
+async def get_request_result(
+    req: Request, request_id: int, substring: str = '', page: int = 1, size: int = 10
+):
+    return await RequestsController.get_request_result(
+        req, request_id, substring, page, size
+    )

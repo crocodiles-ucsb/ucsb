@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="{{url_for('static', path='/operator_requests.css')}}" rel="stylesheet" type="text/css">
+    <title>Результат заявки</title>
+</head>
+
+<body>
+
+<script>
+    base_url = '{{base_url}}';
+    const cancel_request = async (worker_id) => {
+        const response = await fetch(base_url + '/requests/{{request_.id}}/workers/' + worker_id + '/reset',{
+            method : 'post'
+        });
+        switch (response.status) {
+            case 200:
+                window.location.replace(base_url + '/requests/{{request_.id}}/result');
+                return ;
+            case 401:
+                alert('Данные авторизации устарели, обновите страницу');
+                return ;
+        }
+        alert('Данные устарели, обновите страницу')
+    };
+    const close_request = async (request_id) => {
+        const response = await fetch(base_url + '/requests/' + request_id + '/close',{method : 'post'});
+        let status = response.status;
+        if (status === 401){
+            alert('Данные авторизации устарели, обновите страницу');
+            return ;
+        }
+        if (status === 200){
+            window.location.replace(base_url + '/operators/requests');
+            return ;
+        }
+        alert('Либо данные устарели, либо вы не отметили все заявки')
+
+
+    }
+</script>
+
+<div class="grid-container">
+
+    <div class="agent_contract_wr">
+        <p><b>Контрагент:</b> "{{request_.title_of_organization}}"</p>
+        <p><b>Договор:</b> <a href="{{request_.contract_link}}"> {{request_.contract_title}}</a></p>
+    </div>
+
+    <div class="object_workers_wr">
+        <p><b>Объект:</b> {{request_.name_of_object}}</p>
+        <p><b>Кол-во рабочих:</b> {{request_.workers_count}}</p>
+    </div>
+
+
+    <form class="search">
+        <label>
+            <input placeholder="Поиск" type="search" name="substring">
+        </label>
+        <button class="search_button"> Найти</button>
+    </form>
+
+    <div class="result_wr">
+        <button onclick="close_request('{{request_.id}}')" class="green_button"> Закрыть заявку</button>
+    </div>
+
+    <div class="back_wr">
+        <button onclick="window.location.replace('{{base_url}}/operators/requests/{{request_.id}}')"
+        class="blue_button">Назад</button>
+    </div>
+
+    <div class="pagination">
+        {% if pagination.has_prev_page %}
+        <a
+        href="{{base_url}}/requests/{{request_.id}}/result?page={{pagination.prev_page}}&substring={{substring}}">
+            &laquo;</a>
+        {%endif%}
+        <a href="{{base_url}}/requests/{{request_.id}}/result?page={{pagination.current_page}}&substring={{substring}}">{{pagination
+            .current_page}}</a>
+        {%if pagination.has_next_page%}
+        <a href="{{base_url}}/requests/{{request_.id}}/result?page={{pagination.next_page}}&substring={{substring}}">&raquo;</a>
+        {% endif%}
+    </div>
+
+    <div class="table-wr">
+        <table id="table">
+            <tr>
+                <th>ФИО</th>
+                <th>Статус заявки</th>
+                <th>Причина</th>
+                <th></th>
+            </tr>
+            {%for worker in workers%}
+            {%if worker.status.value == 'cancelled'%}
+            <tr class="denied">
+                {%else%}
+            <tr class="allowed">
+                {%endif%}
+                <td>{{worker.last_name}} {{worker.first_name}} {{worker.patronymic}}</td>
+                {%if worker.status.value == 'cancelled'%}
+                <td>Отклонена</td>
+                <td>{{worker.reason_of_rejection}}</td>
+                {%else%}
+                <td>Одобрена</td>
+                <td></td>
+                {%endif%}
+                <td>
+                    <button onclick="cancel_request('{{worker.id}}')" class="deny_button">Отменить</button>
+                </td>
+            </tr>
+            {%endfor%}
+        </table>
+    </div>
+
+    <div class="exit_wr">
+        <button class="exit_button">Выйти</button>
+    </div>
+
+</div>
+
+</body>
+
+</html>

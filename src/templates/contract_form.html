@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="{{url_for('static',path='add_form.css')}}" rel="stylesheet" type="text/css">
+    <title>Добавление договора</title>
+</head>
+
+<body>
+<form id="add_form">
+    <div class="outer">
+        <div class="middle">
+            <div class="inner">
+                <div class="add-wr">
+                    <h2>Добавление договора</h2>
+                    <div class="form">
+                        <label>
+                            <input placeholder="Название" type="text" name="title">
+                        </label>
+                        <p>Договор:
+                            <label class="custom_upload">
+                                Загрузить файл
+                                <input id="file" type="file" name="file">
+                            </label>
+                        </p>
+                        <button type="submit" class="add_button"> + Добавить</button>
+                        <button onclick="window.location.replace('{{base_url}}/contractors/{{contractor_id}}')"
+                        type="button" class="back_button">
+                        Назад</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    base_url = '{{base_url}}';
+    window.onload = async function () {
+        let form = document.getElementById("add_form");
+        form.onsubmit = submitted.bind(form);
+    };
+
+    async function submitted(event) {
+        event.preventDefault();
+        const form_ = new FormData(add_form);
+        if (form_.get('title') === '' || document.getElementById("file").files.length === 0){
+            alert('Неверно введены данные');
+            return ;
+        }
+        const response = await fetch(base_url + '/contractors/{{contractor_id}}/documents', {
+            method: 'post',
+            body: form_
+        });
+        switch (response.status) {
+            case 201:
+                window.location.replace(base_url + '/contractors/{{contractor_id}}');
+                return;
+            case 401:
+                alert('Данные авторизации устарели, обновите страницу');
+                return;
+        }
+    }
+</script>
+</body>
+
+</html>

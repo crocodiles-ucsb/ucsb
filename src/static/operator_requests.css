@@ -12,74 +12,33 @@ body {
 
 .grid-container {
     display: grid;
-    grid-template-columns: 18% auto auto 140px;
-    grid-template-rows: 150px auto auto auto 60px 60px auto auto;
+    grid-template-columns: 10% minmax(min-content, max-content) auto 140px;
+    grid-template-rows: 150px 60px 60px auto;
     grid-column-gap: 2%;
 }
 
-h2 {
-    font-weight: 500;
-    font-size: 1.5em;
-}
-
-h3 {
-    font-weight: 500;
-    font-size: 1.2em;
-    margin-bottom: 0;
-}
-
-.company_head_wr {
+.agent_contract_wr {
     grid-column: 2;
     grid-row: 1;
     align-self: center;
 }
 
-.company_info_wr {
-    grid-column: 2;
-    grid-row: 2;
-}
-
-.contacts_head_wr {
+.object_workers_wr {
     grid-column: 3;
     grid-row: 1;
     align-self: center;
 }
 
-.contacts_info_wr {
-    grid-column: 3;
-    grid-row: 2/8;
-}
-
-.doc_head_wr {
-    grid-column: 2;
-    grid-row: 3;
-}
-
-.doc_info_wr {
-    grid-column: 2;
-    grid-row: 4;
-}
-
-.info {
-    margin-bottom: 50px;
-}
-
-input[type="file"] {
-    display: none;
-}
-
-.custom_upload {
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    display: inline-block;
-    margin-left: 6px;
-    padding: 6px 6px;
-    cursor: pointer;
+.triangle {
+    margin-left: 40%;
+    margin-right: 7%;
+    width: 10px;
+    height: 15px;
 }
 
 .search {
     grid-column: 2;
-    grid-row: 5;
+    grid-row: 2;
     align-self: center;
 }
 
@@ -111,16 +70,24 @@ input[type="search"] {
     transition: box-shadow .4s ease;
 }
 
-.add_wr {
-    grid-column: 2;
-    grid-row: 5;
+.result_wr {
+    grid-column: 2/4;
+    grid-row: 2;
     align-self: center;
     margin-left: 320px;
 }
 
-.add_button {
-    width: 120px;
+.back_wr {
+    grid-column: 3;
+    grid-row: 2;
+    align-self: center;
+    justify-self: end;
+}
+
+.green_button {
     height: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
     border-radius: 5px;
     background: #60B963;
     border: none;
@@ -131,9 +98,23 @@ input[type="search"] {
     transition: box-shadow .4s ease;
 }
 
+.blue_button {
+    height: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: 5px;
+    background: #8497FF;
+    border: none;
+    color: white;
+    font-size: 14px;
+    font-weight: 100;
+    cursor: pointer;
+    transition: box-shadow .4s ease;
+}
+
 .pagination {
     grid-column: 2;
-    grid-row: 6;
+    grid-row: 3;
     align-self: center;
 }
 
@@ -149,17 +130,17 @@ input[type="search"] {
 }
 
 .table-wr {
-    grid-column: 2;
-    grid-row: 7;
+    grid-column: 2/4;
+    grid-row: 4;
     font-size: 14px;
     padding-top: 20px;
     padding-bottom: 40px;
 }
 
-#table{
+#table {
     border: 1px solid #7B7B7B;
     border-radius: 5px;
-    width: 85%;
+    width: 100%;
 }
 
 #table th {
@@ -171,6 +152,18 @@ input[type="search"] {
     font-size: 14px;
     border: 1px solid #ffffff;
     padding: 5px 5px 5px 8px;
+}
+
+.over td {
+    background-color: #FFC0C0;
+}
+
+.denied td {
+    background-color: #FFC0C0;
+}
+
+.allowed td {
+    background-color: #CAE9C8;
 }
 
 #table tr:nth-child(even) {
@@ -187,22 +180,26 @@ input[type="search"] {
     color: #454545;
 }
 
-.back_wr {
-    grid-column: 2;
-    grid-row: 8;
-    align-self: center;
-    padding-bottom: 70px;
+.allow_button {
+    height: 20px;
+    border-radius: 5px;
+    border: 1px solid #03BF38;
+    background: none;
+    color: #03BF38;
+    font-size: 12px;
+    font-weight: 100;
+    cursor: pointer;
+    transition: box-shadow .4s ease;
 }
 
-.back_button {
-    height: 40px;
-    padding-left: 20px;
-    padding-right: 20px;
+.deny_button {
+    height: 20px;
+    margin-left: 5px;
     border-radius: 5px;
-    background: #8497FF;
-    border: none;
-    color: white;
-    font-size: 14px;
+    border: 1px solid #E45D65;
+    background: none;
+    color: #E45D65;
+    font-size: 12px;
     font-weight: 100;
     cursor: pointer;
     transition: box-shadow .4s ease;
@@ -225,18 +222,6 @@ input[type="search"] {
     border: 1px solid #8497FF;
     color: #8497FF;
     font-size: 14px;
-    font-weight: 100;
-    cursor: pointer;
-    transition: box-shadow .4s ease;
-}
-
-.blue_button {
-    height: 20px;
-    border-radius: 5px;
-    border: 1px solid #8497FF;
-    background: none;
-    color: #8497FF;
-    font-size: 12px;
     font-weight: 100;
     cursor: pointer;
     transition: box-shadow .4s ease;

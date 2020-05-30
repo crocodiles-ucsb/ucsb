@@ -1,9 +1,8 @@
 from typing import Optional
 
 from pydantic import BaseModel
-
-from src.DAL.requests import RequestsDAL
 from src.controller.authorization_decorators import auth_required
+from src.DAL.requests import RequestsDAL
 from src.database.user_roles import UserRole
 from src.templates import templates
 from src.urls import Urls
@@ -26,11 +25,22 @@ class OperatorOut(BaseModel):
 class OperatorsController:
     @staticmethod
     @auth_required(UserRole.OPERATOR, check_id=False)
-    async def get_requests(req: Request, substring: str, page: int, size: int) -> _TemplateResponse:
-        requests_with_pagination = await RequestsDAL.get_operators_requests(substring, page, size)
-        return templates.TemplateResponse('operator-requests.html', {'request': req, 'requests':
-            requests_with_pagination.data, 'pagination': requests_with_pagination.pagination_params, 'base_url':
-                                                                         Urls.base_url.value, 'substring': substring})
+    async def get_requests(
+        req: Request, substring: str, page: int, size: int
+    ) -> _TemplateResponse:
+        requests_with_pagination = await RequestsDAL.get_operators_requests(
+            substring, page, size
+        )
+        return templates.TemplateResponse(
+            'operator-requests.html',
+            {
+                'request': req,
+                'requests': requests_with_pagination.data,
+                'pagination': requests_with_pagination.pagination_params,
+                'base_url': Urls.base_url.value,
+                'substring': substring,
+            },
+        )
 
     @staticmethod
     @auth_required(UserRole.OPERATOR, check_id=False)
@@ -40,7 +50,7 @@ class OperatorsController:
     @staticmethod
     @auth_required(UserRole.OPERATOR, check_id=False)
     async def get_representative_add_form(
-            req: Request, contractor_id: int
+        req: Request, contractor_id: int
     ) -> _TemplateResponse:
         return templates.TemplateResponse(
             'operator-representative-add-form.html',
@@ -57,4 +67,25 @@ class OperatorsController:
         return templates.TemplateResponse(
             'operator-contractor-add-form.html',
             {'request': req, 'base_url': Urls.base_url.value},
+        )
+
+    @staticmethod
+    @auth_required(UserRole.OPERATOR, check_id=False)
+    async def get_request(
+        req: Request, request_id: int, substring: str, page: int, size: int
+    ) -> _TemplateResponse:
+        request = await RequestsDAL.get_operator_request(request_id)
+        workers_with_pagination = await RequestsDAL.get_operator_workers_in_request(
+            request_id, substring, page, size
+        )
+        return templates.TemplateResponse(
+            'operator-request.html',
+            {
+                'request': req,
+                'base_url': Urls.base_url.value,
+                'request_': request,
+                'workers': workers_with_pagination.data,
+                'pagination': workers_with_pagination.pagination_params,
+                'substring': substring,
+            },
         )

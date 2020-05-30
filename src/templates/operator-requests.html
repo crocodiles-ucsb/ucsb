@@ -48,22 +48,27 @@
                 <th>Объект</th>
                 <th>Кол-во рабочих</th>
                 <th>Договор</th>
+                <th></th>
             </tr>
             {%for request_ in requests%}
             <tr>
                 <td><a
-                href="{{base_url}}/contractors/requests/{{request_.contractor_id}}">"{{request_.title_of_organization
-                }}"</a></td>
+                        href="{{base_url}}/contractors/{{request_.contractor_id}}">"{{request_.title_of_organization
+                    }}"</a></td>
                 <td>{{request_.name_of_object}}</td>
                 <td>{{request_.workers_count}}</td>
                 <td><a href="{{request_.contract_link}}">{{request_.contract_title}}</a></td>
+                <td>
+                    <button onclick="window.location.replace('{{base_url}}/operators/requests/{{request_.id}}')"
+                    class="check_button">Просмотреть</button>
+                </td>
             </tr>
             {%endfor%}
         </table>
     </div>
 
     <div class="exit_wr">
-        <button class="exit_button">Выйти</button>
+        <button onclick="window.location.replace('{{base_url}}/logout')" class="exit_button">Выйти</button>
     </div>
 
 </div>

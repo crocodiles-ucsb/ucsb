@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="{{url_for('static', path='/add_form.css')}}" rel="stylesheet" type="text/css">
+    <title>Форма отказа</title>
+</head>
+
+<body>
+<form id="add_form">
+    <div class="outer">
+        <div class="middle">
+            <div class="inner">
+                <div class="add-wr">
+                    <div class="form">
+                        <h3>Выберите причину отказа</h3>
+                        <label>
+                            <select name="reason_id">
+                                {%for reason in reasons%}
+                                <option value="{{reason.id}}">{{reason.data}}</option>
+                                {%endfor%}
+                            </select>
+                        </label>
+                        <h3>Комментарий</h3>
+                        <label>
+                            <textarea name="comment"></textarea>
+                        </label>
+                        <button type="submit" class="deny_button"> Отклонить</button>
+                        <button  onclick="window.location.replace('{{base_url}}/operators/requests/{{request_id}}')"
+                        type="button"
+                        class="back_button"> Назад</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    base_url = '{{base_url}}';
+    window.onload = async function () {
+        let form = document.getElementById("add_form");
+        form.onsubmit = submitted.bind(form);
+    };
+
+    async function submitted(event) {
+        event.preventDefault();
+        const form = new FormData(add_form);
+        const res = await fetch(base_url + '/requests/{{request_id}}/cancelled_workers/{{worker_id}}', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({'reason_for_rejection_id': form.get('reason_id'), 'comment': form.get('comment')})
+        });
+        if (res.status === 401) {
+            alert('Данные авторизации устарели, перезагрузите страницу и попробуйте заново');
+            return
+        }
+        if (res.status === 400 || res.status === 404) {
+            alert('Заявка или пользователи изменились, обновите данные');
+            return
+        }
+        window.location.replace(base_url + '/operators/requests/{{request_id}}');
+
+    }
+</script>
+</body>
+
+</html>

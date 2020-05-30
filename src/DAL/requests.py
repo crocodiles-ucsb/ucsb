@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Awaitable, List, Optional
+from typing import Awaitable, Optional
 
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
@@ -17,10 +17,13 @@ from src.exceptions import DALError
 from src.models import (
     DenyWorkerIn,
     OutUser,
+    RequestForTemplateOut,
     RequestIn,
-    RequestInListOut,
     RequestOut,
+    WorkerComplexOut,
+    WorkerInListOut,
     WorkerInRequestOut,
+    WorkerSimpleOut,
 )
 from src.urls import Urls
 
@@ -238,9 +241,16 @@ class RequestsDAL:
 
     @staticmethod
     @run_in_threadpool
+    def get_operator_request(request_id: int) -> Awaitable[RequestForTemplateOut]:
+        with create_session() as session:
+            request = RequestsDAL._get_request(request_id, session)
+            return RequestsDAL._serialize_request(request)  # type: ignore
+
+    @staticmethod
+    @run_in_threadpool
     def get_operators_requests(
         substring: str, page: int, size: int
-    ) -> Awaitable[ListWithPagination[RequestInListOut]]:
+    ) -> Awaitable[ListWithPagination[RequestForTemplateOut]]:
         with create_session() as session:
             requests = (
                 session.query(Request)
@@ -255,15 +265,188 @@ class RequestsDAL:
                 ]
             serialized_requests = []
             for request in requests:
-                serialized_requests.append(
-                    RequestInListOut(
-                        id=request.id,
-                        contractor_id=request.contractor.id,
-                        title_of_organization=request.contractor.title,
-                        name_of_object=request.object_of_work.data,
-                        workers_count=len(request.workers_in_request),
-                        contract_link=f'{Urls.base_url.value}/files/{request.contract.uuid}',
-                        contract_title=request.contract.title
+                serialized_requests.append(RequestsDAL._serialize_request(request))
+            return get_pagination(serialized_requests, page, size)  # type: ignore
+
+    @staticmethod
+    def serialize_worker(worker: Worker):
+        return WorkerSimpleOut(
+            id=worker.id,
+            last_name=worker.last_name,
+            first_name=worker.first_name,
+            patronymic=worker.patronymic,
+            profession=worker.profession.data,
+            birth_date=worker.birth_date,
+            violations_points=worker.penalty_points,
+        )
+
+    @staticmethod
+    @run_in_threadpool
+    def get_representative_workers(
+        representative_id: int, substring: str, page: int, size: int
+    ):
+        with create_session() as session:
+            try:
+                representative: ContractorRepresentative = session.query(
+                    ContractorRepresentative
+                ).filter(ContractorRepresentative.id == representative_id).one()
+            except NoResultFound:
+                raise DALError(HTTPStatus.NOT_FOUND.value)
+            return get_pagination(
+                [
+                    RequestsDAL.serialize_worker(worker)
+                    for worker in representative.contractor.workers
+                    if substring
+                    and substring
+                    in f'{worker.last_name} {worker.first_name} {worker.patronymic}'
+                    or not substring
+                ],
+                page,
+                size,
+            )
+
+    @staticmethod
+    @run_in_threadpool
+    def get_operator_workers_in_request(
+        request_id: int, substring: str, page: int, size: int, is_result: bool = False
+    ) -> Awaitable[ListWithPagination[WorkerInListOut]]:
+        with create_session() as session:
+            request = RequestsDAL._get_request(request_id, session)
+            workers = request.workers_in_request
+            if substring:
+                workers = [
+                    worker
+                    for worker in workers
+                    if substring
+                    in f'{worker.worker.last_name} {worker.worker.first_name} {worker.worker.patronymic}'
+                ]
+            workers_to_out = []
+            if request.status != RequestStatus.WAITING_FOR_VERIFICATION:
+                raise DALError(HTTPStatus.BAD_REQUEST.value)
+            for worker in workers:
+                if (
+                    not is_result
+                    and worker.status != WorkerInRequestStatus.WAITING_FOR_VERIFICATION
+                ):
+                    continue
+                if is_result and not (
+                    worker.status == WorkerInRequestStatus.ACCEPTED
+                    or worker.status == WorkerInRequestStatus.CANCELLED
+                ):
+                    continue
+                workers_to_out.append(
+                    WorkerInListOut(
+                        last_name=worker.worker.last_name,
+                        first_name=worker.worker.first_name,
+                        patronymic=worker.worker.patronymic,
+                        id=worker.id,
+                        profession=worker.worker.profession.data,
+                        penalty_points=worker.worker.penalty_points,
+                        status=worker.status,
+                        reason_of_rejection=worker.reason_for_rejection.data
+                        if worker.reason_for_rejection
+                        else None,
                     )
                 )
-            return get_pagination(serialized_requests, page, size)  # type: ignore
+        return get_pagination(workers_to_out, page, size)
+
+    @staticmethod
+    def _serialize_request(request: Request) -> RequestForTemplateOut:
+        return RequestForTemplateOut(
+            id=request.id,
+            contractor_id=request.contractor.id,
+            title_of_organization=request.contractor.title,
+            name_of_object=request.object_of_work.data,
+            workers_count=len(request.workers_in_request),
+            contract_link=f'{Urls.base_url.value}/files/{request.contract.uuid}',
+            contract_title=request.contract.title,
+        )
+
+    @staticmethod
+    def _serialize_worker(worker: Worker) -> WorkerComplexOut:
+        return WorkerComplexOut(
+            id=worker.id,
+            last_name=worker.last_name,
+            first_name=worker.first_name,
+            patronymic=worker.patronymic,
+            profession=worker.profession.data,
+            birth_date=worker.birth_date,
+            identification_uuid=worker.identification.uuid,
+            driving_license_uuid=worker.driving_license.uuid
+            if worker.driving_license
+            else None,
+            order_of_acceptance_to_work_uuid=worker.order_of_acceptance_to_work.uuid
+            if worker.order_of_acceptance_to_work
+            else None,
+            training_information_uuid=worker.training_information.uuid
+            if worker.training_information
+            else None,
+            speciality_course_information_uuid=worker.speciality_course_information.uuid
+            if worker.speciality_course_information
+            else None,
+            another_drive_license_uuid=worker.another_drive_license.uuid
+            if worker.another_drive_license
+            else None,
+            medical_certificate_uuid=worker.medical_certificate.uuid
+            if worker.medical_certificate
+            else None,
+            certificate_of_competency_uuid=worker.certificate_of_competency.uuid
+            if worker.certificate_of_competency
+            else None,
+            instructed_information_uuid=worker.instructed_information.uuid
+            if worker.instructed_information
+            else None,
+            emergency_driving_certificate_uuid=worker.emergency_driving_certificate.uuid
+            if worker.emergency_driving_certificate
+            else None,
+            violations_points=worker.penalty_points,
+            count_of_violations=len(worker.penalties),
+        )
+
+    @staticmethod
+    @run_in_threadpool
+    def get_worker(request_id: int, worker_id: int) -> Awaitable[WorkerComplexOut]:
+        with create_session() as session:
+            RequestsDAL._get_request(
+                request_id, session
+            )  # checking existence of request
+            worker_in_request = RequestsDAL._get_worker(session, worker_id)
+            if (
+                worker_in_request.status
+                != WorkerInRequestStatus.WAITING_FOR_VERIFICATION
+            ):
+                raise DALError(HTTPStatus.BAD_REQUEST.value)
+            worker = worker_in_request.worker
+            res = RequestsDAL._serialize_worker(worker)
+            res.id = worker_in_request.id
+            return res  # type: ignore
+
+    @staticmethod
+    @run_in_threadpool
+    def get_representative_requests(
+        representative_id: int,
+        substring: str,
+        page: int,
+        size: int,
+        solved: bool = False,
+    ) -> Awaitable[ListWithPagination[RequestForTemplateOut]]:
+        with create_session() as session:
+            try:
+                representative: ContractorRepresentative = session.query(
+                    ContractorRepresentative
+                ).filter(ContractorRepresentative.id == representative_id).one()
+            except NoResultFound:
+                raise DALError(HTTPStatus.NOT_FOUND.value)
+            res = []
+            for request in representative.contractor.requests:
+                if substring and substring not in request.object_of_work.data:
+                    continue
+                if solved and request.status != RequestStatus.CLOSED:
+                    continue
+                if (
+                    not solved
+                    and request.status != RequestStatus.WAITING_FOR_VERIFICATION
+                ):
+                    continue
+                res.append(RequestsDAL._serialize_request(request))
+            return get_pagination(res, page, size)

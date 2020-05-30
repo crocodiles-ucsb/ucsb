@@ -1,46 +1,3 @@
-<!--<!DOCTYPE html>-->
-<!--<html lang="en">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <title>Title</title>-->
-<!--</head>-->
-<!--<body>-->
-<!--<h1>Данные</h1>-->
-<!--<p>название - {{contractor.title}}</p>-->
-<!--<p>юр адрес - {{contractor.address}}</p>-->
-<!--<p>огрн - {{contractor.ogrn}}</p>-->
-<!--<p>инн - {{contractor.inn}}</p>-->
-<!--<a href="{{contractor.ogrn_link}}">ссылка на огрн</a>-->
-<!--<a href="{{contractor.inn_link}}">ссылка на инн</a>-->
-
-<!--<h1>Договры</h1>-->
-<!--<p>Добавить договор</p>-->
-
-<!--{%for contract in contracts%}-->
-
-<!--<a href="{{base_url}}/files/{{contract.uuid}}">ссылка на договор</a>-->
-<!--<p>название договора {{contract.title}}</p>-->
-<!--{%endfor%}-->
-<!--<a href="{{base_url}}/operators/representative_add_form?contractor_id={{contractor.id}}">Добавить представителя</a>-->
-
-<!--Представители-->
-<!--{%for representative in representatives%}-->
-<!--<p>-->
-<!--    ФИО - {{representative.last_name}} {{representative.first_name}} {{representative.patronymic}}-->
-<!--</p>-->
-<!--<p>-->
-<!--    номер - {{representative.telephone_number}}-->
-<!--</p>-->
-<!--<p>-->
-<!--    Почта - {{representative.email}}-->
-<!--</p>-->
-<!--{%endfor%}-->
-<!--</body>-->
-<!--</html>-->
-
-
-
-
 <!DOCTYPE html>
 <html>
 
@@ -66,8 +23,66 @@
         <p><b>ИНН: </b>{{contractor.inn}}</p>
     </div>
 
+    <div class="doc_head_wr">
+        <h3>Документы</h3>
+    </div>
+
+    <div class="doc_info_wr">
+        <p><a href="{{contractor.ogrn_link}}">ОГРН</a></p>
+        <p><a href="{{contractor.inn_link}}">ИНН</a></p>
+        <p>Договоры:</p>
+    </div>
+
+    <form class="search" method="get" action="{{base_url}}/contractors/{{contractor.id}}">
+        <label>
+            <input placeholder="Поиск" type="search" name="substring" value="{{substring}}">
+        </label>
+        <button class="search_button"> Найти</button>
+    </form>
+
+    <div class="add_wr">
+        <button onclick="window.location.replace('{{base_url}}' + '/contractors/{{contractor.id}}/add_contract')"
+        class="add_button"> + Добавить</button>
+    </div>
+
+    <div class="pagination">
+        {% if pagination.has_prev_page %}
+        <a href="{{base_url}}/contractors/{{contractor.id}}?page={{pagination.prev_page}}&substring={{substring}}">
+        &laquo;</a>
+        {%endif%}
+
+        <a href="{{base_url}}/contractors/{{contractor.id}}?page={{pagination.current_page}}&substring={{substring}}">{{pagination.current_page}}</a>
+
+        {%if pagination.has_next_page%}
+        <a href="{{base_url}}/contractors/{{contractor.id}}?page={{pagination.next_page}}&substring={{substring}}">&raquo;</a>
+        {% endif%}
+    </div>
+
     <div class="contacts_head_wr">
         <h2> Представители </h2>
+    </div>
+
+    <div class="table-wr">
+        <table id="table">
+            <tr>
+                <th>Название</th>
+                <th></th>
+            </tr>
+            {%for contract in contracts%}
+            <tr>
+                <td>{{contract.title}}</td>
+                <td>
+                    <button onclick="window.location.replace('{{base_url}}/files/{{contract.uuid}}')"
+                    class="blue_button">
+                    Просмотреть</button>
+                </td>
+            </tr>
+            {%endfor%}
+        </table>
+    </div>
+
+    <div class="back_wr">
+        <button onclick="window.location.replace('{{base_url}}/contractors')" class="back_button">Назад</button>
     </div>
 
     <div class="contacts_info_wr">
@@ -79,8 +94,12 @@
         </div>
         {%endfor%}
 
-        <div><button
-        onclick="window.location.replace('{{base_url}}/operators/representative_add_form?contractor_id={{contractor.id}}')" class="add_button">+ Добавить</button></div>
+        <div>
+            <button
+                    onclick="window.location.replace('{{base_url}}/operators/representative_add_form?contractor_id={{contractor.id}}')"
+                    class="add_button">+ Добавить
+            </button>
+        </div>
     </div>
 
     <div class="exit_wr">

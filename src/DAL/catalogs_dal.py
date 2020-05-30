@@ -1,15 +1,15 @@
 from http import HTTPStatus
-from typing import Awaitable, Optional, Type, TypeVar
+from typing import Awaitable, List, Optional, Type, TypeVar
 
 from sqlalchemy.orm.exc import NoResultFound
 from src.api.catalogs import CatalogStructureType, CatalogType
 from src.DAL.catalogs.catalog_factory import get_catalog
-from src.DAL.utils import ListWithPagination, get_pagination
+from src.DAL.utils import ListWithPagination, get_catalog_db_obj, get_pagination
 from src.database.database import create_session, run_in_threadpool
 from src.database.models import Catalog
 from src.exceptions import DALError
 from src.messages import Message
-from src.models import CatalogWithIntValueIn, SimpleCatalogIn
+from src.models import CatalogWithIntValueIn, SimpleCatalogIn, SimpleCatalogOut
 
 
 class CatalogsDAL:
@@ -26,6 +26,16 @@ class CatalogsDAL:
         catalog = get_catalog(catalog_type, out_model)
         data = await catalog.get_data(substring)
         return get_pagination(data, page, size)
+
+    @staticmethod
+    @run_in_threadpool
+    def get_simple_catalog_items_without_pagination(
+        catalog_type: CatalogType,
+    ) -> Awaitable[List[SimpleCatalogOut]]:
+        with create_session() as session:
+            catalog = get_catalog_db_obj(catalog_type)
+            catalogs = session.query(catalog).all()
+            return [SimpleCatalogOut.from_orm(catalog) for catalog in catalogs]
 
     @staticmethod
     async def add_item(

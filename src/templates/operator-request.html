@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="{{url_for('static',path='/operator_requests.css')}}" rel="stylesheet" type="text/css">
+    <title>Заявка</title>
+</head>
+
+<body>
+
+
+
+<div class="grid-container">
+
+    <div class="agent_contract_wr">
+        <p><b>Контрагент:</b> "{{request_.title_of_organization}}"</p>
+        <p><b>Договор:</b> <a href="{{request_.cotnract_link}}"> {{request_.contract_title}}</a></p>
+    </div>
+
+    <div class="object_workers_wr">
+        <p><b>Объект:</b> {{request_.name_of_object}}</p>
+        <p><b>Кол-во рабочих:</b> {{request_.workers_count}}</p>
+    </div>
+
+
+    <form class="search" method="get" action="{{base_url}}/operators/requests/{{request_.id}}">
+        <label>
+            <input placeholder="Поиск" type="search" name="substring" value="{{substring}}">
+        </label>
+        <button class="search_button"> Найти</button>
+    </form>
+
+    <div class="result_wr">
+        <button onclick="window.location.replace('{{base_url}}/requests/{{request_.id}}/result')" class="blue_button">
+        Итог заявки</button>
+    </div>
+
+    <div class="back_wr">
+        <button onclick="window.location.replace('{{base_url}}/operators/requests')" class="blue_button">Назад
+        </button>
+    </div>
+
+    <div class="pagination">
+        {% if pagination.has_prev_page %}
+        <a href="{{base_url}}/operators/requests/{{request_.id}}?page={{pagination.prev_page}}&substring={{substring}}">
+            &laquo;</a>
+        {%endif%}
+        <a href="{{base_url}}/operators/requests/{{request_.id}}?page={{pagination.current_page}}&substring={{substring}}">{{pagination
+            .current_page}}</a>
+        {%if pagination.has_next_page%}
+        <a href="{{base_url}}/operators/requests/{{request_.id}}?page={{pagination.next_page}}&substring={{substring}}">&raquo;</a>
+        {% endif%}
+    </div>
+
+    <script>
+        base_url = '{{base_url}}';
+        const accept_request = async (worker_id) => {
+            const response = await fetch(base_url + '/requests/{{request_.id}}/accepted_workers/' + worker_id, {
+                method: 'post',
+            });
+            if (response.status === 200) {
+                window.location.replace(base_url + '/operators/requests/' + '{{request_.id}}');
+                return
+            }
+            if (response.status === 400 || response.status === 404){
+                alert('Данные устарели, обновите страницу')
+            }
+            if (response.status === 401){
+                alert('Данные авториазции устарели, обновите страницу');
+                return
+            }
+        };
+    </script>
+    <div class="table-wr">
+        <table id="table">
+            <tr>
+                <th>ФИО</th>
+                <th>Профессия</th>
+                <th>Штрафные баллы</th>
+                <th></th>
+            </tr>
+            {%for worker in workers%}
+            <tr>
+                <td><a
+                        href="{{base_url}}/requests/{{request_.id}}/workers/{{worker.id}}">{{worker.last_name}}
+                    {{worker.first_name}} {{worker
+                    .patronymic}}</a></td>
+                <td>{{worker.profession}}</td>
+                <td>{{worker.penalty_points}}</td>
+                <td>
+                    <button onclick="accept_request('{{worker.id}}')" class="allow_button">Одобрить</button>
+                    <button onclick="window.location.replace(base_url +
+                    '/requests/{{request_.id}}/workers/{{worker.id}}/deny_form')"
+                    class="deny_button">Отклонить
+                    </button>
+                </td>
+            </tr>
+            {%endfor%}
+        </table>
+    </div>
+
+    <div class="exit_wr">
+        <button onclick="window.location.replace('{{base_url}}/logout')" class="exit_button">Выйти</button>
+    </div>
+
+</div>
+
+</body>
+
+</html>

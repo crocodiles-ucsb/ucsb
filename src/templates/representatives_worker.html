@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="{{url_for('static', path='/worker_view.css')}}" rel="stylesheet" type="text/css">
+    <title>Просмотр рабочего</title>
+</head>
+
+<body>
+
+<div class="grid-container">
+
+    <div class="worker_head_wr">
+        <h2>Рабочий</h2>
+    </div>
+
+    <div class="worker_info_wr">
+        <p><b>ФИО: </b>{{worker.last_name}} {{worker.patronymic}} {{worker.patronymic}}</p>
+        <p><b>Профессия: </b>{{worker.profession}}</p>
+        <p><b>Дата рождения: </b>{{worker.birth_date}}</p>
+    </div>
+
+    <div class="doc_head_wr">
+        <h3>Документы</h3>
+    </div>
+
+    <div class="doc_info_wr">
+        <table class="table">
+            <tr>
+                <th>Документ</th>
+            </tr>
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.identification_uuid}}">Удостоверение личности</a></td>
+            </tr>
+
+            {%if worker.driving_license_uuid%}
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.driving_license_uuid}}">Водительское удостоверение</a></td>
+            </tr>
+            {%endif%}
+
+
+            {%if worker.order_of_acceptance_to_work_uuid%}
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.order_of_acceptance_to_work_uuid}}">Приказ приема на работу</a></td>
+            </tr>
+            {%endif%}
+
+
+            {%if worker.training_information_uuid%}
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.training_information_uuid}}">Информация о прохождении обучений</a></td>
+            </tr>
+            {%endif%}
+
+
+            {%if worker.speciality_course_information_uuid%}
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.speciality_course_information_uuid}}">Информация о прохождении курсов целевого назначения</a></td>
+            </tr>
+            {%endif%}
+
+
+            {%if worker.another_drive_license_uuid%}
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.another_drive_license_uuid}}">Удостоверение тракториста-машиниста</a></td>
+            </tr>
+            {%endif%}
+
+
+            {%if worker.medical_certificate_uuid%}
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.medical_certificate_uuid}}">Медсправка</a></td>
+            </tr>
+            {%endif%}
+
+
+            {%if worker.certificate_of_competency_uuid%}
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.certificate_of_competency_uuid}}">Квалификационное удостоверение</a></td>
+            </tr>
+            {%endif%}
+
+
+            {%if worker.instructed_information_uuid%}
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.instructed_information_uuid}}">Информация о прохождении инструктажа</a></td>
+            </tr>
+            {%endif%}
+
+
+            {%if worker.emergency_driving_certificate_uuid%}
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.emergency_driving_certificate_uuid}}">Сертификат о прохождении обучения по программа "Защитное/зимнее
+                вождение"</a></td>
+            </tr>
+            {%endif%}
+
+
+        </table>
+    </div>
+
+    <div class="penalty_head_wr">
+        <h3>Нарушения</h3>
+    </div>
+
+    <div class="penalty_info_wr">
+        <p>Баллы за нарушения: <b>{{worker.violations_points}}</b></p>
+        <p>Общее кол-во нарушений: <b>{{worker.count_of_violations}}</b></p>
+    </div>
+
+    <div class="table-wr">
+        <table class="table">
+            <tr>
+                <th>Нарушение</th>
+                <th>Дата нарушения</th>
+                <th>Место нарушения</th>
+                <th>Штрафные баллы</th>
+            </tr>
+            <tr>
+                <td>Превыешне скорости</td>
+                <td>10.05.2020</td>
+                <td>Алмазная шахта</td>
+                <td>50</td>
+            </tr>
+            <tr>
+                <td>Вождение в нетрезвом виде</td>
+                <td>12.05.2020</td>
+                <td>Алмазная шахта</td>
+                <td>50</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="access_head_wr">
+        <h3>Доступ к объектам</h3>
+    </div>
+
+    <div class="access_info_wr">
+        <p>Алмазная шахта</p>
+        <p>Склад номер 5</p>
+    </div>
+
+    <div class="back_wr">
+        <button onclick="window.location.replace('{{base_url}}/contractor_representatives/workers')"
+        class="back_button">Назад
+        </button>
+    </div>
+
+    <div class="exit_wr">
+        <button onclick="window.location.replace('{{base_url}}/logout')" class="exit_button">Выйти</button>
+    </div>
+
+</div>
+
+</body>
+
+</html>

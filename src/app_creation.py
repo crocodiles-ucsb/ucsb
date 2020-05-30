@@ -30,7 +30,9 @@ def create_app() -> FastAPI:
     app.include_router(contractors.router, tags=['contractors'], prefix='/contractors')
     app.include_router(files.router, tags=['files'], prefix='/files')
     app.include_router(
-        representatives.router, tags=['representatives'], prefix='/representatives'
+        representatives.router,
+        tags=['representatives'],
+        prefix='/contractor_representatives',
     )
     app.include_router(workers.router, tags=['workers'], prefix='/workers')
     app.include_router(requests.router, tags=['requests'], prefix='/requests')

@@ -46,7 +46,7 @@ class InRefreshToken(BaseModel):
 class OperatorIn(BaseModel):
     first_name: str
     last_name: str
-    patronymic: Optional[str] = None
+    patronymic: str = ''
 
 
 class OperatorOut(OperatorIn):
@@ -57,7 +57,7 @@ class OperatorOut(OperatorIn):
 class SecurityIn(BaseModel):
     first_name: str
     last_name: str
-    patronymic: Optional[str] = None
+    patronymic: str = ''
     position: str
 
 
@@ -128,7 +128,7 @@ class ContractorRepresentativeOut(BaseModel):
     id: int
     last_name: str
     first_name: str
-    patronymic: Optional[str] = None
+    patronymic: str = ''
     telephone_number: str
     email: str
 
@@ -181,7 +181,7 @@ class RequestOut(RequestIn):
         orm_mode = True
 
 
-class RequestInListOut(BaseModel):
+class RequestForTemplateOut(BaseModel):
     id: int
     contractor_id: int
     title_of_organization: str
@@ -205,6 +205,48 @@ class WorkerInRequestIn(BaseModel):
     worker_id: int
 
 
+class WorkerInListOut(BaseModel):
+    last_name: str
+    first_name: str
+    patronymic: str = ''
+    id: int
+    profession: str
+    penalty_points: int
+    status: WorkerInRequestStatus
+    reason_of_rejection: Optional[str]
+
+
 class DenyWorkerIn(BaseModel):
     reason_for_rejection_id: int
     comment: Optional[str]
+
+
+class WorkerSimpleOut(BaseModel):
+    id: int
+    last_name: str
+    first_name: str
+    patronymic: str
+    profession: str
+    birth_date: date
+    violations_points: int
+
+
+class WorkerComplexOut(BaseModel):
+    id: int
+    last_name: str
+    first_name: str
+    patronymic: str
+    profession: str
+    birth_date: date
+    identification_uuid: str
+    driving_license_uuid: Optional[str]
+    order_of_acceptance_to_work_uuid: Optional[str]
+    training_information_uuid: Optional[str]
+    speciality_course_information_uuid: Optional[str]
+    another_drive_license_uuid: Optional[str]
+    medical_certificate_uuid: Optional[str]
+    certificate_of_competency_uuid: Optional[str]
+    instructed_information_uuid: Optional[str]
+    emergency_driving_certificate_uuid: Optional[str]
+    violations_points: int
+    count_of_violations: int

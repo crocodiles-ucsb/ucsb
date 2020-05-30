@@ -8,6 +8,7 @@ from src.database.user_roles import UserRole
 from src.models import DocumentWithTitleOut
 from src.templates import templates
 from starlette.requests import Request
+from starlette.templating import _TemplateResponse
 
 
 class ContractorsController:
@@ -43,5 +44,16 @@ class ContractorsController:
 
     @staticmethod
     @auth_required(UserRole.OPERATOR, check_id=False)
-    async def get_contractor(req: Request, contracotr_id: int):
-        return await ContractorsDAL.get(req, contracotr_id)
+    async def get_contractor(
+        req: Request, contractor_id: int, substring: str, page: int, size: int
+    ):
+        return await ContractorsDAL.get(req, contractor_id, substring, page, size)
+
+    @staticmethod
+    @auth_required(UserRole.OPERATOR, check_id=False)
+    async def get_add_contract_form(
+        req: Request, contractor_id: int
+    ) -> _TemplateResponse:
+        return templates.TemplateResponse(
+            'contract_form.html', {'request': req, 'contractor_id': contractor_id}
+        )

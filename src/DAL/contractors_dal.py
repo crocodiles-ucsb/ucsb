@@ -63,7 +63,7 @@ class ContractorsDAL:
 
     @staticmethod
     @run_in_threadpool
-    def get(req: Request, contractor_id: int):
+    def get(req: Request, contractor_id: int, substring: str, page: int, size: int):
         with create_session() as session:
             try:
                 contractor = (
@@ -83,11 +83,14 @@ class ContractorsDAL:
                 ContractorRepresentativeOut.from_orm(contractor)
                 for contractor in contractor.representatives
             ]
-            # for contract in contractor.contracts:
 
             contracts = [
-                DocumentWithTitleOut.from_orm(item) for item in contractor.contracts
+                DocumentWithTitleOut.from_orm(item)
+                for item in contractor.contracts
+                if substring and substring in item.title or not substring
             ]
+            contracts_with_pagination = get_pagination(contracts, page, size)
+
         return templates.TemplateResponse(
             'contractor.html',
             {
@@ -95,6 +98,8 @@ class ContractorsDAL:
                 'base_url': Urls.base_url.value,
                 'contractor': contractor_out,
                 'representatives': representatives,
-                'contracts': contracts,
+                'contracts': contracts_with_pagination.data,
+                'pagination': contracts_with_pagination.pagination_params,
+                'substring': substring,
             },
         )

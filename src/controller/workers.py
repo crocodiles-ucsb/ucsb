@@ -17,6 +17,7 @@ class WorkersController:
         req: Request,
         last_name: str,
         first_name: str,
+        patronymic: str,
         birthday: date,
         profession: str,
         **kwargs
@@ -26,6 +27,7 @@ class WorkersController:
             contractor_representative,
             last_name,
             first_name,
+            patronymic,
             birthday,
             profession,
             **kwargs

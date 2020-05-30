@@ -19,8 +19,17 @@ async def get_contractor_add_form(req: Request):
 
 
 @router.get('/requests')
-async def get_requests(req: Request, substring: str = '', page: int = 1, size: int = 10):
+async def get_requests(
+    req: Request, substring: str = '', page: int = 1, size: int = 10
+):
     return await OperatorsController.get_requests(req, substring, page, size)
+
+
+@router.get('/requests/{request_id}')
+async def get_request(
+    req: Request, request_id: int, substring: str = '', page: int = 1, size: int = 10
+):
+    return await OperatorsController.get_request(req, request_id, substring, page, size)
 
 
 @router.post('/')

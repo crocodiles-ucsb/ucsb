@@ -36,13 +36,25 @@ async def contractors(
     )
 
 
+@router.get('/{contractor_id}/add_contract')
+async def add_contract(req: Request, contractor_id: int):
+    return await ContractorsController.get_add_contract_form(req, contractor_id)
+
+
 @router.post('/{contractor_id}/documents', status_code=HTTPStatus.CREATED.value)
 async def add_document(
-    request: Request, contractor_id: int, title: str, file: UploadFile = File(...)
+    request: Request,
+    contractor_id: int,
+    title: str = Form(...),
+    file: UploadFile = File(...),
 ):
     return await ContractorsController.add_contract(request, contractor_id, title, file)
 
 
 @router.get('/{contractor_id}')
-async def get_contractor(req: Request, contractor_id: int) -> _TemplateResponse:
-    return await ContractorsController.get_contractor(req, contractor_id)
+async def get_contractor(
+    req: Request, contractor_id: int, substring: str = '', page: int = 1, size: int = 10
+) -> _TemplateResponse:
+    return await ContractorsController.get_contractor(
+        req, contractor_id, substring, page, size
+    )

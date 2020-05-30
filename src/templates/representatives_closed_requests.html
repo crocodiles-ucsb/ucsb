@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="{{url_for('static', path='/representatives_requests.css')}}" rel="stylesheet" type="text/css">
+    <title>Заявки</title>
+</head>
+
+<body>
+
+<div class="grid-container">
+
+    <div class="topbar">
+        <a href="{{base_url}}/contractor_representatives/requests">Открытые</a>
+        <a class="active" href="{{base_url}}/contractor_representatives/requests?solved=True">Закрытые</a>
+    </div>
+
+    <div class="sidebar">
+        <a href="{{base_url}}/contractor_representatives/workers">
+            <img class="triangle" src="{{url_for('static',path='/triangle.png')}}">Сотрудники</a>
+        <a class="active" href="{{base_url}}/contractor_representatives/requests">
+            <img class="triangle" src="{{url_for('static',path='/triangle.png')}}">Заявки</a>
+    </div>
+
+    <form class="search" method="get" action="{{base_url}}/contractor_representatives/requests">
+        <label>
+            <input placeholder="Поиск" type="search" value="{{substring}}" name="substring">
+        </label>
+        <input type="hidden" name="solved" value="True">
+        <button class="search_button"> Найти</button>
+    </form>
+
+    <div class="add_wr">
+        <button class="add_button"> + Добавить</button>
+    </div>
+
+    <div class="pagination">
+        {% if pagination.has_prev_page %}
+        <a
+                href="{{base_url}}/contractor_representatives/requests?solved=True&page={{pagination.prev_page}}&substring={{substring}}">
+            &laquo;</a>
+        {%endif%}
+        <a
+                href="{{base_url}}/contractor_representatives/requests?solved=True&page={{pagination.current_page}}&substring={{substring}}">{{pagination
+            .current_page}}</a>
+        {%if pagination.has_next_page%}
+        <a
+                href="{{base_url}}/contractor_representatives/requests?solved=True&page={{pagination.next_page}}&substring={{substring}}">&raquo;</a>
+        {% endif%}
+    </div>
+
+    <div class="table-wr">
+        <table id="table">
+            <tr>
+                <th>Объект</th>
+                <th>Кол-во сотрудников</th>
+                <th></th>
+            </tr>
+            {%for request in requests%}
+            <tr>
+                <td>{{request.name_of_object}}</td>
+                <td>{{request.workers_count}}</td>
+                <td>
+                    <button class="check_button">Просмотреть</button>
+                </td>
+            </tr>
+            {%endfor%}
+        </table>
+    </div>
+
+    <div class="exit_wr">
+        <button class="exit_button">Выйти</button>
+    </div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="{{url_for('static', path='/representative.css')}}" rel="stylesheet" type="text/css">
+    <title>Сотрудники</title>
+</head>
+
+<body>
+
+<div class="grid-container">
+
+    <div class="sidebar">
+        <a class="active" href="{{base_url}}/contractor_representatives/workers">
+            <img class="triangle" src="{{url_for('static',path='/triangle.png')}}">Сотрудники</a>
+        <a href="{{base_url}}/contractor_representatives/requests">
+            <img class="triangle" src="{{url_for('static',path='/triangle.png')}}">Заявки</a>
+    </div>
+
+    <form class="search" action="{{base_url}}/contractor_representatives/workers" method="get">
+        <label>
+            <input placeholder="Поиск" type="search" value="{{substring}}" name="substring">
+        </label>
+        <button class="search_button"> Найти</button>
+    </form>
+
+    <div class="add_wr">
+        <button class="add_button"> + Добавить</button>
+    </div>
+
+    <div class="pagination">
+        {% if pagination.has_prev_page %}
+        <a
+                href="{{base_url}}/contractor_representatives/workers?page={{pagination.prev_page}}&substring={{substring}}">
+            &laquo;</a>
+        {%endif%}
+        <a href="{{base_url}}/contractor_representatives/workers?page={{pagination.current_page}}&substring={{substring}}">{{pagination
+            .current_page}}</a>
+        {%if pagination.has_next_page%}
+        <a href="{{base_url}}/contractor_representatives/workers?page={{pagination.next_page}}&substring={{substring}}">&raquo;</a>
+        {% endif%}
+    </div>
+
+    <div class="table-wr">
+        <table id="table">
+            <tr>
+                <th>ФИО</th>
+                <th>Должность</th>
+                <th>Баллы за нарушения</th>
+            </tr>
+            {%for worker in workers%}
+            <tr>
+                <td><a href="{{base_url}}/contractor_representatives/workers/{{worker.id}}">{{worker.last_name}}
+                {{worker.first_name}} {{worker
+                    .patronymic}}</a></td>
+                <td>{{worker.profession}}</td>
+                <td>{{worker.vioalation_points}}</td>
+            </tr>
+            {%endfor%}
+        </table>
+    </div>
+
+    <div class="exit_wr">
+        <button onclick="window.location.replace('{{base_url}}/logout')" class="exit_button">Выйти</button>
+    </div>
+
+</div>
+
+</body>
+
+</html>
