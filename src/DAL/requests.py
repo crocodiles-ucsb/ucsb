@@ -353,7 +353,7 @@ class RequestsDAL:
                     if (
                         request_.object_of_work_id == request.object_of_work_id
                         and request_.contract_id == request.contract_id and worker_in_request.status !=
-                        WorkerInRequestStatus.CANCELLED and worker_in_request.status != WorkerInRequestStatus.WAITING_FOR_READINESS
+                        WorkerInRequestStatus.CANCELLED
                     ):
                         was_broken = True
                         break
