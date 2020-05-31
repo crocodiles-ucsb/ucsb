@@ -1,3 +1,4 @@
+from src.DAL.securities import SecuritiesDAL
 from src.api.catalogs import CatalogType
 from src.controller.authorization_decorators import auth_required
 from src.DAL.catalogs_dal import CatalogsDAL
@@ -104,6 +105,7 @@ class RequestsController:
     @auth_required(UserRole.OPERATOR, check_id=False)
     async def get_worker(req: Request, request_id: int, worker_id: int):
         worker = await RequestsDAL.get_worker(request_id, worker_id)
+        violations = await SecuritiesDAL.get_worker_violations(worker_id)
         return templates.TemplateResponse(
             'worker_in_request.html',
             {
@@ -111,6 +113,7 @@ class RequestsController:
                 'base_url': Urls.base_url.value,
                 'worker': worker,
                 'request_id': request_id,
+                'violations': violations
             },
         )
 

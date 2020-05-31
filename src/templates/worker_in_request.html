@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1" name="viewport">
-    <link href="{{url_for('static',path='worker_view.css')}}" rel="stylesheet" type="text/css">
+    <link href="{{url_for('static',path='operator_worker_view.css')}}" rel="stylesheet" type="text/css">
     <title>Просмотр рабочего</title>
 </head>
 
@@ -52,20 +52,84 @@
         <h3>Документы</h3>
     </div>
     <div class="doc_info_wr">
-        <div class="column">
-            <p><a href="{{base_url}}/files/{{worker.identification_uuid}}">Удостоверение личности</a></p>
-            <p><a href="{{base_url}}/files/{{worker.driving_license_uuid}}">Водительское удостоверение</a></p>
-            <p><a href="{{base_url}}/files/{{worker.order_of_acceptance_to_work_uuid}}">Приказ приёма на работу</a></p>
-            <p><a href="{{base_url}}/files/{{worker.identification_uuid}}">Информация о прохождении обучений</a></p>
-            <p><a href="{{base_url}}/files/{{worker.identification_uuid}}">Информация о прохождении курсов целевого назначения</a></p>
-        </div>
-        <div class="column">
-            <p><a href="#">Удостоверение тракториста-машиниста</a></p>
-            <p><a href="#">Медсправка</a></p>
-            <p><a href="#">Кваливикационное удостоверение</a></p>
-            <p><a href="#">Информация о прохождении инструктажа</a></p>
-            <p><a href="#">Сертификат о прохождении обучения по программе “Защитное/зимнее вождение”</a></p>
-        </div>
+        <table class="table">
+            <tr>
+                <th>Документ</th>
+            </tr>
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.identification_uuid}}">Удостоверение личности</a></td>
+            </tr>
+
+            {%if worker.driving_license_uuid%}
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.driving_license_uuid}}">Водительское удостоверение</a></td>
+            </tr>
+            {%endif%}
+
+
+            {%if worker.order_of_acceptance_to_work_uuid%}
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.order_of_acceptance_to_work_uuid}}">Приказ приема на работу</a>
+                </td>
+            </tr>
+            {%endif%}
+
+
+            {%if worker.training_information_uuid%}
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.training_information_uuid}}">Информация о прохождении
+                    обучений</a></td>
+            </tr>
+            {%endif%}
+
+
+            {%if worker.speciality_course_information_uuid%}
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.speciality_course_information_uuid}}">Информация о прохождении
+                    курсов целевого назначения</a></td>
+            </tr>
+            {%endif%}
+
+
+            {%if worker.another_drive_license_uuid%}
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.another_drive_license_uuid}}">Удостоверение
+                    тракториста-машиниста</a></td>
+            </tr>
+            {%endif%}
+
+
+            {%if worker.medical_certificate_uuid%}
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.medical_certificate_uuid}}">Медсправка</a></td>
+            </tr>
+            {%endif%}
+
+
+            {%if worker.certificate_of_competency_uuid%}
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.certificate_of_competency_uuid}}">Квалификационное
+                    удостоверение</a></td>
+            </tr>
+            {%endif%}
+
+
+            {%if worker.instructed_information_uuid%}
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.instructed_information_uuid}}">Информация о прохождении
+                    инструктажа</a></td>
+            </tr>
+            {%endif%}
+
+
+            {%if worker.emergency_driving_certificate_uuid%}
+            <tr>
+                <td><a href="{{base_url}}/files/{{worker.emergency_driving_certificate_uuid}}">Сертификат о прохождении
+                    обучения по программа "Защитное/зимнее
+                    вождение"</a></td>
+            </tr>
+            {%endif%}
+        </table>
     </div>
 
     <div class="penalty_head_wr">
@@ -78,25 +142,21 @@
     </div>
 
     <div class="table-wr">
-        <table id="table">
+        <table class="table">
             <tr>
                 <th>Нарушение</th>
                 <th>Дата нарушения</th>
                 <th>Место нарушения</th>
                 <th>Штрафные баллы</th>
             </tr>
+            {%for violation in violations%}
             <tr>
-                <td>Превыешне скорости</td>
-                <td>10.05.2020</td>
-                <td>Алмазная шахта</td>
-                <td>50</td>
+                <td>{{violation.data}}</td>
+                <td>{{violation.created_at}}</td>
+                <td>{{violation.object}}</td>
+                <td>{{violation.value}}</td>
             </tr>
-            <tr>
-                <td>Вождение в нетрезвом виде</td>
-                <td>12.05.2020</td>
-                <td>Алмазная шахта</td>
-                <td>50</td>
-            </tr>
+            {%endfor%}
         </table>
     </div>
 

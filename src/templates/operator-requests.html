@@ -26,10 +26,6 @@
         <button class="search_button"> Найти</button>
     </form>
 
-    <div class="add_wr">
-        <button class="add_button"> + Добавить</button>
-    </div>
-
     <div class="pagination">
         {% if pagination.has_prev_page %}
         <a href="{{base_url}}/operators/requests?page={{pagination.prev_page}}&substring={{substring}}">&laquo;</a>

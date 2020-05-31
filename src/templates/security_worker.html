@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1" name="viewport">
-    <link href="{{url_for('static', path='/worker_view.css')}}" rel="stylesheet" type="text/css">
+    <link href="{{url_for('static',path='/operator_worker_view.css')}}" rel="stylesheet" type="text/css">
     <title>Просмотр рабочего</title>
 </head>
 
@@ -17,9 +17,16 @@
     </div>
 
     <div class="worker_info_wr">
-        <p><b>ФИО: </b>{{worker.last_name}} {{worker.first_name}} {{worker.patronymic}}</p>
+        <p><b>ФИО: </b>{{worker.last_name}} {{worker.first_name}}
+            {{worker
+            .patronymic}}</p>
         <p><b>Профессия: </b>{{worker.profession}}</p>
         <p><b>Дата рождения: </b>{{worker.birth_date}}</p>
+    </div>
+
+    <div class="allow_deny_wr">
+        <button onclick="window.location.replace('{{base_url}}/securities/workers/{{worker.id}}/add_violation')"
+        class="allow_button">+ Добавить нарушение</button>
     </div>
 
     <div class="doc_head_wr">
@@ -104,8 +111,6 @@
                     вождение"</a></td>
             </tr>
             {%endif%}
-
-
         </table>
     </div>
 
@@ -126,35 +131,19 @@
                 <th>Место нарушения</th>
                 <th>Штрафные баллы</th>
             </tr>
+            {%for violation in violations%}
             <tr>
-                <td>Превыешне скорости</td>
-                <td>10.05.2020</td>
-                <td>Алмазная шахта</td>
-                <td>50</td>
+                <td>{{violation.data}}</td>
+                <td>{{violation.created_at}}</td>
+                <td>{{violation.object}}</td>
+                <td>{{violation.value}}</td>
             </tr>
-            <tr>
-                <td>Вождение в нетрезвом виде</td>
-                <td>12.05.2020</td>
-                <td>Алмазная шахта</td>
-                <td>50</td>
-            </tr>
+            {%endfor%}
         </table>
     </div>
 
-    <div class="access_head_wr">
-        <h3>Доступ к объектам</h3>
-    </div>
-
-    <div class="access_info_wr">
-        {%for object in objects%}
-        <p>{{object.data}}</p>
-        {%endfor%}
-    </div>
-
     <div class="back_wr">
-        <button onclick="window.location.replace('{{base_url}}/contractor_representatives/workers')"
-                class="back_button">Назад
-        </button>
+        <button onclick="window.location.replace('{{base_url}}/securities/workers')" class="back_button">Назад</button>
     </div>
 
     <div class="exit_wr">

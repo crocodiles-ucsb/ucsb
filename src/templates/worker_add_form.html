@@ -46,13 +46,13 @@
                                 <p>Удостоверение личности <span style="color:red">*</span> :
                                     <label class="custom_upload">
                                         Загрузить файл
-                                        <input id="identification" type="file" name="identification">
+                                        <input id="identification" type="file" accept="application/pdf,application/vnd.ms-excel" name="identification">
                                     </label>
                                 </p>
                                 <p>Водительское удостоверение:
                                     <label class="custom_upload">
                                         Загрузить файл
-                                        <input id="drivers_license" type="file" name="drivers_license">
+                                        <input id="drivers_license" type="file" accept="application/pdf,application/vnd.ms-excel" name="drivers_license">
                                     </label>
                                 </p>
                                 <p>Приказ приёма на работу:
@@ -65,13 +65,13 @@
                                 <p>Информация о прохождении обучений:
                                     <label class="custom_upload">
                                         Загрузить файл
-                                        <input id="training_information" type="file" name="training_information">
+                                        <input id="training_information" accept="application/pdf,application/vnd.ms-excel" type="file" name="training_information">
                                     </label>
                                 </p>
                                 <p>Информация о прохождении <br> курсов целевого назначения:
                                     <label class="custom_upload">
                                         Загрузить файл
-                                        <input id="speciality_course_information" type="file"
+                                        <input id="speciality_course_information" accept="application/pdf,application/vnd.ms-excel" type="file"
                                                name="speciality_course_information">
                                     </label>
                                 </p>
@@ -80,19 +80,19 @@
                                 <p>Удостоверение тракториста-машиниста:
                                     <label class="custom_upload">
                                         Загрузить файл
-                                        <input id="another_drive_license" type="file" name="another_drive_license">
+                                        <input accept="application/pdf,application/vnd.ms-excel" id="another_drive_license" type="file" name="another_drive_license">
                                     </label>
                                 </p>
                                 <p>Медсправка:
                                     <label class="custom_upload">
                                         Загрузить файл
-                                        <input id="medical_certificate" type="file" name="medical_certificate">
+                                        <input accept="application/pdf,application/vnd.ms-excel" id="medical_certificate" type="file" name="medical_certificate">
                                     </label>
                                 </p>
                                 <p>Кваливикационное удостоверение:
                                     <label class="custom_upload">
                                         Загрузить файл
-                                        <input id="certificate_of_competency" type="file" value=""
+                                        <input accept="application/pdf,application/vnd.ms-excel" id="certificate_of_competency" type="file" value=""
                                                name="certificate_of_competency">
                                     </label>
                                 </p>
@@ -100,13 +100,13 @@
                                     :
                                     <label class="custom_upload">
                                         Загрузить файл
-                                        <input id="instructed_information" type="file" name="instructed_information">
+                                        <input accept="application/pdf,application/vnd.ms-excel" id="instructed_information" type="file" name="instructed_information">
                                     </label>
                                 </p>
                                 <p>Сертификат о прохождении обучения по <br> программе “Защитное/зимнее вождение”:
                                     <label class="custom_upload">
                                         Загрузить файл
-                                        <input id="emergency_driving_certificate" type="file"
+                                        <input accept="application/pdf,application/vnd.ms-excel" id="emergency_driving_certificate" type="file"
                                                name="emergency_driving_certificate">
                                     </label>
                                 </p>
@@ -138,10 +138,11 @@
     _form.onsubmit = async (e) => {
         e.preventDefault();
         let form = new FormData(add_form);
-        if (form.get('last_name') === '' || form.get('first_name') === '' || form.get('patronymic') === '' ||
+        if (form.get('last_name') === '' || form.get('first_name') === '' ||
             form.get('profession') === '' || form.get('birthday') === '' ||
             document.getElementById('identification').files.length === 0) {
-            alert('Данные введены некоректно')
+            alert('Данные введены некоректно');
+            return
 
         }
         delete_file_from_form_if_not_exists('drivers_license', form);

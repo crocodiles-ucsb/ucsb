@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="{{url_for('static',path='/workers.css')}}" rel="stylesheet" type="text/css">
+    <title>Поиск рабочего</title>
+</head>
+
+<body>
+
+<div class="grid-container">
+
+    <form class="search" method="get">
+        <label>
+            <input placeholder="Поиск" type="search" name="substring" value="{{substring}}">
+        </label>
+        <button type="submit" class="search_button"> Найти</button>
+    </form>
+
+    <div class="pagination">
+        {% if pagination.has_prev_page %}
+        <a
+                href="{{base_url}}/securities/workers?page={{pagination.prev_page}}&substring={{substring}}">
+            &laquo;</a>
+        {%endif%}
+        <a
+                href="{{base_url}}/securities/workers?page={{pagination.current_page}}&substring={{substring}}">{{pagination
+            .current_page}}</a>
+        {%if pagination.has_next_page%}
+        <a
+                href="{{base_url}}/securities/workers?page={{pagination.next_page}}&substring={{substring}}">&raquo;</a>
+        {% endif%}
+    </div>
+
+    <div class="table-wr">
+        <table id="table">
+            <tr>
+                <th>ФИО</th>
+                <th>Профессия</th>
+                <th>Подрядчик</th>
+                <th></th>
+            </tr>
+            {%for worker in workers%}
+
+            <tr>
+                <td><a href="{{base_url}}/securities/workers/{{worker.id}}">{{worker.last_name}} {{worker.first_name}}
+                {{worker
+                .patronymic}}</a></td>
+                <td>{{worker.profession}}</td>
+                <td>{{worker.contractor_name}}</td>
+                <td>
+                    <button
+                    onclick="window.location.replace('{{base_url}}/securities/workers/{{worker.id}}/add_violation')"
+                    class="blue_button">Добавить нарушение</button>
+                </td>
+            </tr>
+            {%endfor%}
+        </table>
+    </div>
+
+    <div class="exit_wr">
+        <button onclick="window.location.replace('{{base_url}}/logout')" class="exit_button">Выйти</button>
+    </div>
+
+</div>
+
+</body>
+
+</html>

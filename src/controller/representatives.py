@@ -19,7 +19,7 @@ class RepresentativesController:
     @staticmethod
     @auth_required(UserRole.CONTRACTOR_REPRESENTATIVE, check_id=False)
     async def get_request_result(
-            req: Request, request_id: int, substring: str, page: int, size: int
+        req: Request, request_id: int, substring: str, page: int, size: int
     ):
         workers_with_pagination = await RequestsDAL.get_representative_request_result(
             request_id, (await get_user(req)).id, substring, page, size
@@ -68,7 +68,7 @@ class RepresentativesController:
     @staticmethod
     @auth_required(UserRole.CONTRACTOR_REPRESENTATIVE, check_id=False)
     async def get_requests_page(
-            req: Request, solved: bool, substring: str, page: int, size: int
+        req: Request, solved: bool, substring: str, page: int, size: int
     ):
         requests_with_pagination = await RequestsDAL.get_representative_requests(
             (await get_user(req)).id, substring, page, size, solved
@@ -97,7 +97,12 @@ class RepresentativesController:
         objects = await RepresentativesDAL.get_worker_objects(worker_id)
         return templates.TemplateResponse(
             'representatives_worker.html',
-            {'request': req, 'worker': worker, 'base_url': Urls.base_url.value,'objects': objects},
+            {
+                'request': req,
+                'worker': worker,
+                'base_url': Urls.base_url.value,
+                'objects': objects,
+            },
         )
 
     @staticmethod
@@ -130,14 +135,14 @@ class RepresentativesController:
     @staticmethod
     @auth_required(UserRole.CONTRACTOR_REPRESENTATIVE, check_id=False)
     async def get_closed_request_page(
-            req: Request, request_id: int, substring: str, page: int, size: int
+        req: Request, request_id: int, substring: str, page: int, size: int
     ):
         pass
 
     @staticmethod
     @auth_required(UserRole.CONTRACTOR_REPRESENTATIVE, check_id=False)
     async def get_request_page(
-            req: Request, request_id: int, substring: str, page: int, size: int
+        req: Request, request_id: int, substring: str, page: int, size: int
     ):
         workers = await RequestsDAL.get_representative_workers_in_request(
             (await get_user(req)).id, request_id, substring, page, size
@@ -158,20 +163,27 @@ class RepresentativesController:
 
     @staticmethod
     @auth_required(UserRole.CONTRACTOR_REPRESENTATIVE, check_id=False)
-    async def get_filled_request_page(req: Request, request_id: int, substring: str, page: int, size: int):
-        request: RequestForTemplateOut = await RequestsDAL.get_representative_request(request_id)
-        workers_with_pagination = await RequestsDAL.get_worker_from_requests((await get_user(
-        req)).id,request_id, substring,page, size)
+    async def get_filled_request_page(
+        req: Request, request_id: int, substring: str, page: int, size: int
+    ):
+        request: RequestForTemplateOut = await RequestsDAL.get_representative_request(
+            request_id
+        )
+        workers_with_pagination = await RequestsDAL.get_worker_from_requests(
+            (await get_user(req)).id, request_id, substring, page, size
+        )
         if request.status == RequestStatus.WAITING_FOR_VERIFICATION:
             template = 'representative_request_open.html'
         else:
             template = 'representative_request_closed.html'
-        return templates.TemplateResponse(template,{
+        return templates.TemplateResponse(
+            template,
+            {
                 'request': req,
                 'workers': workers_with_pagination.data,
                 'pagination': workers_with_pagination.pagination_params,
                 'substring': substring,
                 'request_id': request_id,
                 'request_': request,
-            },)
-
+            },
+        )

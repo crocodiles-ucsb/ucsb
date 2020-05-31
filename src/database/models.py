@@ -143,6 +143,7 @@ class ObjectOfWork(Catalog):
     __tablename__ = 'object_of_work'
     id = sa.Column(sa.Integer, sa.ForeignKey('catalog.id'), primary_key=True)
 
+    penalties = relationship('Penalty', back_populates='object_of_work')
     workers = relationship(
         'Worker',
         secondary=association_table_worker_object_of_work,
@@ -345,8 +346,10 @@ class Penalty(Base):
     id = sa.Column(sa.Integer, primary_key=True, index=True)
     violation_id = sa.Column(sa.ForeignKey(Violation.id))
     worker_id = sa.Column(sa.ForeignKey('worker.id'))
-
+    object_of_work_id = sa.Column(sa.ForeignKey(ObjectOfWork.id))
     created_at = sa.Column(sa.Date)
+
+    object_of_work = relationship(ObjectOfWork, back_populates='penalties')
     violation = relationship(Violation, back_populates='penalties')
     worker = relationship('Worker', back_populates='penalties')
 

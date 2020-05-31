@@ -11,36 +11,43 @@ from src.DAL.users.contractor_representative import (
     ContractorRepresentativeToAddingOut,
 )
 from src.database.database import create_session, run_in_threadpool
-from src.database.models import ContractorRepresentative, Profession, Worker, RequestStatus, WorkerInRequestStatus
+from src.database.models import (
+    ContractorRepresentative,
+    Profession,
+    RequestStatus,
+    Worker,
+    WorkerInRequestStatus,
+)
 from src.exceptions import DALError
 from src.messages import Message
 from src.models import (
     ContractorRepresentativeOut,
+    ObjectOut,
     OutUser,
     SimpleDocumentIn,
     WorkerComplexOut,
     WorkerOut,
     WorkerWithProfessionOut,
-    ObjectOut)
+)
 
 
 class RepresentativesDAL:
     @staticmethod
     async def add_worker(
-            contractor_representative: OutUser,
-            last_name: str,
-            first_name: str,
-            patronymic: str,
-            birthday: date,
-            profession: str,
-            **kwargs
+        contractor_representative: OutUser,
+        last_name: str,
+        first_name: str,
+        patronymic: str,
+        birthday: date,
+        profession: str,
+        **kwargs
     ) -> WorkerWithProfessionOut:
         with create_session() as session:
             try:
                 profession = (
                     session.query(Profession)
-                        .filter(Profession.data == profession)
-                        .one()
+                    .filter(Profession.data == profession)
+                    .one()
                 )
             except NoResultFound:
                 raise DALError(
@@ -82,21 +89,21 @@ class RepresentativesDAL:
 
     @staticmethod
     async def add(
-            params: ContractorRepresentativeAddingParams,
+        params: ContractorRepresentativeAddingParams,
     ) -> ContractorRepresentativeToAddingOut:
         return await ContractorRepresentatives().add_user(params)
 
     @staticmethod
     @run_in_threadpool
     def get_worker(
-            representative_id: int, worker_id: int
+        representative_id: int, worker_id: int
     ) -> Awaitable[WorkerComplexOut]:
         with create_session() as session:
             try:
                 representative: ContractorRepresentative = (
                     session.query(ContractorRepresentative)
-                        .filter(ContractorRepresentative.id == representative_id)
-                        .one()
+                    .filter(ContractorRepresentative.id == representative_id)
+                    .one()
                 )
                 worker: Worker = session.query(Worker).filter(
                     Worker.id == worker_id
@@ -113,10 +120,17 @@ class RepresentativesDAL:
         with create_session() as session:
             try:
                 res = []
-                worker: Worker = session.query(Worker).filter(Worker.id == worker_id).one()
+                worker: Worker = session.query(Worker).filter(
+                    Worker.id == worker_id
+                ).one()
                 for worker_in_request in worker.worker_requests:
-                    if worker_in_request.status == WorkerInRequestStatus.ACCEPTED:
-                        res.append(ObjectOut(data=worker_in_request.request.object_of_work.data))
+                    if worker_in_request.status == WorkerInRequestStatus.ACCEPTED and ObjectOut(
+                    data=worker_in_request.request.object_of_work.data) not in res:
+                        res.append(
+                            ObjectOut(
+                                data=worker_in_request.request.object_of_work.data
+                            )
+                        )
                 return res
             except NoResultFound:
                 raise DALError(HTTPStatus.NOT_FOUND.value)

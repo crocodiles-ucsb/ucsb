@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="{{url_for('static', path='security_add_form.css')}}" rel="stylesheet" type="text/css">
+    <title>Добавлние нарушения</title>
+</head>
+
+<body>
+<form id="add_form">
+    <div class="outer">
+        <div class="middle">
+            <div class="inner">
+                <div class="add-wr">
+                    <div class="form">
+                        <h3>Выберите нарушение</h3>
+                        <label>
+                            <select name="violation_id">
+                                {%for violation in violations%}
+                                <option value="{{violation.id}}">{{violation
+                                    .data}}
+                                </option>
+                                {%endfor%}
+                            </select>
+                        </label>
+                        <h3>Выберите место нарушения</h3>
+                        <label>
+                            <select name="object_of_work_id">
+                                {%for object in objects%}
+                                <option  value="{{object.id}}">{{object
+                                    .data}}
+                                </option>
+                                {%endfor%}
+                            </select>
+                        </label>
+                        <button type="submit" class="add_button"> + Добавить</button>
+                        <button type="button" class="back_button"> Назад</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    const form = document.getElementById('add_form');
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        const form_data = new FormData(add_form);
+        if (form_data.get('date') === '') {
+            alert('Данные введены некоректно');
+            return;
+        }
+        const response = await fetch('{{base_url}}/securities/workers/{{worker_id}}/penalties/',
+            {
+                method: 'post', body:
+                    JSON.stringify({
+                        'violation_id': form_data.get('violation_id'), 'object_of_work_id':
+                            form_data.get('object_of_work_id')
+                    })
+            });
+        if (response.status === 401) {
+            alert('Данные авторизации устарели, перезагрузите страницу');
+            return
+        }
+        window.location.replace('{{base_url}}/securities/workers/{{worker_id}}')
+
+    }
+</script>
+</body>
+
+</html>

@@ -231,6 +231,8 @@ class WorkerSimpleOut(BaseModel):
     profession: str
     birth_date: date
     violations_points: int
+    contractor_name: str
+    contractor_id: int
 
 
 class WorkerSimpleOutWithRequestInfo(WorkerSimpleOut):
@@ -262,3 +264,15 @@ class WorkerComplexOut(BaseModel):
 
 class ObjectOut(BaseModel):
     data: str
+
+
+class WorkerPenaltyOut(BaseModel):
+    created_at: date
+    data: str
+    value: int
+    object: str
+
+
+class PenaltyIn(BaseModel):
+    violation_id: int
+    object_of_work_id: int

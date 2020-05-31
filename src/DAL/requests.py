@@ -25,7 +25,8 @@ from src.models import (
     WorkerInListOut,
     WorkerInRequestOut,
     WorkerSimpleOut,
-     WorkerSimpleOutWithRequestInfo)
+    WorkerSimpleOutWithRequestInfo,
+)
 from src.urls import Urls
 
 
@@ -95,8 +96,8 @@ class RequestsDAL:
                     if (
                         request_.contract_id == request.contract_id
                         and request_.object_of_work_id == request.object_of_work_id
-                        and request_.contractor_id == request.contractor_id and worker_request.status ==
-                        WorkerInRequestStatus.ACCEPTED
+                        and request_.contractor_id == request.contractor_id
+                        and worker_request.status == WorkerInRequestStatus.ACCEPTED
                     ):
                         raise DALError(
                             HTTPStatus.BAD_REQUEST.value,
@@ -127,11 +128,7 @@ class RequestsDAL:
             if request not in representative_from_db.contractor.requests:
                 raise DALError(HTTPStatus.BAD_REQUEST.value)
             try:
-                worker = (
-                    session.query(Worker)
-                    .filter(Worker.id == worker_id)
-                    .one()
-                )
+                worker = session.query(Worker).filter(Worker.id == worker_id).one()
                 for worker_in_request in request.workers_in_request:
                     if worker_in_request.worker == worker:
                         session.delete(worker_in_request)
@@ -139,8 +136,6 @@ class RequestsDAL:
                 raise DALError(HTTPStatus.NOT_FOUND.value)
             except NoResultFound:
                 raise DALError(HTTPStatus.NOT_FOUND.value)
-
-
 
     @staticmethod
     def _get_request(request_id, session):
@@ -159,7 +154,9 @@ class RequestsDAL:
             )
             request = RequestsDAL._get_request(request_id, session)
             if len(request.workers_in_request) == 0:
-                raise DALError(HTTPStatus.BAD_REQUEST.value,'Вы не можете создать пустую заявку')
+                raise DALError(
+                    HTTPStatus.BAD_REQUEST.value, 'Вы не можете создать пустую заявку'
+                )
             if (
                 request not in representative.contractor.requests
                 or request.status != RequestStatus.WAITING_FOR_READINESS
@@ -288,7 +285,9 @@ class RequestsDAL:
             patronymic=worker.patronymic,
             profession=worker.profession.data,
             birth_date=worker.birth_date,
-            violations_points=worker.penalty_points
+            violations_points=worker.penalty_points,
+            contractor_name=worker.contractor.title,
+            contractor_id=worker.contractor_id,
         )
 
     @staticmethod
@@ -338,7 +337,7 @@ class RequestsDAL:
             if request not in representative.contractor.requests:
                 raise DALError(HTTPStatus.FORBIDDEN.value)
             res = []
-            was_broken : bool = False
+            was_broken: bool = False
             for worker in representative.contractor.workers:
                 if was_broken:
                     was_broken = False
@@ -352,8 +351,8 @@ class RequestsDAL:
                     request_ = worker_in_request.request
                     if (
                         request_.object_of_work_id == request.object_of_work_id
-                        and request_.contract_id == request.contract_id and worker_in_request.status !=
-                        WorkerInRequestStatus.CANCELLED
+                        and request_.contract_id == request.contract_id
+                        and worker_in_request.status != WorkerInRequestStatus.CANCELLED
                     ):
                         was_broken = True
                         break
@@ -362,7 +361,9 @@ class RequestsDAL:
         return get_pagination(res, page, size)
 
     @staticmethod
-    def serialize_worker_with_request_info(worker: Worker, worker_in_request: WorkerInRequest):
+    def serialize_worker_with_request_info(
+        worker: Worker, worker_in_request: WorkerInRequest
+    ):
         return WorkerSimpleOutWithRequestInfo(
             id=worker.id,
             last_name=worker.last_name,
@@ -373,7 +374,11 @@ class RequestsDAL:
             violations_points=worker.penalty_points,
             status=worker_in_request.status,
             comment=worker_in_request.comment if worker_in_request.comment else '',
-            reason=worker_in_request.reason_for_rejection.data if worker_in_request.reason_for_rejection else ''
+            reason=worker_in_request.reason_for_rejection.data
+            if worker_in_request.reason_for_rejection
+            else '',
+            contractor_name = worker.contractor.title,
+            contractor_id=worker.contractor_id
         )
 
     @staticmethod
@@ -566,12 +571,17 @@ class RequestsDAL:
 
     @staticmethod
     @run_in_threadpool
-    def get_worker_from_requests(representative_id: int, request_id: int, substring: str, page: int, size: int):
+    def get_worker_from_requests(
+        representative_id: int, request_id: int, substring: str, page: int, size: int
+    ):
         with create_session() as session:
             request = RequestsDAL._get_request(request_id, session)
             try:
-                representative = session.query(ContractorRepresentative).filter(ContractorRepresentative.id ==
-                representative_id).one()
+                representative = (
+                    session.query(ContractorRepresentative)
+                    .filter(ContractorRepresentative.id == representative_id)
+                    .one()
+                )
 
             except NoResultFound:
                 raise DALError(HTTPStatus.NOT_FOUND.value)
@@ -580,7 +590,15 @@ class RequestsDAL:
             res = []
             for worker_in_request in request.workers_in_request:
                 worker = worker_in_request.worker
-                if substring and substring not in f'{worker.last_name} {worker.first_name} {worker.patronymic}':
+                if (
+                    substring
+                    and substring
+                    not in f'{worker.last_name} {worker.first_name} {worker.patronymic}'
+                ):
                     continue
-                res.append(RequestsDAL.serialize_worker_with_request_info(worker,worker_in_request))
-            return get_pagination(res,page,size)
+                res.append(
+                    RequestsDAL.serialize_worker_with_request_info(
+                        worker, worker_in_request
+                    )
+                )
+            return get_pagination(res, page, size)

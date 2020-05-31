@@ -47,7 +47,9 @@ async def get_requests(
 async def get_get_closed_request(
     req: Request, request_id: int, substring: str = '', page: int = 1, size: int = 10
 ):
-    return await RepresentativesController.get_filled_request_page(req, request_id, substring, page, size)
+    return await RepresentativesController.get_filled_request_page(
+        req, request_id, substring, page, size
+    )
 
 
 @router.get('/requests/{request_id}/result')

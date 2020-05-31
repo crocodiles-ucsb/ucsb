@@ -75,9 +75,14 @@
                 {%else%}
                 <td>{{worker.reason}}</td>
                 {%endif%}
+
+                {%if worker.status.value == 'accepted'%}
+                <td></td>
+                {%else%}
                 <td>
                     <button onclick="alert('{{worker.comment}}')" class="check_button">Просмотреть комментарий</button>
                 </td>
+                {%endif%}
             </tr>
             {%endfor%}
         </table>
