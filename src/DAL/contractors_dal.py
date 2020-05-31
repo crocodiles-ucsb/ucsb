@@ -6,7 +6,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from src.DAL.documents_dal import DocumentsDAL
 from src.DAL.utils import ListWithPagination, get_pagination
 from src.database.database import create_session, run_in_threadpool
-from src.database.models import Contractor
+from src.database.models import Contractor, ContractorRepresentative
 from src.exceptions import DALError
 from src.models import (
     ContractorInListOut,
@@ -22,6 +22,21 @@ from starlette.requests import Request
 
 
 class ContractorsDAL:
+    @staticmethod
+    @run_in_threadpool
+    def get_contracts(representative_id: int):
+        with create_session() as session:
+            try:
+                representative: ContractorRepresentative = session.query(
+                    ContractorRepresentative
+                ).filter(ContractorRepresentative.id == representative_id).one()
+                return [
+                    DocumentWithTitleOut.from_orm(contract)
+                    for contract in representative.contractor.contracts
+                ]
+            except NoResultFound:
+                raise DALError(HTTPStatus.NOT_FOUND.value)
+
     @staticmethod
     async def add(
         title: str, address: str, ogrn: str, inn: str, **kwargs

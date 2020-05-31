@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="{{url_for('static',path='request_add_form.css')}}" rel="stylesheet" type="text/css">
+    <title>Выбор объекта и договора</title>
+</head>
+
+<body>
+<form id="add_form">
+    <div class="outer">
+        <div class="middle">
+            <div class="inner">
+                <div class="add-wr">
+                    <h2>Выбор объекта и договора</h2>
+                    <div class="form">
+                        <h3>Выберите объект</h3>
+                        <label>
+                            <select name="object_id">
+                                {%for object in objects_of_work%}
+
+                                <option value="{{object.id}}">{{object.data}}</option>
+                                {%endfor%}
+                            </select>
+                        </label>
+                        <h3>Выберите договор</h3>
+                        <label>
+                            <select name="contract_id">
+                                {%for contract in contracts%}
+                                <option value="{{contract.id}}">{{contract.title}}</option>
+                                {%endfor%}
+                            </select>
+                        </label>
+                        <button type="submit" class="add_button"> Далее</button>
+                        <button onclick="window.location.replace('{{base_url}}/contractor_representatives/requests')"
+                        type="button" class="back_button"> Назад</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    base_url = '{{base_url}}';
+    const form = document.getElementById('add_form');
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        let form_ = new FormData(add_form);
+        const response = await fetch(base_url + '/requests', {
+            method: 'post',
+            body: JSON.stringify({
+                'object_of_work_id': form_.get('object_id'), 'contract_id':
+                    form_.get('contract_id')
+            })
+
+        });
+        if (response.status === 401){
+            alert('Данные авторизации устарели');
+            return
+        }
+        if (response.status === 201){
+            window.location.replace(base_url + '/contractor_representatives/requests/'+ (await response.json()).id)
+        }
+    }
+</script>
+</body>
+
+</html>

@@ -103,6 +103,7 @@ class DocumentWithTitleIn(SimpleDocumentIn):
 
 
 class SimpleDocumentOut(BaseModel):
+    id: int
     uuid: str
 
     class Config:
@@ -189,6 +190,7 @@ class RequestForTemplateOut(BaseModel):
     workers_count: int
     contract_link: str
     contract_title: str
+    status: RequestStatus
 
 
 class WorkerInRequestOut(BaseModel):
@@ -229,6 +231,12 @@ class WorkerSimpleOut(BaseModel):
     profession: str
     birth_date: date
     violations_points: int
+
+
+class WorkerSimpleOutWithRequestInfo(WorkerSimpleOut):
+    status: WorkerInRequestStatus
+    comment: str
+    reason: str
 
 
 class WorkerComplexOut(BaseModel):

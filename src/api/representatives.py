@@ -13,6 +13,16 @@ async def add(req: Request, params: ContractorRepresentativeAddingParams):
     return await RepresentativesController.add(req, params)
 
 
+@router.get('/add_worker')
+async def add_worker_page(req: Request):
+    return await RepresentativesController.get_add_worker_form(req)
+
+
+@router.get('/add_request')
+async def add_worker_page(req: Request):
+    return await RepresentativesController.get_add_request_form(req)
+
+
 @router.get('/workers')
 async def get_workers_page(
     req: Request, substring: str = '', page: int = 1, size: int = 10
@@ -30,6 +40,31 @@ async def get_requests(
 ):
     return await RepresentativesController.get_requests_page(
         req, solved, substring, page, size
+    )
+
+
+@router.get('/filled_requests/{request_id}')
+async def get_get_closed_request(
+    req: Request, request_id: int, substring: str = '', page: int = 1, size: int = 10
+):
+    return await RepresentativesController.get_filled_request_page(req, request_id, substring, page, size)
+
+
+@router.get('/requests/{request_id}/result')
+async def get_result_of_request(
+    req: Request, request_id: int, substring: str = '', page: int = 1, size: int = 10
+):
+    return await RepresentativesController.get_request_result(
+        req, request_id, substring, page, size
+    )
+
+
+@router.get('/requests/{request_id}')
+async def get_request(
+    req: Request, request_id: int, substring: str = '', page: int = 1, size: int = 10
+):
+    return await RepresentativesController.get_request_page(
+        req, request_id, substring, page, size
     )
 
 

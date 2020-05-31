@@ -7,6 +7,7 @@ from src.DAL.utils import ListWithPagination, get_pagination
 from src.database.database import create_session, run_in_threadpool
 from src.database.models import (
     ContractorRepresentative,
+    ObjectOfWork,
     Request,
     RequestStatus,
     Worker,
@@ -24,7 +25,7 @@ from src.models import (
     WorkerInListOut,
     WorkerInRequestOut,
     WorkerSimpleOut,
-)
+     WorkerSimpleOutWithRequestInfo)
 from src.urls import Urls
 
 
@@ -96,7 +97,11 @@ class RequestsDAL:
                         and request_.object_of_work_id == request.object_of_work_id
                         and request_.contractor_id == request.contractor_id
                     ):
-                        raise DALError(HTTPStatus.BAD_REQUEST.value)
+                        raise DALError(
+                            HTTPStatus.BAD_REQUEST.value,
+                            'Этот пользователь уже участвует в заявке по '
+                            'этому документы и на этом участке',
+                        )
                 worker_in_request = WorkerInRequest(
                     worker_id=worker_id,
                     request_id=request_id,
@@ -121,16 +126,20 @@ class RequestsDAL:
             if request not in representative_from_db.contractor.requests:
                 raise DALError(HTTPStatus.BAD_REQUEST.value)
             try:
-                worker_in_request = (
-                    session.query(WorkerInRequest)
-                    .filter(WorkerInRequest.id == worker_id)
+                worker = (
+                    session.query(Worker)
+                    .filter(Worker.id == worker_id)
                     .one()
                 )
+                for worker_in_request in request.workers_in_request:
+                    if worker_in_request.worker == worker:
+                        session.delete(worker_in_request)
+                        return
+                raise DALError(HTTPStatus.NOT_FOUND.value)
             except NoResultFound:
                 raise DALError(HTTPStatus.NOT_FOUND.value)
-            if worker_in_request not in request.workers_in_request:
-                raise DALError(HTTPStatus.BAD_REQUEST.value)
-            session.delete(worker_in_request)
+
+
 
     @staticmethod
     def _get_request(request_id, session):
@@ -148,9 +157,10 @@ class RequestsDAL:
                 representative, session
             )
             request = RequestsDAL._get_request(request_id, session)
+            if len(request.workers_in_request) == 0:
+                raise DALError(HTTPStatus.BAD_REQUEST.value,'Вы не можете создать пустую заявку')
             if (
                 request not in representative.contractor.requests
-                or len(request.workers_in_request) == 0
                 or request.status != RequestStatus.WAITING_FOR_READINESS
             ):
                 raise DALError(HTTPStatus.BAD_REQUEST.value)
@@ -277,7 +287,7 @@ class RequestsDAL:
             patronymic=worker.patronymic,
             profession=worker.profession.data,
             birth_date=worker.birth_date,
-            violations_points=worker.penalty_points,
+            violations_points=worker.penalty_points
         )
 
     @staticmethod
@@ -307,9 +317,69 @@ class RequestsDAL:
 
     @staticmethod
     @run_in_threadpool
+    def get_representative_workers_in_request(
+        representative_id: int,
+        request_id: int,
+        substring: str,
+        page: int,
+        size: int,
+        is_result: bool = False,
+    ):
+        with create_session() as session:
+            request = RequestsDAL._get_request(request_id, session)
+
+            try:
+                representative: ContractorRepresentative = session.query(
+                    ContractorRepresentative
+                ).filter(ContractorRepresentative.id == representative_id).one()
+            except NoResultFound:
+                raise DALError(HTTPStatus.NOT_FOUND.value)
+            if request not in representative.contractor.requests:
+                raise DALError(HTTPStatus.FORBIDDEN.value)
+            res = []
+            was_broken : bool = False
+            for worker in representative.contractor.workers:
+                if was_broken:
+                    was_broken = False
+                if (
+                    substring
+                    and substring
+                    not in f'{worker.last_name} {worker.first_name} {worker.patronymic}'
+                ):
+                    continue
+                for worker_in_request in worker.worker_requests:
+                    request_ = worker_in_request.request
+                    if (
+                        request_.object_of_work_id == request.object_of_work_id
+                        and request_.contract_id == request.contract_id
+                    ):
+                        was_broken = True
+                        break
+                if not was_broken:
+                    res.append(RequestsDAL.serialize_worker(worker))
+        return get_pagination(res, page, size)
+
+    @staticmethod
+    def serialize_worker_with_request_info(worker: Worker, worker_in_request: WorkerInRequest):
+        return WorkerSimpleOutWithRequestInfo(
+            id=worker.id,
+            last_name=worker.last_name,
+            first_name=worker.first_name,
+            patronymic=worker.patronymic,
+            profession=worker.profession.data,
+            birth_date=worker.birth_date,
+            violations_points=worker.penalty_points,
+            status=worker_in_request.status,
+            comment=worker_in_request.comment if worker_in_request.comment else '',
+            reason=worker_in_request.reason_for_rejection.data if worker_in_request.reason_for_rejection else ''
+        )
+
+    @staticmethod
+    @run_in_threadpool
     def get_operator_workers_in_request(
         request_id: int, substring: str, page: int, size: int, is_result: bool = False
     ) -> Awaitable[ListWithPagination[WorkerInListOut]]:
+
         with create_session() as session:
             request = RequestsDAL._get_request(request_id, session)
             workers = request.workers_in_request
@@ -351,6 +421,46 @@ class RequestsDAL:
         return get_pagination(workers_to_out, page, size)
 
     @staticmethod
+    @run_in_threadpool
+    def get_representative_request(request_id):
+        with create_session() as session:
+            request = RequestsDAL._get_request(request_id, session)
+            return RequestsDAL._serialize_request(request)
+
+    @staticmethod
+    @run_in_threadpool
+    def get_representative_request_result(
+        request_id: int, representative_id: int, substring: str, page: int, size: int
+    ):
+        with create_session() as session:
+            try:
+                representative = (
+                    session.query(ContractorRepresentative)
+                    .filter(ContractorRepresentative.id == representative_id)
+                    .one()
+                )
+            except NoResultFound:
+                raise DALError(HTTPStatus.NOT_FOUND.value)
+            request = RequestsDAL._get_request(request_id, session)
+            if request not in representative.contractor.requests:
+                raise DALError(HTTPStatus.FORBIDDEN.value)
+            if request.status != RequestStatus.WAITING_FOR_READINESS:
+                raise DALError(HTTPStatus.NOT_FOUND.value)
+            workers = map(
+                lambda worker_in_request: worker_in_request.worker,
+                request.workers_in_request,
+            )
+            res = [
+                RequestsDAL.serialize_worker(worker)
+                for worker in workers
+                if substring
+                and substring in f''
+                f'{worker.last_name} {worker.first_name} {worker.patronymic}'
+                or not substring
+            ]
+            return get_pagination(res, page, size)
+
+    @staticmethod
     def _serialize_request(request: Request) -> RequestForTemplateOut:
         return RequestForTemplateOut(
             id=request.id,
@@ -358,6 +468,7 @@ class RequestsDAL:
             title_of_organization=request.contractor.title,
             name_of_object=request.object_of_work.data,
             workers_count=len(request.workers_in_request),
+            status=request.status,
             contract_link=f'{Urls.base_url.value}/files/{request.contract.uuid}',
             contract_title=request.contract.title,
         )
@@ -450,3 +561,24 @@ class RequestsDAL:
                     continue
                 res.append(RequestsDAL._serialize_request(request))
             return get_pagination(res, page, size)
+
+    @staticmethod
+    @run_in_threadpool
+    def get_worker_from_requests(representative_id: int, request_id: int, substring: str, page: int, size: int):
+        with create_session() as session:
+            request = RequestsDAL._get_request(request_id, session)
+            try:
+                representative = session.query(ContractorRepresentative).filter(ContractorRepresentative.id ==
+                representative_id).one()
+
+            except NoResultFound:
+                raise DALError(HTTPStatus.NOT_FOUND.value)
+            if request not in representative.contractor.requests:
+                raise DALError(HTTPStatus.FORBIDDEN.value)
+            res = []
+            for worker_in_request in request.workers_in_request:
+                worker = worker_in_request.worker
+                if substring and substring not in f'{worker.last_name} {worker.first_name} {worker.patronymic}':
+                    continue
+                res.append(RequestsDAL.serialize_worker_with_request_info(worker,worker_in_request))
+            return get_pagination(res,page,size)

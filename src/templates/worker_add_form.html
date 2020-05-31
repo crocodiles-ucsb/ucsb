@@ -1,10 +1,171 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="{{url_for('static', path='/add_form.css')}}" rel="stylesheet" type="text/css">
+    <title>Добавление Рабочего</title>
 </head>
+
 <body>
-$END$
+<form id="add_form">
+    <div class="outer">
+        <div class="middle">
+            <div class="inner">
+                <div class="add-wr">
+                    <h2>Добавление рабочего</h2>
+                    <div class="form">
+                        <h3>Фамилия</h3>
+                        <label>
+                            <input placeholder="Фамилия" type="text" name="last_name">
+                        </label>
+                        <h3>Имя</h3>
+                        <label>
+                            <input placeholder="Имя" type="text" name="first_name">
+                        </label>
+                        <h3>Отчество</h3>
+                        <label>
+                            <input placeholder="Отчество" type="text" name="patronymic">
+                        </label>
+                        <h3>Профессия</h3>
+                        <label>
+                            <select name="profession">
+                                {%for profession in professions%}
+                                <option value="{{profession.data}}">{{profession.data}}</option>
+                                {%endfor%}
+                            </select>
+                        </label>
+                        <h3>Дата рождения</h3>
+                        <label>
+                            <input placeholder="Дата рождения" type="date" name="birthday">
+                        </label>
+                        <h3>Документы</h3>
+                        <div class="docs_wr">
+                            <div class="column">
+                                <p>Удостоверение личности <span style="color:red">*</span> :
+                                    <label class="custom_upload">
+                                        Загрузить файл
+                                        <input id="identification" type="file" name="identification">
+                                    </label>
+                                </p>
+                                <p>Водительское удостоверение:
+                                    <label class="custom_upload">
+                                        Загрузить файл
+                                        <input id="drivers_license" type="file" name="drivers_license">
+                                    </label>
+                                </p>
+                                <p>Приказ приёма на работу:
+                                    <label class="custom_upload">
+                                        Загрузить файл
+                                        <input id="order_of_acceptance_to_work" type="file"
+                                               name="order_of_acceptance_to_work">
+                                    </label>
+                                </p>
+                                <p>Информация о прохождении обучений:
+                                    <label class="custom_upload">
+                                        Загрузить файл
+                                        <input id="training_information" type="file" name="training_information">
+                                    </label>
+                                </p>
+                                <p>Информация о прохождении <br> курсов целевого назначения:
+                                    <label class="custom_upload">
+                                        Загрузить файл
+                                        <input id="speciality_course_information" type="file"
+                                               name="speciality_course_information">
+                                    </label>
+                                </p>
+                            </div>
+                            <div class="column">
+                                <p>Удостоверение тракториста-машиниста:
+                                    <label class="custom_upload">
+                                        Загрузить файл
+                                        <input id="another_drive_license" type="file" name="another_drive_license">
+                                    </label>
+                                </p>
+                                <p>Медсправка:
+                                    <label class="custom_upload">
+                                        Загрузить файл
+                                        <input id="medical_certificate" type="file" name="medical_certificate">
+                                    </label>
+                                </p>
+                                <p>Кваливикационное удостоверение:
+                                    <label class="custom_upload">
+                                        Загрузить файл
+                                        <input id="certificate_of_competency" type="file" value=""
+                                               name="certificate_of_competency">
+                                    </label>
+                                </p>
+                                <p>Информация о прохождении инструктажа
+                                    :
+                                    <label class="custom_upload">
+                                        Загрузить файл
+                                        <input id="instructed_information" type="file" name="instructed_information">
+                                    </label>
+                                </p>
+                                <p>Сертификат о прохождении обучения по <br> программе “Защитное/зимнее вождение”:
+                                    <label class="custom_upload">
+                                        Загрузить файл
+                                        <input id="emergency_driving_certificate" type="file"
+                                               name="emergency_driving_certificate">
+                                    </label>
+                                </p>
+                            </div>
+                        </div>
+                        <button type="submit" class="add_button"> + Добавить</button>
+                        <button onclick="window.location.replace(base_url + '/contractor_representatives/workers')"
+                        type="button"
+                        class="back_button"> Назад
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+
+
+    function delete_file_from_form_if_not_exists(name, form) {
+        if (document.getElementById(name).files.length === 0) {
+            form.delete(name)
+        }
+
+    }
+
+    const base_url = '{{base_url}}';
+    _form = document.getElementById('add_form');
+    _form.onsubmit = async (e) => {
+        e.preventDefault();
+        let form = new FormData(add_form);
+        if (form.get('last_name') === '' || form.get('first_name') === '' || form.get('patronymic') === '' ||
+            form.get('profession') === '' || form.get('birthday') === '' ||
+            document.getElementById('identification').files.length === 0) {
+            alert('Данные введены некоректно')
+
+        }
+        delete_file_from_form_if_not_exists('drivers_license', form);
+        delete_file_from_form_if_not_exists('order_of_acceptance_to_work', form);
+        delete_file_from_form_if_not_exists('training_information', form);
+        delete_file_from_form_if_not_exists('speciality_course_information', form);
+        delete_file_from_form_if_not_exists('another_drive_license', form);
+        delete_file_from_form_if_not_exists('medical_certificate', form);
+        delete_file_from_form_if_not_exists('certificate_of_competency', form);
+        delete_file_from_form_if_not_exists('instructed_information', form);
+        delete_file_from_form_if_not_exists('emergency_driving_certificate', form);
+        const response = await fetch(base_url + '/workers', {
+            method: 'post',
+            body: form
+        });
+        if (response.status === 401) {
+            alert('Данные авторизации устарели, обновите страницу')
+        }
+        if (response.status === 201) {
+            window.location.replace(base_url + '/contractor_representatives/workers')
+        }
+    }
+</script>
+
 </body>
+
 </html>

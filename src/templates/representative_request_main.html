@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="{{url_for('static', path='/representatives_requests.css')}}" rel="stylesheet" type="text/css">
+    <title>Заявка</title>
+</head>
+
+<body>
+
+<div class="grid-container">
+
+    <div class="agent_contract_wr">
+        <p><b>Объект: </b>{{request_.name_of_object}}</p>
+        <p><b>Договор: </b> <a href="#">{{request_.contract_title}}</a></p>
+    </div>
+
+    <form class="search" method="get">
+        <label>
+            <input placeholder="Поиск" type="search" name="substring" value="{{substring}}">
+        </label>
+        <button class="search_button"> Найти</button>
+    </form>
+
+    <div class="result_wr">
+        <button
+        onclick="window.location.replace('{{base_url}}/contractor_representatives/requests/{{request_.id}}/result')"
+        class="blue_button"> Итог заявки</button>
+    </div>
+
+    <div class="back_wr">
+        <button onclick="window.location.replace('{{base_url}}/contractor_representatives/requests')"
+                class="blue_button">
+            Назад
+        </button>
+    </div>
+
+    <div class="pagination">
+        {% if pagination.has_prev_page %}
+        <a
+                href="{{base_url}}/contractor_representatives/requests/{{request_id}}?page={{pagination.prev_page}}&substring={{substring}}">
+            &laquo;</a>
+        {%endif%}
+        <a
+                href="{{base_url}}/contractor_representatives/requests/{{request_id}}?page={{pagination.current_page}}&substring={{substring}}">{{pagination
+            .current_page}}</a>
+        {%if pagination.has_next_page%}
+        <a
+                href="{{base_url}}/contractor_representatives/requests/{{request_id}}?page={{pagination.next_page}}&substring={{substring}}">&raquo;</a>
+        {% endif%}
+    </div>
+
+    <div class="table-wr">
+        <table id="table">
+            <tr>
+                <th>ФИО</th>
+                <th>Профессия</th>
+                <th>Баллы за нарушения</th>
+                <th></th>
+            </tr>
+            {%for worker in workers%}
+            <tr>
+                <td><a href="{{base_url}}/contractor_representatives/workers/{{worker.id}}">{{worker.last_name}}
+                    {{worker.first_name}}
+                    {{worker.patronymic}}</a></td>
+                <td>{{worker.profession}}</td>
+                <td>{{worker.violations_points}}</td>
+                <td>
+                    <button onclick="add_to_request('{{worker.id}}')" class="check_button">Добавить в заявку</button>
+                </td>
+            </tr>
+            {%endfor%}
+        </table>
+    </div>
+
+    <script>
+        const add_to_request = async (worker_id) => {
+            const response = await fetch('{{base_url}}/requests/{{request_id}}/workers', {
+                method: 'post',
+                body: JSON.stringify({'worker_id': worker_id})
+            });
+            if (response.status === 401) {
+                alert('Данные авторизации устарели, обновите страницу')
+            }
+            if (response.status === 201) {
+                window.location.replace('{{base_url}}/contractor_representatives/requests/{{request_id}}')
+            }
+            if (response.status === 400){
+                const message =(await response.json()).detail;
+                if(message){
+                    alert(message)
+                }else{
+                    alert('Данные устарели, обновите страницу')
+                }
+            }
+        }
+    </script>
+
+    <div class="exit_wr">
+        <button class="exit_button">Выйти</button>
+    </div>
+
+</div>
+
+</body>
+
+</html>

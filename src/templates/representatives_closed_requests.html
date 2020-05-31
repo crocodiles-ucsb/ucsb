@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1" name="viewport">
-    <link href="{{url_for('static', path='/representatives_requests.css')}}" rel="stylesheet" type="text/css">
+    <link href="{{url_for('static', path='/representatives_requests_view.css')}}" rel="stylesheet" type="text/css">
     <title>Заявки</title>
 </head>
 
@@ -33,7 +33,9 @@
     </form>
 
     <div class="add_wr">
-        <button class="add_button"> + Добавить</button>
+        <button onclick="window.location.replace('{{base_url}}' +'/contractor_representatives/add_request')"
+        class="add_button"> +
+        Добавить</button>
     </div>
 
     <div class="pagination">
@@ -63,7 +65,9 @@
                 <td>{{request.name_of_object}}</td>
                 <td>{{request.workers_count}}</td>
                 <td>
-                    <button class="check_button">Просмотреть</button>
+                    <button
+                    onclick="window.location.replace('{{base_url}}/contractor_representatives/filled_requests/{{request.id}}')"
+                    class="check_button">Просмотреть</button>
                 </td>
             </tr>
             {%endfor%}
@@ -71,7 +75,7 @@
     </div>
 
     <div class="exit_wr">
-        <button class="exit_button">Выйти</button>
+        <button onclick="window.location.replace('{{base_url}}/logout')" class="exit_button">Выйти</button>
     </div>
 
 </div>

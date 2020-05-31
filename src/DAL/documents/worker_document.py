@@ -20,4 +20,5 @@ class WorkerDocument(AbstractDocument[SimpleDocumentIn, Worker, SimpleDocumentOu
         )
         session.add(document)
         document.worker = db_obj
+        session.flush()
         return SimpleDocumentOut.from_orm(document)
