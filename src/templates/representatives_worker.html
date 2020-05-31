@@ -126,18 +126,14 @@
                 <th>Место нарушения</th>
                 <th>Штрафные баллы</th>
             </tr>
+            {%for violation in violations%}
             <tr>
-                <td>Превыешне скорости</td>
-                <td>10.05.2020</td>
-                <td>Алмазная шахта</td>
-                <td>50</td>
+                <td>{{violation.data}}</td>
+                <td>{{violation.created_at}}</td>
+                <td>{{violation.object}}</td>
+                <td>{{violation.value}}</td>
             </tr>
-            <tr>
-                <td>Вождение в нетрезвом виде</td>
-                <td>12.05.2020</td>
-                <td>Алмазная шахта</td>
-                <td>50</td>
-            </tr>
+            {%endfor%}
         </table>
     </div>
 

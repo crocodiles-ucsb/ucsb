@@ -1,3 +1,4 @@
+from src.DAL.securities import SecuritiesDAL
 from src.api.catalogs import CatalogType
 from src.controller.authorization_decorators import auth_required
 from src.DAL.catalogs_dal import CatalogsDAL
@@ -91,6 +92,7 @@ class RepresentativesController:
     @staticmethod
     @auth_required(UserRole.CONTRACTOR_REPRESENTATIVE, check_id=False)
     async def get_worker_page(req: Request, worker_id: int):
+        violations = await SecuritiesDAL.get_worker_violations(worker_id)
         worker = await RepresentativesDAL.get_worker(
             (await get_user(req)).id, worker_id
         )
@@ -102,6 +104,7 @@ class RepresentativesController:
                 'worker': worker,
                 'base_url': Urls.base_url.value,
                 'objects': objects,
+                'violations' : violations
             },
         )
 
