@@ -94,9 +94,10 @@ class RepresentativesController:
         worker = await RepresentativesDAL.get_worker(
             (await get_user(req)).id, worker_id
         )
+        objects = await RepresentativesDAL.get_worker_objects(worker_id)
         return templates.TemplateResponse(
             'representatives_worker.html',
-            {'request': req, 'worker': worker, 'base_url': Urls.base_url.value},
+            {'request': req, 'worker': worker, 'base_url': Urls.base_url.value,'objects': objects},
         )
 
     @staticmethod

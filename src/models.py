@@ -258,3 +258,7 @@ class WorkerComplexOut(BaseModel):
     emergency_driving_certificate_uuid: Optional[str]
     violations_points: int
     count_of_violations: int
+
+
+class ObjectOut(BaseModel):
+    data: str

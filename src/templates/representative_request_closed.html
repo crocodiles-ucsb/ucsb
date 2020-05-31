@@ -31,7 +31,7 @@
 
     <div class="back_wr">
         <button onclick="window.location.replace('{{base_url}}/contractor_representatives/requests?solved=True')"
-        class="blue_button">Назад
+                class="blue_button">Назад
         </button>
     </div>
 
@@ -57,23 +57,27 @@
                 <th>Должность</th>
                 <th>Баллы за нарушения</th>
                 <th>Причина</th>
+                <th></th>
             </tr>
             {%for worker in workers%}
             {%if worker.status.value == 'accepted'%}
             <tr class="allowed">
                 {%else%}
             <tr class="denied">
-            {%endif%}
+                {%endif%}
                 <td><a href="{{base_url}}/contractor_representatives/workers/{{worker.id}}">{{worker.last_name}}
-                {{worker.first_name}} {{worker
-                .patronymic}}</a></td>
+                    {{worker.first_name}} {{worker
+                    .patronymic}}</a></td>
                 <td>{{worker.profession}}</td>
                 <td>0</td>
                 {%if worker.status.value == 'accepted'%}
-            <td></td>
+                <td></td>
                 {%else%}
-            <td>{{worker.reason}}</td>
-            {%endif%}
+                <td>{{worker.reason}}</td>
+                {%endif%}
+                <td>
+                    <button onclick="alert('{{worker.comment}}')" class="check_button">Просмотреть комментарий</button>
+                </td>
             </tr>
             {%endfor%}
         </table>

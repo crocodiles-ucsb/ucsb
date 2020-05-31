@@ -17,7 +17,7 @@
     </div>
 
     <div class="worker_info_wr">
-        <p><b>ФИО: </b>{{worker.last_name}} {{worker.patronymic}} {{worker.patronymic}}</p>
+        <p><b>ФИО: </b>{{worker.last_name}} {{worker.first_name}} {{worker.patronymic}}</p>
         <p><b>Профессия: </b>{{worker.profession}}</p>
         <p><b>Дата рождения: </b>{{worker.birth_date}}</p>
     </div>
@@ -44,28 +44,32 @@
 
             {%if worker.order_of_acceptance_to_work_uuid%}
             <tr>
-                <td><a href="{{base_url}}/files/{{worker.order_of_acceptance_to_work_uuid}}">Приказ приема на работу</a></td>
+                <td><a href="{{base_url}}/files/{{worker.order_of_acceptance_to_work_uuid}}">Приказ приема на работу</a>
+                </td>
             </tr>
             {%endif%}
 
 
             {%if worker.training_information_uuid%}
             <tr>
-                <td><a href="{{base_url}}/files/{{worker.training_information_uuid}}">Информация о прохождении обучений</a></td>
+                <td><a href="{{base_url}}/files/{{worker.training_information_uuid}}">Информация о прохождении
+                    обучений</a></td>
             </tr>
             {%endif%}
 
 
             {%if worker.speciality_course_information_uuid%}
             <tr>
-                <td><a href="{{base_url}}/files/{{worker.speciality_course_information_uuid}}">Информация о прохождении курсов целевого назначения</a></td>
+                <td><a href="{{base_url}}/files/{{worker.speciality_course_information_uuid}}">Информация о прохождении
+                    курсов целевого назначения</a></td>
             </tr>
             {%endif%}
 
 
             {%if worker.another_drive_license_uuid%}
             <tr>
-                <td><a href="{{base_url}}/files/{{worker.another_drive_license_uuid}}">Удостоверение тракториста-машиниста</a></td>
+                <td><a href="{{base_url}}/files/{{worker.another_drive_license_uuid}}">Удостоверение
+                    тракториста-машиниста</a></td>
             </tr>
             {%endif%}
 
@@ -79,22 +83,25 @@
 
             {%if worker.certificate_of_competency_uuid%}
             <tr>
-                <td><a href="{{base_url}}/files/{{worker.certificate_of_competency_uuid}}">Квалификационное удостоверение</a></td>
+                <td><a href="{{base_url}}/files/{{worker.certificate_of_competency_uuid}}">Квалификационное
+                    удостоверение</a></td>
             </tr>
             {%endif%}
 
 
             {%if worker.instructed_information_uuid%}
             <tr>
-                <td><a href="{{base_url}}/files/{{worker.instructed_information_uuid}}">Информация о прохождении инструктажа</a></td>
+                <td><a href="{{base_url}}/files/{{worker.instructed_information_uuid}}">Информация о прохождении
+                    инструктажа</a></td>
             </tr>
             {%endif%}
 
 
             {%if worker.emergency_driving_certificate_uuid%}
             <tr>
-                <td><a href="{{base_url}}/files/{{worker.emergency_driving_certificate_uuid}}">Сертификат о прохождении обучения по программа "Защитное/зимнее
-                вождение"</a></td>
+                <td><a href="{{base_url}}/files/{{worker.emergency_driving_certificate_uuid}}">Сертификат о прохождении
+                    обучения по программа "Защитное/зимнее
+                    вождение"</a></td>
             </tr>
             {%endif%}
 
@@ -139,13 +146,14 @@
     </div>
 
     <div class="access_info_wr">
-        <p>Алмазная шахта</p>
-        <p>Склад номер 5</p>
+        {%for object in objects%}
+        {{object.data}}
+        {%endfor%}
     </div>
 
     <div class="back_wr">
         <button onclick="window.location.replace('{{base_url}}/contractor_representatives/workers')"
-        class="back_button">Назад
+                class="back_button">Назад
         </button>
     </div>
 

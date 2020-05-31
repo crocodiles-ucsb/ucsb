@@ -95,7 +95,8 @@ class RequestsDAL:
                     if (
                         request_.contract_id == request.contract_id
                         and request_.object_of_work_id == request.object_of_work_id
-                        and request_.contractor_id == request.contractor_id
+                        and request_.contractor_id == request.contractor_id and worker_request.status ==
+                        WorkerInRequestStatus.ACCEPTED
                     ):
                         raise DALError(
                             HTTPStatus.BAD_REQUEST.value,
@@ -351,7 +352,8 @@ class RequestsDAL:
                     request_ = worker_in_request.request
                     if (
                         request_.object_of_work_id == request.object_of_work_id
-                        and request_.contract_id == request.contract_id
+                        and request_.contract_id == request.contract_id and worker_in_request.status !=
+                        WorkerInRequestStatus.CANCELLED and worker_in_request.status != WorkerInRequestStatus.WAITING_FOR_READINESS
                     ):
                         was_broken = True
                         break
