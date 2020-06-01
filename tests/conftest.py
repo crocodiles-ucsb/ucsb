@@ -114,7 +114,7 @@ def simple_registration():
 
 @pytest.fixture()
 def worker_fields():
-    return {'last_name': '1', 'first_name': '2', 'birthday': datetime.utcnow()}
+    return {'last_name': '1', 'first_name': '2', 'patronymic' : '3','birthday': datetime.utcnow()}
 
 
 @pytest.fixture(scope='session')
